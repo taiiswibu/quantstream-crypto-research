@@ -12,7 +12,10 @@
 ## GitHub and next research cycle
 - [x] Publish to the user's new repository.
 - [x] Observe successful remote CI on Linux and Windows.
-- [ ] Run TCN on the user's Kaggle account and record real results.
+- [x] Verify the uploaded CUDA TCN output and record results/protocol deviation.
+- [x] Prepare budgeted Ridge/XGBoost/TCN/GRU search with inner early stopping and multi-seed checks.
+- [x] Prepare a controlled Chronos LoRA steps/learning-rate lab.
+- [ ] Receive and analyze actual model-search output from Kaggle.
 - [ ] Run/revise the LoRA hypothesis using development data.
 - [ ] Make sleeve vs portfolio turnover units explicit with accounting coverage.
 - [ ] Add block-based uncertainty and per-regime validation.

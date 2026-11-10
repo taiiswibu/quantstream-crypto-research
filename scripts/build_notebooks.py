@@ -167,10 +167,11 @@ md("""## Train
 
 TCN dùng convolution causal có dilation; không nhìn các bước phía sau. Scaler của mỗi fold chỉ fit train. Huber loss trên lợi suất được nhân 100 để ổn định thang số. Chọn epoch bằng validation MSE. Strategy threshold được so sánh trên ba fold sau phí.
 
-`epochs=8` là cấu hình dự kiến cho lần chạy Kaggle. Lượt kiểm chứng kèm gói đã dùng 6 epoch/fold và lưu kết quả riêng."""),
+`EPOCHS=6` là cấu hình cố định cho run-001. Lượt upload thực tế đã chạy 8; xem experiment log để biết sai lệch. Không tăng epoch chỉ vì loss train giảm."""),
 code("""from quantstream.deep import train_snapshot
 OUTPUT=WORK/'tcn_output'
-metadata=train_snapshot(SNAPSHOT,OUTPUT,epochs=8,device='auto')
+EPOCHS=6
+metadata=train_snapshot(SNAPSHOT,OUTPUT,epochs=EPOCHS,device='auto')
 print(json.dumps(metadata['selection'],indent=2))"""),
 md("""## Download output
 
