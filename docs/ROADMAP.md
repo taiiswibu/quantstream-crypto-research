@@ -10,8 +10,8 @@
 - [x] Git provenance, CI configuration and contribution documentation.
 
 ## GitHub and next research cycle
-- [ ] Publish to the user's new repository.
-- [ ] Observe remote CI and resolve actual platform failures.
+- [x] Publish to the user's new repository.
+- [x] Observe successful remote CI on Linux and Windows.
 - [ ] Run TCN on the user's Kaggle account and record real results.
 - [ ] Run/revise the LoRA hypothesis using development data.
 - [ ] Make sleeve vs portfolio turnover units explicit with accounting coverage.

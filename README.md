@@ -1,5 +1,7 @@
 # QuantStream
 
+[![CI](https://github.com/taiiswibu/quantstream-crypto-research/actions/workflows/ci.yml/badge.svg)](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323)
+
 **Local-first crypto forecasting, reproducible ML research and paper trading.**
 
 QuantStream turns public BTC/USDT and ETH/USDT candles into checked research snapshots, compares classical ML and a PyTorch TCN, evaluates trading rules after costs, and runs a local paper-trading dashboard. A separate Chronos-2 LoRA experiment compares pretrained and fine-tuned forecasts.
@@ -107,7 +109,7 @@ python -m ruff check quantstream app.py tests scripts
 python scripts/check_notebooks.py
 ```
 
-17 local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior and Git provenance. CI is configured for Linux and Windows; its remote status is only known after it runs on GitHub. The Linux job includes PyTorch; the core Windows job may skip optional TCN coverage.
+17 local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior and Git provenance. The [first remote CI run](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323) passed on both Linux and Windows. The badge reflects subsequent runs. The Linux job includes PyTorch; the core Windows job may skip optional TCN coverage.
 
 Read [CONTRIBUTING](CONTRIBUTING.md), [Vietnamese Git workflow](docs/GIT_WORKFLOW_VI.md), [roadmap](docs/ROADMAP.md) and [changelog](CHANGELOG.md). Use one branch/PR per coherent change or hypothesis. Commit meaningful work, not an artificial contribution count.
 
