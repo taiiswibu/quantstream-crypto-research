@@ -17,6 +17,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dl = ["torch>=2.5,<3"]
+research = ["torch>=2.5,<3", "optuna>=4.5,<6"]
 finetune = ["torch>=2.5,<3", "chronos-forecasting>=2.3,<3", "peft>=0.18,<1", "accelerate>=1,<2", "datasets>=3,<5"]
 dev = ["pytest>=8,<10", "nbformat>=5,<6", "ruff>=0.12,<1"]
 
