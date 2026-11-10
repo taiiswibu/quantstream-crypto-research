@@ -16,6 +16,14 @@ git push origin --tags
 
 Nếu có origin rồi, xem `git remote -v` trước; không force-push repo cũ không liên quan. Git có thể yêu cầu đăng nhập trên trình duyệt.
 
+Có thể dùng helper thay cho ba lệnh xuất bản sau khi đã tạo repo trống:
+
+```powershell
+powershell -File scripts/publish_github.ps1 -RepoUrl https://github.com/taiiswibu/quantstream-crypto-research.git
+```
+
+Helper yêu cầu branch main sạch, không thay origin khác và không force-push. Nếu chính sách PowerShell trên máy không cho chạy script, dùng các lệnh Git trực tiếp bên trên; không cần đổi chính sách hệ thống. Script được cung cấp cho Windows, chưa chạy trên Windows trong môi trường tạo gói.
+
 Gói Git-ready có cả lịch sử. Có thể áp dụng source lên thư mục MVP hiện tại nếu nó CHƯA có Git; các dữ liệu/model trong đường dẫn ignored được giữ. Nếu thư mục đã có Git, dùng thư mục mới thay vì chép đè lịch sử cũ.
 
 ## Một phần việc thật
