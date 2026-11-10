@@ -1,0 +1,12 @@
+# Versions used for the executed reference run. Use normal pyproject install first.
+numpy==2.3.5
+pandas==2.2.3
+pyarrow==26.0.1
+duckdb==2.0.0
+scikit-learn==1.8.0
+joblib==1.5.3
+xgboost-cpu==3.4.1; platform_system == "Linux"
+xgboost==3.4.1; platform_system != "Linux"
+streamlit==1.67.0
+plotly==7.1.0
+websockets==16.0

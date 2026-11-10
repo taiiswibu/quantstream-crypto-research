@@ -1,0 +1,10 @@
+# Core Kaggle images already include torch. Install this AFTER attaching the input ZIP.
+numpy>=1.26,<3
+pandas>=2.2,<3
+pyarrow>=17,<27
+scikit-learn>=1.5,<2
+chronos-forecasting>=2.3,<3
+peft>=0.18.1,<1
+accelerate>=1.1,<2
+datasets>=3,<5
+

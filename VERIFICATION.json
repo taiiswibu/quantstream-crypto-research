@@ -1,0 +1,115 @@
+{
+  "verified_at": "2026-11-09T17:25:11.452889+00:00",
+  "platform_tested": "Linux x86_64, Python 3.12.14",
+  "windows_launcher": "provided; not executed on Windows in this environment",
+  "unit_tests": {
+    "passed": 12,
+    "covers": [
+      "timestamp ms/us",
+      "quality/quarantine",
+      "causal features",
+      "purged temporal split",
+      "round-trip costs",
+      "non-overlap",
+      "TCN causality",
+      "PSI",
+      "paper idempotence",
+      "late entry skip",
+      "final-test lock"
+    ]
+  },
+  "static_checks": "ruff and compileall passed",
+  "real_market_data": {
+    "historical_valid_candles": 67196,
+    "archive_checksums_verified": 92,
+    "synthetic_training_data": false
+  },
+  "training": {
+    "ridge_logistic_xgboost": "3 walk-forward folds completed",
+    "tcn": "6 epochs per fold; 3 folds; final refit 3 epochs on development",
+    "chronos_2": "LoRA 200 steps, CPU, 512 sampled validation windows; saved adapter reloaded and produced finite predictions"
+  },
+  "dashboard": {
+    "method": "Streamlit AppTest",
+    "tabs": 5,
+    "exceptions": 0,
+    "metrics_with_paper_state": 10,
+    "browser_screenshot": "not completed; browser installation unavailable"
+  },
+  "paper": "one real public-REST catch-up and simulated paper step completed; no real orders",
+  "websocket": "optional code provided; sustained live capture not verified",
+  "notebooks": {
+    "results": "all 5 code cells executed in-process through IPython; 2 PNG figures; outputs saved",
+    "kaggle_tcn_and_lora": "schema and Python syntax validated; not run on user Kaggle account"
+  },
+  "final_test": {
+    "evaluated_at": "2026-11-09T17:11:51.752363+00:00",
+    "model": "tcn",
+    "model_sha256": "0be961ff47c2d5516bf4f4bed4e2459d9e1d41f6164a3b270deebd00dca35fe6",
+    "threshold": 0.006,
+    "period": {
+      "start": "2026-01-25 17:00:00+00:00",
+      "end": "2026-11-01 00:00:00+00:00"
+    },
+    "prediction": {
+      "directional_accuracy": 0.5141833383099432,
+      "mae_return": 0.007089498319254603
+    },
+    "strategy": {
+      "total_return": -0.1445669218493708,
+      "sharpe_hourly_estimate": -2.0601403041868833,
+      "max_drawdown": -0.17087732499091768,
+      "trades": 46,
+      "win_rate": 0.2608695652173913,
+      "turnover": 80.68726090510904,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "buy_hold": {
+      "total_return": -0.16411646822417958,
+      "sharpe_hourly_estimate": -0.29810599211167554,
+      "max_drawdown": -0.40459354757796007,
+      "trades": 2,
+      "win_rate": 0.0,
+      "turnover": 3.4714423020574947,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "ema": {
+      "total_return": -0.19805518906450392,
+      "sharpe_hourly_estimate": -3.501635020167507,
+      "max_drawdown": -0.19925288809982833,
+      "trades": 88,
+      "win_rate": 0.3181818181818182,
+      "turnover": 152.95445403334313,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "assumptions": {
+      "fee_bps_each_side": 10,
+      "slippage_bps_each_side": 5,
+      "execution_lag_hours": 1,
+      "holding_hours": 4,
+      "drawdown_halt_per_asset": 0.2,
+      "position_fraction_per_asset_sleeve": 0.95
+    },
+    "limitations": [
+      "Hourly OHLCV fills are an approximation, not order-book execution.",
+      "Two chosen liquid assets have selection bias; this is not an all-crypto universe study.",
+      "Trading rule and model were selected only on development folds.",
+      "No profitability guarantee. Sharpe is an unadjusted hourly estimate."
+    ]
+  },
+  "source_hashes": {
+    "quantstream/__init__.py": "2008de7473101a244411840635f236c881fcd36bb16d4e7caeeb7f0354100881",
+    "quantstream/__main__.py": "c7107e8aa342c028ffdfac7ec6129e0d436105aef750525eb839c35968715c14",
+    "quantstream/backtest.py": "23825e6d231e89ef7238d2fdec871a806d1beb74089dff141e2b7bbebaf32cc3",
+    "quantstream/cli.py": "eacd0c7e386e8836a0d86fda0387b45639cd42dce6eb700b2bf74a1984acbbbb",
+    "quantstream/common.py": "b558dd9e663ce93f5d1a7eb3dc9488d7350a648bcc77f5b880b561eff3e2fc14",
+    "quantstream/data.py": "7ec4ba9e7e108958d703c83ad30ab6cd6427e1118825b34157a134b819d52e23",
+    "quantstream/deep.py": "0230bff810fb5772c67cd98350e09abc7f29e32a8032d85c931c04b266b6cc73",
+    "quantstream/features.py": "2944b185c86dc2f53f24a0dabc858b9d6b80e1550d38d662464ec33e1377a388",
+    "quantstream/finetune.py": "1d0c470f662de595b1200fb2ea362f662eaf4c2282abcdecc2f9140d5c2778c4",
+    "quantstream/monitor.py": "7e3c1080dcaf935e14ec1a501538e2457ea524113238c2f6aed442c5b7e242fe",
+    "quantstream/paper.py": "2de21669c0eb79579155f753014598b2549044a9606a9fff93a62149b2d60738",
+    "quantstream/research.py": "536c325bdbe63bfb2cd8f466208fcb25c1e5c75ae2a71b8c9d902e2937b60665",
+    "quantstream/stream.py": "fe1dc5fce81c695e1fe428a8df3d8b9d5c7abd60c079ea243ca4a11d40b20ccb"
+  }
+}
