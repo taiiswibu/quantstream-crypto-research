@@ -15,4 +15,17 @@ QuantStream_Kaggle_Input.zip
 *.pt
 *.joblib
 .env
+.env.*
+!.env.example
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.zip
+*.bundle
+*.safetensors
+BAO_CAO_KET_QUA.html
+notebook_work/
+private_uploads/
 
