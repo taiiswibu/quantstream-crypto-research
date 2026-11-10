@@ -9,7 +9,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Ridge, LogisticRegression
 from sklearn.metrics import mean_absolute_error
-from .common import sha256, write_json, write_parquet, stamp, utcnow
+from .common import sha256, write_json, write_parquet, stamp, utcnow, git_provenance
 from .features import FEATURES, fold_data
 from .backtest import evaluate_strategy, simulate
 from .contracts import verify_feature_snapshot
@@ -98,6 +98,7 @@ def research(root, cfg):
     oof_output = pd.concat(all_oof, ignore_index=True)
     write_parquet(run / "validation_predictions.parquet", oof_output[["symbol", "decision_time", "target_return", "prediction", "fold", "model"]])
     metadata = {"created_at": utcnow(), "type": "sklearn", "model": winner["model"],
+                "source_control": git_provenance(root),
                 "path": str((run / "model.joblib").relative_to(root)),
                 "sha256": sha256(run / "model.joblib"), "threshold": winner["threshold"],
                 "features": FEATURES, "config": cfg.to_dict(), "split": plan,
@@ -200,6 +201,7 @@ def export_kaggle(root, cfg):
     for name, df in [("train", train), ("validation", val), ("development", dev), ("bars", bars)]:
         write_parquet(folder / f"{name}.parquet", df)
     manifest = {"created_at": utcnow(), "config": cfg.to_dict(), "split": plan, "feature_columns": FEATURES,
+                "source_control": git_provenance(root),
                 "full_features_sha256": sha256(root / "data/processed/features.parquet"),
                 "files": {p.name: sha256(p) for p in folder.glob("*.parquet")},
                 "contains_final_holdout": False}

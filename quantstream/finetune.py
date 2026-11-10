@@ -84,6 +84,7 @@ def chronos_experiment(snapshot, output, steps=200, max_windows=512, device="aut
     write_parquet(output / "chronos_validation.parquet", scored)
     truth = scored.target_return.to_numpy()
     report = {"created_at": utcnow(), "model_id": model_id, "resolved_revision": resolved_revision,
+              "source_control": manifest.get("source_control", {"status": "not_recorded_in_legacy_snapshot"}),
               "steps": steps, "mode": "lora", "device": device, "context_length": context_length,
               "peft_version": peft.__version__,
               "evaluation_windows": len(scored), "contains_final_holdout": False,

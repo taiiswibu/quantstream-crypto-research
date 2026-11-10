@@ -4,6 +4,7 @@ import dataclasses
 import hashlib
 import json
 import os
+import subprocess
 from pathlib import Path
 from dataclasses import dataclass
 import pandas as pd
@@ -91,3 +92,21 @@ def write_parquet(path, df):
 
 def stamp():
     return pd.Timestamp.now(tz="UTC").strftime("%Y%m%dT%H%M%S%fZ")
+
+
+def git_provenance(root):
+    """Record the real revision and working-tree state without requiring Git on Kaggle."""
+    try:
+        def run(*args):
+            return subprocess.run(["git", "-C", str(Path(root).resolve()), *args],
+                                  capture_output=True, text=True, timeout=5, check=False)
+        commit = run("rev-parse", "HEAD")
+        if commit.returncode:
+            return {"commit": None, "branch": None, "dirty": None, "status": "unavailable"}
+        branch = run("rev-parse", "--abbrev-ref", "HEAD")
+        state = run("status", "--porcelain", "--untracked-files=normal")
+        return {"commit": commit.stdout.strip(), "branch": branch.stdout.strip(),
+                "dirty": bool(state.stdout.strip()) if state.returncode == 0 else None,
+                "status": "available"}
+    except (OSError, subprocess.TimeoutExpired):
+        return {"commit": None, "branch": None, "dirty": None, "status": "unavailable"}

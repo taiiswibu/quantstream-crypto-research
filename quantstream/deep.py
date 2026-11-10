@@ -190,6 +190,7 @@ def train_snapshot(snapshot, output, epochs=8, device="auto"):
     torch.save({"state_dict": {k: v.cpu() for k, v in final.state_dict().items()},
                 "mean": mean.tolist(), "std": std.tolist(), "lookback": cfg.lookback}, output / "model.pt")
     metadata = {"created_at": utcnow(), "type": "tcn", "model": "tcn", "threshold": chosen["threshold"],
+                "source_control": manifest.get("source_control", {"status": "not_recorded_in_legacy_snapshot"}),
                 "sha256": sha256(output / "model.pt"), "config": cfg.to_dict(), "features": FEATURES,
                 "features_sha256": manifest["full_features_sha256"], "split": manifest["split"],
                 "selection": chosen, "best_epoch": best_epoch, "device_used": device,
