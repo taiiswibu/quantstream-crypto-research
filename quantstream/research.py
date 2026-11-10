@@ -12,6 +12,7 @@ from sklearn.metrics import mean_absolute_error
 from .common import sha256, write_json, write_parquet, stamp, utcnow
 from .features import FEATURES, fold_data
 from .backtest import evaluate_strategy, simulate
+from .contracts import verify_feature_snapshot
 
 
 def make_model(name, cfg):
@@ -47,12 +48,9 @@ def score_summary(summary, minimum_trades):
 
 def research(root, cfg):
     root = Path(root)
+    _, plan = verify_feature_snapshot(root, cfg)
     samples = pd.read_parquet(root / "data/processed/features.parquet")
     bars = pd.read_parquet(root / "data/processed/bars.parquet")
-    plan = json.loads((root / "data/processed/split_plan.json").read_text())
-    feature_manifest = json.loads((root / "data/processed/feature_manifest.json").read_text())
-    if json.dumps(feature_manifest["config"], sort_keys=True) != json.dumps(cfg.to_dict(), sort_keys=True):
-        raise ValueError("Config changed after feature preparation. Run prepare first.")
     run = root / "runs" / stamp()
     run.mkdir(parents=True)
     names = ["ridge", "logistic", "xgboost_d3", "xgboost_d5"]
@@ -190,7 +188,7 @@ def export_kaggle(root, cfg):
     """Export development-only data. The final holdout is not in this ZIP."""
     import zipfile
     root = Path(root)
-    plan = json.loads((root / "data/processed/split_plan.json").read_text())
+    _, plan = verify_feature_snapshot(root, cfg)
     all_features = pd.read_parquet(root / "data/processed/features.parquet")
     bounds = plan["folds"][-1]
     train, val = fold_data(all_features, bounds["validation_start"], bounds["validation_end"])
