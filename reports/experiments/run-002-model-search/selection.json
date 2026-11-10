@@ -1,0 +1,806 @@
+{
+  "selected": {
+    "trial": 2,
+    "params": {
+      "family": "tcn",
+      "lookback": 48,
+      "width": 16,
+      "dropout": 0.0,
+      "lr": 0.0013394334706750498,
+      "weight_decay": 0.0006358358856676254,
+      "batch_size": 256
+    },
+    "mean_objective": 0.9930596138063726,
+    "std_objective": 0.00428719160850474,
+    "seeds": [
+      {
+        "params": {
+          "family": "tcn",
+          "lookback": 48,
+          "width": 16,
+          "dropout": 0.0,
+          "lr": 0.0013394334706750498,
+          "weight_decay": 0.0006358358856676254,
+          "batch_size": 256
+        },
+        "seed": 42,
+        "folds": [
+          {
+            "fold": 0,
+            "prediction": {
+              "mse": 0.00020963250143444907,
+              "zero_forecast_mse": 0.00021049783460245765,
+              "mse_ratio_to_zero": 0.9958891113077585,
+              "mae": 0.009634610822263974,
+              "directional_accuracy": 0.5185029436501262,
+              "rows": 7134
+            },
+            "strategy": {
+              "total_return": 0.013273388906015926,
+              "sharpe_hourly_estimate": 1.2489824677608368,
+              "max_drawdown": -0.006897476802252611,
+              "trades": 4,
+              "win_rate": 1.0,
+              "turnover": 7.65917192569661,
+              "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+            },
+            "best_epoch": 1,
+            "inner_cut": "2024-06-24 00:00:00+00:00",
+            "history": [
+              {
+                "epoch": 1,
+                "train_huber": 0.3538946651492904,
+                "inner_validation_mse": 0.0001415116139105482
+              },
+              {
+                "epoch": 2,
+                "train_huber": 0.34564713083054005,
+                "inner_validation_mse": 0.00014316226096993548
+              },
+              {
+                "epoch": 3,
+                "train_huber": 0.34295371235085104,
+                "inner_validation_mse": 0.0001427243632393519
+              }
+            ]
+          },
+          {
+            "fold": 1,
+            "prediction": {
+              "mse": 0.00014530310866401388,
+              "zero_forecast_mse": 0.00014822731810708705,
+              "mse_ratio_to_zero": 0.9802721287788492,
+              "mae": 0.007855783261482112,
+              "directional_accuracy": 0.5336322869955157,
+              "rows": 7136
+            },
+            "strategy": {
+              "total_return": -0.0027319768286272472,
+              "sharpe_hourly_estimate": -0.03928897022001107,
+              "max_drawdown": -0.03595185421574776,
+              "trades": 14,
+              "win_rate": 0.6428571428571429,
+              "turnover": 25.919675081122914,
+              "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+            },
+            "best_epoch": 2,
+            "inner_cut": "2024-10-21 01:00:00+00:00",
+            "history": [
+              {
+                "epoch": 1,
+                "train_huber": 0.3726142414732078,
+                "inner_validation_mse": 0.0001979831462393938
+              },
+              {
+                "epoch": 2,
+                "train_huber": 0.36581716980902995,
+                "inner_validation_mse": 0.00019793504422719344
+              },
+              {
+                "epoch": 3,
+                "train_huber": 0.3632863433073681,
+                "inner_validation_mse": 0.0001984021745528893
+              },
+              {
+                "epoch": 4,
+                "train_huber": 0.36077048517577515,
+                "inner_validation_mse": 0.00019812773501920832
+              }
+            ]
+          }
+        ],
+        "objective": 0.9880806200433039,
+        "mean_sharpe_diagnostic": 0.6048467487704129
+      },
+      {
+        "params": {
+          "family": "tcn",
+          "lookback": 48,
+          "width": 16,
+          "dropout": 0.0,
+          "lr": 0.0013394334706750498,
+          "weight_decay": 0.0006358358856676254,
+          "batch_size": 256
+        },
+        "seed": 123,
+        "folds": [
+          {
+            "fold": 0,
+            "prediction": {
+              "mse": 0.00020961336761017064,
+              "zero_forecast_mse": 0.00021049783460245765,
+              "mse_ratio_to_zero": 0.995798213345247,
+              "mae": 0.009625482611893818,
+              "directional_accuracy": 0.5285954583683767,
+              "rows": 7134
+            },
+            "strategy": {
+              "total_return": 0.10924612897034613,
+              "sharpe_hourly_estimate": 2.082022062317584,
+              "max_drawdown": -0.03823860115560751,
+              "trades": 31,
+              "win_rate": 0.5483870967741935,
+              "turnover": 65.09831094532642,
+              "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+            },
+            "best_epoch": 1,
+            "inner_cut": "2024-06-24 00:00:00+00:00",
+            "history": [
+              {
+                "epoch": 1,
+                "train_huber": 0.35181663574736594,
+                "inner_validation_mse": 0.00014258848849951745
+              },
+              {
+                "epoch": 2,
+                "train_huber": 0.345260727799891,
+                "inner_validation_mse": 0.00014288397159916173
+              },
+              {
+                "epoch": 3,
+                "train_huber": 0.34172536107199947,
+                "inner_validation_mse": 0.00014377265759356277
+              }
+            ]
+          },
+          {
+            "fold": 1,
+            "prediction": {
+              "mse": 0.00014664241257033558,
+              "zero_forecast_mse": 0.00014822731810708705,
+              "mse_ratio_to_zero": 0.98930760161493,
+              "mae": 0.00788114415465464,
+              "directional_accuracy": 0.5249439461883408,
+              "rows": 7136
+            },
+            "strategy": {
+              "total_return": 0.02125280125636042,
+              "sharpe_hourly_estimate": 0.6013051033019136,
+              "max_drawdown": -0.046172071543151616,
+              "trades": 22,
+              "win_rate": 0.6363636363636364,
+              "turnover": 41.810586237861735,
+              "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+            },
+            "best_epoch": 1,
+            "inner_cut": "2024-10-21 01:00:00+00:00",
+            "history": [
+              {
+                "epoch": 1,
+                "train_huber": 0.3712136444986531,
+                "inner_validation_mse": 0.00019811484379253017
+              },
+              {
+                "epoch": 2,
+                "train_huber": 0.3650951682299708,
+                "inner_validation_mse": 0.00019885405334353563
+              },
+              {
+                "epoch": 3,
+                "train_huber": 0.363513289427687,
+                "inner_validation_mse": 0.00019818728001033743
+              }
+            ]
+          }
+        ],
+        "objective": 0.9925529074800885,
+        "mean_sharpe_diagnostic": 1.3416635828097487
+      },
+      {
+        "params": {
+          "family": "tcn",
+          "lookback": 48,
+          "width": 16,
+          "dropout": 0.0,
+          "lr": 0.0013394334706750498,
+          "weight_decay": 0.0006358358856676254,
+          "batch_size": 256
+        },
+        "seed": 2026,
+        "folds": [
+          {
+            "fold": 0,
+            "prediction": {
+              "mse": 0.00021097304088268974,
+              "zero_forecast_mse": 0.00021049783460245765,
+              "mse_ratio_to_zero": 1.0022575352431988,
+              "mae": 0.009625146358821378,
+              "directional_accuracy": 0.5367255396691898,
+              "rows": 7134
+            },
+            "strategy": {
+              "total_return": 0.03992442141106478,
+              "sharpe_hourly_estimate": 0.6343390024932994,
+              "max_drawdown": -0.07579823411821218,
+              "trades": 88,
+              "win_rate": 0.45454545454545453,
+              "turnover": 162.9064725052887,
+              "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+            },
+            "best_epoch": 3,
+            "inner_cut": "2024-06-24 00:00:00+00:00",
+            "history": [
+              {
+                "epoch": 1,
+                "train_huber": 0.36340938942684897,
+                "inner_validation_mse": 0.00014195579221123209
+              },
+              {
+                "epoch": 2,
+                "train_huber": 0.3472011444817575,
+                "inner_validation_mse": 0.0001418377538270554
+              },
+              {
+                "epoch": 3,
+                "train_huber": 0.3445777750584346,
+                "inner_validation_mse": 0.0001417864302587012
+              },
+              {
+                "epoch": 4,
+                "train_huber": 0.3429888089155248,
+                "inner_validation_mse": 0.00014420362847851007
+              },
+              {
+                "epoch": 5,
+                "train_huber": 0.3405206930308429,
+                "inner_validation_mse": 0.0001451038294653465
+              }
+            ]
+          },
+          {
+            "fold": 1,
+            "prediction": {
+              "mse": 0.00014746144127260696,
+              "zero_forecast_mse": 0.00014822731810708705,
+              "mse_ratio_to_zero": 0.9948330925482523,
+              "mae": 0.00785825959314611,
+              "directional_accuracy": 0.5298486547085202,
+              "rows": 7136
+            },
+            "strategy": {
+              "total_return": 0.0398373371234948,
+              "sharpe_hourly_estimate": 0.8515730630248403,
+              "max_drawdown": -0.03848359725577555,
+              "trades": 21,
+              "win_rate": 0.5714285714285714,
+              "turnover": 41.4720727993918,
+              "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+            },
+            "best_epoch": 2,
+            "inner_cut": "2024-10-21 01:00:00+00:00",
+            "history": [
+              {
+                "epoch": 1,
+                "train_huber": 0.3807875886301813,
+                "inner_validation_mse": 0.00019876227223444943
+              },
+              {
+                "epoch": 2,
+                "train_huber": 0.3666588588585175,
+                "inner_validation_mse": 0.00019847663812865653
+              },
+              {
+                "epoch": 3,
+                "train_huber": 0.3640671245409246,
+                "inner_validation_mse": 0.0001984974802128755
+              },
+              {
+                "epoch": 4,
+                "train_huber": 0.3624531509316775,
+                "inner_validation_mse": 0.00019992927199922222
+              }
+            ]
+          }
+        ],
+        "objective": 0.9985453138957255,
+        "mean_sharpe_diagnostic": 0.7429560327590699
+      }
+    ]
+  },
+  "shortlist": [
+    {
+      "trial": 2,
+      "params": {
+        "family": "tcn",
+        "lookback": 48,
+        "width": 16,
+        "dropout": 0.0,
+        "lr": 0.0013394334706750498,
+        "weight_decay": 0.0006358358856676254,
+        "batch_size": 256
+      },
+      "mean_objective": 0.9930596138063726,
+      "std_objective": 0.00428719160850474,
+      "seeds": [
+        {
+          "params": {
+            "family": "tcn",
+            "lookback": 48,
+            "width": 16,
+            "dropout": 0.0,
+            "lr": 0.0013394334706750498,
+            "weight_decay": 0.0006358358856676254,
+            "batch_size": 256
+          },
+          "seed": 42,
+          "folds": [
+            {
+              "fold": 0,
+              "prediction": {
+                "mse": 0.00020963250143444907,
+                "zero_forecast_mse": 0.00021049783460245765,
+                "mse_ratio_to_zero": 0.9958891113077585,
+                "mae": 0.009634610822263974,
+                "directional_accuracy": 0.5185029436501262,
+                "rows": 7134
+              },
+              "strategy": {
+                "total_return": 0.013273388906015926,
+                "sharpe_hourly_estimate": 1.2489824677608368,
+                "max_drawdown": -0.006897476802252611,
+                "trades": 4,
+                "win_rate": 1.0,
+                "turnover": 7.65917192569661,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              },
+              "best_epoch": 1,
+              "inner_cut": "2024-06-24 00:00:00+00:00",
+              "history": [
+                {
+                  "epoch": 1,
+                  "train_huber": 0.3538946651492904,
+                  "inner_validation_mse": 0.0001415116139105482
+                },
+                {
+                  "epoch": 2,
+                  "train_huber": 0.34564713083054005,
+                  "inner_validation_mse": 0.00014316226096993548
+                },
+                {
+                  "epoch": 3,
+                  "train_huber": 0.34295371235085104,
+                  "inner_validation_mse": 0.0001427243632393519
+                }
+              ]
+            },
+            {
+              "fold": 1,
+              "prediction": {
+                "mse": 0.00014530310866401388,
+                "zero_forecast_mse": 0.00014822731810708705,
+                "mse_ratio_to_zero": 0.9802721287788492,
+                "mae": 0.007855783261482112,
+                "directional_accuracy": 0.5336322869955157,
+                "rows": 7136
+              },
+              "strategy": {
+                "total_return": -0.0027319768286272472,
+                "sharpe_hourly_estimate": -0.03928897022001107,
+                "max_drawdown": -0.03595185421574776,
+                "trades": 14,
+                "win_rate": 0.6428571428571429,
+                "turnover": 25.919675081122914,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              },
+              "best_epoch": 2,
+              "inner_cut": "2024-10-21 01:00:00+00:00",
+              "history": [
+                {
+                  "epoch": 1,
+                  "train_huber": 0.3726142414732078,
+                  "inner_validation_mse": 0.0001979831462393938
+                },
+                {
+                  "epoch": 2,
+                  "train_huber": 0.36581716980902995,
+                  "inner_validation_mse": 0.00019793504422719344
+                },
+                {
+                  "epoch": 3,
+                  "train_huber": 0.3632863433073681,
+                  "inner_validation_mse": 0.0001984021745528893
+                },
+                {
+                  "epoch": 4,
+                  "train_huber": 0.36077048517577515,
+                  "inner_validation_mse": 0.00019812773501920832
+                }
+              ]
+            }
+          ],
+          "objective": 0.9880806200433039,
+          "mean_sharpe_diagnostic": 0.6048467487704129
+        },
+        {
+          "params": {
+            "family": "tcn",
+            "lookback": 48,
+            "width": 16,
+            "dropout": 0.0,
+            "lr": 0.0013394334706750498,
+            "weight_decay": 0.0006358358856676254,
+            "batch_size": 256
+          },
+          "seed": 123,
+          "folds": [
+            {
+              "fold": 0,
+              "prediction": {
+                "mse": 0.00020961336761017064,
+                "zero_forecast_mse": 0.00021049783460245765,
+                "mse_ratio_to_zero": 0.995798213345247,
+                "mae": 0.009625482611893818,
+                "directional_accuracy": 0.5285954583683767,
+                "rows": 7134
+              },
+              "strategy": {
+                "total_return": 0.10924612897034613,
+                "sharpe_hourly_estimate": 2.082022062317584,
+                "max_drawdown": -0.03823860115560751,
+                "trades": 31,
+                "win_rate": 0.5483870967741935,
+                "turnover": 65.09831094532642,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              },
+              "best_epoch": 1,
+              "inner_cut": "2024-06-24 00:00:00+00:00",
+              "history": [
+                {
+                  "epoch": 1,
+                  "train_huber": 0.35181663574736594,
+                  "inner_validation_mse": 0.00014258848849951745
+                },
+                {
+                  "epoch": 2,
+                  "train_huber": 0.345260727799891,
+                  "inner_validation_mse": 0.00014288397159916173
+                },
+                {
+                  "epoch": 3,
+                  "train_huber": 0.34172536107199947,
+                  "inner_validation_mse": 0.00014377265759356277
+                }
+              ]
+            },
+            {
+              "fold": 1,
+              "prediction": {
+                "mse": 0.00014664241257033558,
+                "zero_forecast_mse": 0.00014822731810708705,
+                "mse_ratio_to_zero": 0.98930760161493,
+                "mae": 0.00788114415465464,
+                "directional_accuracy": 0.5249439461883408,
+                "rows": 7136
+              },
+              "strategy": {
+                "total_return": 0.02125280125636042,
+                "sharpe_hourly_estimate": 0.6013051033019136,
+                "max_drawdown": -0.046172071543151616,
+                "trades": 22,
+                "win_rate": 0.6363636363636364,
+                "turnover": 41.810586237861735,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              },
+              "best_epoch": 1,
+              "inner_cut": "2024-10-21 01:00:00+00:00",
+              "history": [
+                {
+                  "epoch": 1,
+                  "train_huber": 0.3712136444986531,
+                  "inner_validation_mse": 0.00019811484379253017
+                },
+                {
+                  "epoch": 2,
+                  "train_huber": 0.3650951682299708,
+                  "inner_validation_mse": 0.00019885405334353563
+                },
+                {
+                  "epoch": 3,
+                  "train_huber": 0.363513289427687,
+                  "inner_validation_mse": 0.00019818728001033743
+                }
+              ]
+            }
+          ],
+          "objective": 0.9925529074800885,
+          "mean_sharpe_diagnostic": 1.3416635828097487
+        },
+        {
+          "params": {
+            "family": "tcn",
+            "lookback": 48,
+            "width": 16,
+            "dropout": 0.0,
+            "lr": 0.0013394334706750498,
+            "weight_decay": 0.0006358358856676254,
+            "batch_size": 256
+          },
+          "seed": 2026,
+          "folds": [
+            {
+              "fold": 0,
+              "prediction": {
+                "mse": 0.00021097304088268974,
+                "zero_forecast_mse": 0.00021049783460245765,
+                "mse_ratio_to_zero": 1.0022575352431988,
+                "mae": 0.009625146358821378,
+                "directional_accuracy": 0.5367255396691898,
+                "rows": 7134
+              },
+              "strategy": {
+                "total_return": 0.03992442141106478,
+                "sharpe_hourly_estimate": 0.6343390024932994,
+                "max_drawdown": -0.07579823411821218,
+                "trades": 88,
+                "win_rate": 0.45454545454545453,
+                "turnover": 162.9064725052887,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              },
+              "best_epoch": 3,
+              "inner_cut": "2024-06-24 00:00:00+00:00",
+              "history": [
+                {
+                  "epoch": 1,
+                  "train_huber": 0.36340938942684897,
+                  "inner_validation_mse": 0.00014195579221123209
+                },
+                {
+                  "epoch": 2,
+                  "train_huber": 0.3472011444817575,
+                  "inner_validation_mse": 0.0001418377538270554
+                },
+                {
+                  "epoch": 3,
+                  "train_huber": 0.3445777750584346,
+                  "inner_validation_mse": 0.0001417864302587012
+                },
+                {
+                  "epoch": 4,
+                  "train_huber": 0.3429888089155248,
+                  "inner_validation_mse": 0.00014420362847851007
+                },
+                {
+                  "epoch": 5,
+                  "train_huber": 0.3405206930308429,
+                  "inner_validation_mse": 0.0001451038294653465
+                }
+              ]
+            },
+            {
+              "fold": 1,
+              "prediction": {
+                "mse": 0.00014746144127260696,
+                "zero_forecast_mse": 0.00014822731810708705,
+                "mse_ratio_to_zero": 0.9948330925482523,
+                "mae": 0.00785825959314611,
+                "directional_accuracy": 0.5298486547085202,
+                "rows": 7136
+              },
+              "strategy": {
+                "total_return": 0.0398373371234948,
+                "sharpe_hourly_estimate": 0.8515730630248403,
+                "max_drawdown": -0.03848359725577555,
+                "trades": 21,
+                "win_rate": 0.5714285714285714,
+                "turnover": 41.4720727993918,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              },
+              "best_epoch": 2,
+              "inner_cut": "2024-10-21 01:00:00+00:00",
+              "history": [
+                {
+                  "epoch": 1,
+                  "train_huber": 0.3807875886301813,
+                  "inner_validation_mse": 0.00019876227223444943
+                },
+                {
+                  "epoch": 2,
+                  "train_huber": 0.3666588588585175,
+                  "inner_validation_mse": 0.00019847663812865653
+                },
+                {
+                  "epoch": 3,
+                  "train_huber": 0.3640671245409246,
+                  "inner_validation_mse": 0.0001984974802128755
+                },
+                {
+                  "epoch": 4,
+                  "train_huber": 0.3624531509316775,
+                  "inner_validation_mse": 0.00019992927199922222
+                }
+              ]
+            }
+          ],
+          "objective": 0.9985453138957255,
+          "mean_sharpe_diagnostic": 0.7429560327590699
+        }
+      ]
+    },
+    {
+      "trial": 11,
+      "params": {
+        "family": "ridge",
+        "alpha": 0.12844377595711354
+      },
+      "mean_objective": 0.9938232334187344,
+      "std_objective": 1.1102230246251565e-16,
+      "seeds": [
+        {
+          "params": {
+            "family": "ridge",
+            "alpha": 0.12844377595711354
+          },
+          "seed": 42,
+          "folds": [
+            {
+              "fold": 0,
+              "prediction": {
+                "mse": 0.00021005297847599645,
+                "zero_forecast_mse": 0.00021049783460245765,
+                "mse_ratio_to_zero": 0.9978866474930664,
+                "mae": 0.009636546131778988,
+                "directional_accuracy": 0.5180824222035324,
+                "rows": 7134
+              },
+              "strategy": {
+                "total_return": 0.03755450800093829,
+                "sharpe_hourly_estimate": 1.1726419058612754,
+                "max_drawdown": -0.030741503872798948,
+                "trades": 17,
+                "win_rate": 0.5294117647058824,
+                "turnover": 34.137456908861736,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              }
+            },
+            {
+              "fold": 1,
+              "prediction": {
+                "mse": 0.0001467094435915757,
+                "zero_forecast_mse": 0.00014822731810708705,
+                "mse_ratio_to_zero": 0.9897598193444022,
+                "mae": 0.007899055612107679,
+                "directional_accuracy": 0.507707399103139,
+                "rows": 7136
+              },
+              "strategy": {
+                "total_return": 0.0011919563808366895,
+                "sharpe_hourly_estimate": 0.07737266095757708,
+                "max_drawdown": -0.03658347690429742,
+                "trades": 4,
+                "win_rate": 0.75,
+                "turnover": 7.455211639663397,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              }
+            }
+          ],
+          "objective": 0.9938232334187342,
+          "mean_sharpe_diagnostic": 0.6250072834094262
+        },
+        {
+          "params": {
+            "family": "ridge",
+            "alpha": 0.12844377595711354
+          },
+          "seed": 123,
+          "folds": [
+            {
+              "fold": 0,
+              "prediction": {
+                "mse": 0.00021005297847599645,
+                "zero_forecast_mse": 0.00021049783460245765,
+                "mse_ratio_to_zero": 0.9978866474930664,
+                "mae": 0.009636546131778988,
+                "directional_accuracy": 0.5180824222035324,
+                "rows": 7134
+              },
+              "strategy": {
+                "total_return": 0.03755450800093829,
+                "sharpe_hourly_estimate": 1.1726419058612754,
+                "max_drawdown": -0.030741503872798948,
+                "trades": 17,
+                "win_rate": 0.5294117647058824,
+                "turnover": 34.137456908861736,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              }
+            },
+            {
+              "fold": 1,
+              "prediction": {
+                "mse": 0.0001467094435915757,
+                "zero_forecast_mse": 0.00014822731810708705,
+                "mse_ratio_to_zero": 0.9897598193444022,
+                "mae": 0.007899055612107679,
+                "directional_accuracy": 0.507707399103139,
+                "rows": 7136
+              },
+              "strategy": {
+                "total_return": 0.0011919563808366895,
+                "sharpe_hourly_estimate": 0.07737266095757708,
+                "max_drawdown": -0.03658347690429742,
+                "trades": 4,
+                "win_rate": 0.75,
+                "turnover": 7.455211639663397,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              }
+            }
+          ],
+          "objective": 0.9938232334187342,
+          "mean_sharpe_diagnostic": 0.6250072834094262
+        },
+        {
+          "params": {
+            "family": "ridge",
+            "alpha": 0.12844377595711354
+          },
+          "seed": 2026,
+          "folds": [
+            {
+              "fold": 0,
+              "prediction": {
+                "mse": 0.00021005297847599645,
+                "zero_forecast_mse": 0.00021049783460245765,
+                "mse_ratio_to_zero": 0.9978866474930664,
+                "mae": 0.009636546131778988,
+                "directional_accuracy": 0.5180824222035324,
+                "rows": 7134
+              },
+              "strategy": {
+                "total_return": 0.03755450800093829,
+                "sharpe_hourly_estimate": 1.1726419058612754,
+                "max_drawdown": -0.030741503872798948,
+                "trades": 17,
+                "win_rate": 0.5294117647058824,
+                "turnover": 34.137456908861736,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              }
+            },
+            {
+              "fold": 1,
+              "prediction": {
+                "mse": 0.0001467094435915757,
+                "zero_forecast_mse": 0.00014822731810708705,
+                "mse_ratio_to_zero": 0.9897598193444022,
+                "mae": 0.007899055612107679,
+                "directional_accuracy": 0.507707399103139,
+                "rows": 7136
+              },
+              "strategy": {
+                "total_return": 0.0011919563808366895,
+                "sharpe_hourly_estimate": 0.07737266095757708,
+                "max_drawdown": -0.03658347690429742,
+                "trades": 4,
+                "win_rate": 0.75,
+                "turnover": 7.455211639663397,
+                "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+              }
+            }
+          ],
+          "objective": 0.9938232334187342,
+          "mean_sharpe_diagnostic": 0.6250072834094262
+        }
+      ]
+    }
+  ],
+  "frozen_at": "2026-11-10T17:43:33.779211+00:00",
+  "threshold": 0.006
+}

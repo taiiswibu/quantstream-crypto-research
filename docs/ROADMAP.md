@@ -15,7 +15,7 @@
 - [x] Verify the uploaded CUDA TCN output and record results/protocol deviation.
 - [x] Prepare budgeted Ridge/XGBoost/TCN/GRU search with inner early stopping and multi-seed checks.
 - [x] Prepare a controlled Chronos LoRA steps/learning-rate lab.
-- [ ] Receive and analyze actual model-search output from Kaggle.
+- [x] Verify all 12 model-search trial predictions, diagnostic/cost metrics and record a research-only decision.
 - [ ] Run/revise the LoRA hypothesis using development data.
 - [ ] Make sleeve vs portfolio turnover units explicit with accounting coverage.
 - [ ] Add block-based uncertainty and per-regime validation.

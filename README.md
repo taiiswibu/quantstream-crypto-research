@@ -23,7 +23,9 @@ QuantStream turns public BTC/USDT and ETH/USDT candles into checked research sna
 | Reproducibility | Config/data/code contracts; model hashes; Git SHA and dirty-tree provenance; final-test lock |
 | Development | Tests; Linux/Windows CI configuration; notebook validation; issue and PR templates |
 
-Reference experiments ran locally on CPU. The [first uploaded Kaggle TCN artifact](docs/experiments/run-001-kaggle-tcn.md) reports CUDA training; checkpoint hashes and development strategy metrics were verified. The observed eight-epoch run deviates from the planned six epochs; notebook URL/GPU model/runtime versions were not captured. No competition score is claimed. The new model-search and LoRA-lab notebooks are prepared but have not run on the user's account yet.
+Reference experiments ran locally on CPU. The [first uploaded Kaggle TCN artifact](docs/experiments/run-001-kaggle-tcn.md) reports CUDA training; checkpoint hashes and development strategy metrics were verified. The observed eight-epoch run deviates from the planned six epochs; notebook URL/GPU model/runtime versions were not captured. No competition score is claimed.
+
+The [12-trial Kaggle model search](docs/experiments/run-002-model-search.md) is now complete; uploaded runtime reports a Tesla T4. TCN's three-seed mean normalized forecast MSE was 0.99306 on tuning folds, versus 0.99382 for tuned Ridge. On the historically observed last development fold, TCN's forecast MSE was worse than zero-return forecasting; strategy return changed from +2.89% at base costs to -0.71% at 1.5x costs. The candidate remains **research only**. Trial/diagnostic prediction metrics were independently recomputed; extra-seed backtests lack saved predictions for independent recomputation. The new controlled LoRA lab remains prepared and unrun.
 
 ## Reference outcome
 
