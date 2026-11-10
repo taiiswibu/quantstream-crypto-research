@@ -1,0 +1,24 @@
+{
+  "created_at": "2026-11-09T17:13:47.004687+00:00",
+  "model_id": "amazon/chronos-2",
+  "resolved_revision": "29ec3766d36d6f73f0696f85560a422f50e8498c",
+  "steps": 200,
+  "mode": "lora",
+  "device": "cpu",
+  "context_length": 128,
+  "peft_version": "0.21.2",
+  "evaluation_windows": 512,
+  "contains_final_holdout": false,
+  "snapshot_manifest_sha256": "3b572ed119126ce1da14a812bef84a5ef24b83203c78c70950cb6a490dc734ff",
+  "zero_shot_mae": 0.007835988160826379,
+  "finetuned_mae": 0.007916147928355297,
+  "zero_shot_directional_accuracy": 0.501953125,
+  "finetuned_directional_accuracy": 0.498046875,
+  "pretraining_data_cutoff_verified": false,
+  "limitations": [
+    "Exploratory sampled validation, not final strategy performance.",
+    "Pretraining overlap with financial data is unverified.",
+    "Forecasted pre-entry close approximates future entry open.",
+    "No automatic deployment of this experimental adapter."
+  ]
+}

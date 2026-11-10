@@ -1,0 +1,306 @@
+[
+  {
+    "model": "ridge",
+    "threshold": 0.006,
+    "eligible": true,
+    "mean_validation_sharpe": 0.4439668157883132,
+    "mean_validation_return": 0.01641834618805064,
+    "worst_validation_drawdown": -0.03658347690429742,
+    "validation_trades": 20,
+    "last_fold": {
+      "total_return": -0.010643445552869002,
+      "sharpe_hourly_estimate": -0.7310754785131304,
+      "max_drawdown": -0.01568804327002149,
+      "trades": 4,
+      "win_rate": 0.25,
+      "turnover": 7.495888715700098,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": 0.4439668157883132
+  },
+  {
+    "model": "xgboost_d5",
+    "threshold": 0.006,
+    "eligible": true,
+    "mean_validation_sharpe": -0.28098704889570203,
+    "mean_validation_return": -0.022006583484592095,
+    "worst_validation_drawdown": -0.14070832889044238,
+    "validation_trades": 166,
+    "last_fold": {
+      "total_return": -0.03176541399219168,
+      "sharpe_hourly_estimate": -0.9314522698956751,
+      "max_drawdown": -0.05497085839852067,
+      "trades": 29,
+      "win_rate": 0.4482758620689655,
+      "turnover": 54.36282512886463,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -0.28098704889570203
+  },
+  {
+    "model": "xgboost_d3",
+    "threshold": 0.006,
+    "eligible": true,
+    "mean_validation_sharpe": -0.3343527763641589,
+    "mean_validation_return": -0.028893651151300197,
+    "worst_validation_drawdown": -0.1554528909885462,
+    "validation_trades": 97,
+    "last_fold": {
+      "total_return": -0.0016867689816670861,
+      "sharpe_hourly_estimate": -0.03803682682011698,
+      "max_drawdown": -0.026525999230231245,
+      "trades": 17,
+      "win_rate": 0.47058823529411764,
+      "turnover": 32.09584955898106,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -0.3343527763641589
+  },
+  {
+    "model": "xgboost_d3",
+    "threshold": 0.003,
+    "eligible": true,
+    "mean_validation_sharpe": -0.5109314934095246,
+    "mean_validation_return": -0.026452757937357463,
+    "worst_validation_drawdown": -0.1511915152251535,
+    "validation_trades": 269,
+    "last_fold": {
+      "total_return": -0.07711004972228874,
+      "sharpe_hourly_estimate": -2.065983125519959,
+      "max_drawdown": -0.09345640600838989,
+      "trades": 49,
+      "win_rate": 0.3877551020408163,
+      "turnover": 90.64895447082101,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -0.5109314934095246
+  },
+  {
+    "model": "xgboost_d5",
+    "threshold": 0.003,
+    "eligible": true,
+    "mean_validation_sharpe": -0.6666597701669028,
+    "mean_validation_return": -0.06012083252430348,
+    "worst_validation_drawdown": -0.16540008878745416,
+    "validation_trades": 481,
+    "last_fold": {
+      "total_return": -0.05378499535528747,
+      "sharpe_hourly_estimate": -1.042199573019848,
+      "max_drawdown": -0.09327457692458763,
+      "trades": 89,
+      "win_rate": 0.449438202247191,
+      "turnover": 167.92068066720813,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -0.6666597701669028
+  },
+  {
+    "model": "ridge",
+    "threshold": 0.003,
+    "eligible": true,
+    "mean_validation_sharpe": -0.7657329143011702,
+    "mean_validation_return": -0.05093548894128571,
+    "worst_validation_drawdown": -0.12551127728238032,
+    "validation_trades": 147,
+    "last_fold": {
+      "total_return": -0.061113148817708574,
+      "sharpe_hourly_estimate": -1.509469401018405,
+      "max_drawdown": -0.06255458791589352,
+      "trades": 35,
+      "win_rate": 0.34285714285714286,
+      "turnover": 63.1967457412181,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -0.7657329143011702
+  },
+  {
+    "model": "xgboost_d3",
+    "threshold": 0.0015,
+    "eligible": true,
+    "mean_validation_sharpe": -1.573865623362695,
+    "mean_validation_return": -0.11665650905864315,
+    "worst_validation_drawdown": -0.19633815874991456,
+    "validation_trades": 592,
+    "last_fold": {
+      "total_return": -0.16389100744156004,
+      "sharpe_hourly_estimate": -3.0903936393531852,
+      "max_drawdown": -0.1716944732281891,
+      "trades": 118,
+      "win_rate": 0.3389830508474576,
+      "turnover": 211.7641097291099,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -1.573865623362695
+  },
+  {
+    "model": "logistic",
+    "threshold": 0.6,
+    "eligible": true,
+    "mean_validation_sharpe": -1.986805757887445,
+    "mean_validation_return": -0.1030054791120983,
+    "worst_validation_drawdown": -0.18181184747217727,
+    "validation_trades": 234,
+    "last_fold": {
+      "total_return": -0.13362120254711907,
+      "sharpe_hourly_estimate": -3.3196493470518926,
+      "max_drawdown": -0.1435034021428372,
+      "trades": 41,
+      "win_rate": 0.3170731707317073,
+      "turnover": 73.1735168806016,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -1.986805757887445
+  },
+  {
+    "model": "ridge",
+    "threshold": 0.0015,
+    "eligible": true,
+    "mean_validation_sharpe": -2.0312306249559637,
+    "mean_validation_return": -0.0748856305850113,
+    "worst_validation_drawdown": -0.20203721258058904,
+    "validation_trades": 394,
+    "last_fold": {
+      "total_return": -0.20154529443044134,
+      "sharpe_hourly_estimate": -5.531120850735576,
+      "max_drawdown": -0.20203721258058904,
+      "trades": 84,
+      "win_rate": 0.2857142857142857,
+      "turnover": 143.30301032300602,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -2.0312306249559637
+  },
+  {
+    "model": "xgboost_d5",
+    "threshold": 0.0015,
+    "eligible": true,
+    "mean_validation_sharpe": -2.686654214418485,
+    "mean_validation_return": -0.14613997701530765,
+    "worst_validation_drawdown": -0.209893401002185,
+    "validation_trades": 426,
+    "last_fold": {
+      "total_return": -0.2059930838299996,
+      "sharpe_hourly_estimate": -5.049695829191395,
+      "max_drawdown": -0.209893401002185,
+      "trades": 101,
+      "win_rate": 0.3069306930693069,
+      "turnover": 178.0974021182574,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -2.686654214418485
+  },
+  {
+    "model": "logistic",
+    "threshold": 0.56,
+    "eligible": true,
+    "mean_validation_sharpe": -2.818290878506718,
+    "mean_validation_return": -0.13950688251080354,
+    "worst_validation_drawdown": -0.20803781672453936,
+    "validation_trades": 539,
+    "last_fold": {
+      "total_return": -0.20623408082554817,
+      "sharpe_hourly_estimate": -5.798220141229707,
+      "max_drawdown": -0.20803781672453936,
+      "trades": 92,
+      "win_rate": 0.34782608695652173,
+      "turnover": 158.8036517969965,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -2.818290878506718
+  },
+  {
+    "model": "ridge",
+    "threshold": 0.0,
+    "eligible": true,
+    "mean_validation_sharpe": -3.016764364393724,
+    "mean_validation_return": -0.156625661992937,
+    "worst_validation_drawdown": -0.20388825388280274,
+    "validation_trades": 621,
+    "last_fold": {
+      "total_return": -0.19570910689502086,
+      "sharpe_hourly_estimate": -4.836233754535156,
+      "max_drawdown": -0.19896703544558758,
+      "trades": 151,
+      "win_rate": 0.2980132450331126,
+      "turnover": 258.5199246477104,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -3.016764364393724
+  },
+  {
+    "model": "xgboost_d5",
+    "threshold": 0.0,
+    "eligible": true,
+    "mean_validation_sharpe": -3.0960179130083354,
+    "mean_validation_return": -0.15848148654210772,
+    "worst_validation_drawdown": -0.20633080084762467,
+    "validation_trades": 530,
+    "last_fold": {
+      "total_return": -0.18954335717516968,
+      "sharpe_hourly_estimate": -4.4831709258586185,
+      "max_drawdown": -0.2008392004469357,
+      "trades": 176,
+      "win_rate": 0.30113636363636365,
+      "turnover": 303.63354384387077,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -3.0960179130083354
+  },
+  {
+    "model": "xgboost_d3",
+    "threshold": 0.0,
+    "eligible": true,
+    "mean_validation_sharpe": -3.154293553435893,
+    "mean_validation_return": -0.16447738630253805,
+    "worst_validation_drawdown": -0.20852921457189144,
+    "validation_trades": 578,
+    "last_fold": {
+      "total_return": -0.20016162356998513,
+      "sharpe_hourly_estimate": -4.5883325611319,
+      "max_drawdown": -0.20197915838485614,
+      "trades": 193,
+      "win_rate": 0.3316062176165803,
+      "turnover": 329.3207395975047,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -3.154293553435893
+  },
+  {
+    "model": "logistic",
+    "threshold": 0.5,
+    "eligible": true,
+    "mean_validation_sharpe": -3.232639818498041,
+    "mean_validation_return": -0.16705057920594876,
+    "worst_validation_drawdown": -0.21812083006205873,
+    "validation_trades": 602,
+    "last_fold": {
+      "total_return": -0.18904356525913024,
+      "sharpe_hourly_estimate": -4.905235019033193,
+      "max_drawdown": -0.1974861874218644,
+      "trades": 186,
+      "win_rate": 0.3387096774193548,
+      "turnover": 326.48696009772834,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -3.232639818498041
+  },
+  {
+    "model": "logistic",
+    "threshold": 0.53,
+    "eligible": true,
+    "mean_validation_sharpe": -3.6647072577029474,
+    "mean_validation_return": -0.17605424572561823,
+    "worst_validation_drawdown": -0.2044172356511793,
+    "validation_trades": 544,
+    "last_fold": {
+      "total_return": -0.1841446763360055,
+      "sharpe_hourly_estimate": -5.456069996327658,
+      "max_drawdown": -0.18928840807657799,
+      "trades": 137,
+      "win_rate": 0.31386861313868614,
+      "turnover": 246.6722755384415,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    "selection_score": -3.6647072577029474
+  }
+]

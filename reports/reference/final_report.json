@@ -1,0 +1,55 @@
+{
+  "evaluated_at": "2026-11-09T17:11:51.752363+00:00",
+  "model": "tcn",
+  "model_sha256": "0be961ff47c2d5516bf4f4bed4e2459d9e1d41f6164a3b270deebd00dca35fe6",
+  "threshold": 0.006,
+  "period": {
+    "start": "2026-01-25 17:00:00+00:00",
+    "end": "2026-11-01 00:00:00+00:00"
+  },
+  "prediction": {
+    "directional_accuracy": 0.5141833383099432,
+    "mae_return": 0.007089498319254603
+  },
+  "strategy": {
+    "total_return": -0.1445669218493708,
+    "sharpe_hourly_estimate": -2.0601403041868833,
+    "max_drawdown": -0.17087732499091768,
+    "trades": 46,
+    "win_rate": 0.2608695652173913,
+    "turnover": 80.68726090510904,
+    "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+  },
+  "buy_hold": {
+    "total_return": -0.16411646822417958,
+    "sharpe_hourly_estimate": -0.29810599211167554,
+    "max_drawdown": -0.40459354757796007,
+    "trades": 2,
+    "win_rate": 0.0,
+    "turnover": 3.4714423020574947,
+    "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+  },
+  "ema": {
+    "total_return": -0.19805518906450392,
+    "sharpe_hourly_estimate": -3.501635020167507,
+    "max_drawdown": -0.19925288809982833,
+    "trades": 88,
+    "win_rate": 0.3181818181818182,
+    "turnover": 152.95445403334313,
+    "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+  },
+  "assumptions": {
+    "fee_bps_each_side": 10,
+    "slippage_bps_each_side": 5,
+    "execution_lag_hours": 1,
+    "holding_hours": 4,
+    "drawdown_halt_per_asset": 0.2,
+    "position_fraction_per_asset_sleeve": 0.95
+  },
+  "limitations": [
+    "Hourly OHLCV fills are an approximation, not order-book execution.",
+    "Two chosen liquid assets have selection bias; this is not an all-crypto universe study.",
+    "Trading rule and model were selected only on development folds.",
+    "No profitability guarantee. Sharpe is an unadjusted hourly estimate."
+  ]
+}
