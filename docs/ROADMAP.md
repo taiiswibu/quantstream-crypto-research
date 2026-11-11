@@ -20,7 +20,8 @@
 - [x] Commit notebook 05 torchao remediation, CPU adapter preflight and runtime evidence capture (full Kaggle GPU rerun still unverified).
 - [x] Draft [Run 004 seed-stability protocol](experiments/run-004-seed-stability-protocol.md), with explicit training budget and separate prospective gates; not executed.
 - [x] Implement Run 004 runner with independent fits, shared-sample checks, trainer/adapter evidence and weekly paired bootstrap.
-- [ ] Verify notebook 06 preflight on Kaggle GPU, review the environment lock and freeze the execution plan before training.
+- [x] Review notebook 06 Kaggle GPU preflight, adapter/step evidence and freeze the environment lock with source/data/budget identities.
+- [ ] Record the actual Kaggle notebook URL and materialize the frozen per-run plan before the first research fit.
 - [ ] Execute all three Run 004 seeds (or record an interrupted/partial run) and independently verify the output.
 - [ ] Make sleeve vs portfolio turnover units explicit with accounting coverage.
 - [ ] Add block-based uncertainty and per-regime validation.

@@ -1,0 +1,114 @@
+{
+  "status": "preflight_verified_research_not_started",
+  "artifact_name": "QuantStream_Run004_Preflight.zip",
+  "artifact_sha256": "1e1f37e8970e7f924cee940f254a0fc109ec46a5e4e8fa51ad714be637829eef",
+  "lock_sha256": "f44720e43fd6404e3b95b7fa8481f61b03ad96cb2ab6af34f86406974c52474d",
+  "finished_at_recorded_utc": "2026-11-11T16:39:11.040316+00:00",
+  "execution_source_commit": "bb47737b5bc400169a8bbd75f8c7534503ba18d5",
+  "execution_protocol_sha256": "32d6cb80433ca147d799e17ddd9d45ae9e383ff9b17b21dab1096202b6722441",
+  "source_dirty": false,
+  "environment": {
+    "python": "3.13.16",
+    "platform": "Linux",
+    "machine": "x86_64",
+    "cuda": "13.0",
+    "cudnn": 92700,
+    "gpu": "Tesla T4",
+    "gpu_capability": [
+      7,
+      5
+    ],
+    "torchao_installed": false
+  },
+  "key_packages": {
+    "accelerate": "1.15.0",
+    "chronos-forecasting": "2.3.2",
+    "datasets": "4.8.5",
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "peft": "0.21.2",
+    "pyarrow": "23.0.1",
+    "safetensors": "0.8.0",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.20.2"
+  },
+  "frozen_package_count": 937,
+  "synthetic_smoke": {
+    "global_step": 1,
+    "loss": 0.1805589497089386,
+    "grad_norm": 0.9547756314277649,
+    "adapter_tensors": 194,
+    "adapter_stored_parameters": 1206912,
+    "lora_b_nonzero_tensors": 73,
+    "lora_b_total_tensors": 97,
+    "adapter_hashes": {
+      "adapter_config.json": "95a2febe84a80fa3206742ecc94fea2118872951546c21eab08f87ab21350669",
+      "adapter_model.safetensors": "cd3ef7a3e0548095c4adcc2fbd795599476638b78e87998486a5c1aaf4240840"
+    },
+    "eval_mode_recorded": true,
+    "finite_forecast_recorded": true
+  },
+  "checks": {
+    "zip_crc": true,
+    "source_file_hashes_match_pinned_git_commit": true,
+    "protocol_hash_matches_pinned_git_commit": true,
+    "environment_equals_lock_and_version_inventory": true,
+    "preflight_plan_equals_lock_source_inputs_lora": true,
+    "current_and_reference_manifest_bytes_hashes_checked": true,
+    "scientific_manifest_contracts_equal": true,
+    "reported_data_hashes_match_run003_reference": true,
+    "sample_hash_independently_recomputed_from_run003_predictions": true,
+    "adapter_hashes_and_all_tensor_values_checked": true,
+    "trainer_state_and_arguments_agree_on_one_step": true
+  },
+  "inputs": {
+    "manifest_sha256": "ba321d82a4dffb031a19168682f3b6dbd0c13814460238376626b47ad0ae5b37",
+    "reference_manifest_sha256": "c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0",
+    "manifest_relation": "data_equivalent_metadata_diff",
+    "metadata_differences": [
+      "code_files",
+      "created_at",
+      "source_control"
+    ],
+    "data_file_hashes": {
+      "train.parquet": "6e67cf5d1866715c3ae469d01ab3eb35c294440cc5d9ecc2eeabac354d845fa4",
+      "validation.parquet": "17ff4fa7b6edea663e75cb324090f1a307acb64cab2b5e7f2f357a524a26bb7b",
+      "development.parquet": "2620c723dd9af007469ab38adebfd7ccf8cb5c7e950dd9ef715320d98c1b5b5a",
+      "bars.parquet": "37ff9fbcbb6ff3720549b9159bd70ef5e67fb9bdc0d1e09448ff0ef6eb6d84ed"
+    },
+    "sample_sha256": "c024cd77d9f37fca3909c97b682b560d466c3f203e77d263794d52bea445a28c",
+    "contexts_sha256": "d736d27d9839a3fb4cfeb07d433e1a91fa7bcd6202d328ecf5dfee35c2b11fb8",
+    "training_sha256": "45d0d6d0d43973c0ac37731e306e4a6ea7466c7c6139513695998b2ce610fd54",
+    "training_series": 4,
+    "training_lengths": [
+      1980,
+      21341,
+      1980,
+      21341
+    ],
+    "rows": 512,
+    "horizon": 5
+  },
+  "research_budget": {
+    "seeds": [
+      42,
+      123,
+      2026
+    ],
+    "steps_per_seed": 200,
+    "total_steps": 600,
+    "learning_rate": 1e-05,
+    "context_length": 128,
+    "batch_size": 8
+  },
+  "research_fits_started": 0,
+  "deployment_status": "research_only_no_promotion",
+  "limitations": [
+    "Current raw Parquet bytes not included; preflight code reports rehashing them.",
+    "Finite smoke forecast is reported in lock; numerical predictions not exported.",
+    "No financial research fit or profitability metric in preflight.",
+    "Base checkpoint weights and live GPU execution were not independently observed; runtime metadata and trainer evidence are from the supplied artifact.",
+    "The Kaggle notebook URL/version must be supplied before the research fits; it is absent from preflight.",
+    "The version inventory is not a container/image or a guarantee of bitwise reproducibility."
+  ]
+}

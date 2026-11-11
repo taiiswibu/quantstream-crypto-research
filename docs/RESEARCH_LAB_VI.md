@@ -6,7 +6,7 @@ TCN đã train thành công trên CUDA. Run 001 chọn epoch 3/4/2 trong ba fold
 
 Một researcher cần biết **câu hỏi, thiết kế kiểm tra, kết quả và giới hạn**, thay vì chỉ có nhiều file model. Giữ cả thí nghiệm không cải thiện trong Git.
 
-Run 002 và Run 003 đã hoàn tất: xem [model search](experiments/run-002-model-search.md) và [LoRA A/B/C](experiments/run-003-lora-lab.md). Không cần chạy lại hai vòng này để tiếp tục dự án. [Run 004](experiments/run-004-seed-stability-protocol.md) đã có runner; bước tiếp theo là kiểm tra môi trường Kaggle GPU bằng notebook 06. Chưa có kết quả research training Run 004.
+Run 002 và Run 003 đã hoàn tất: xem [model search](experiments/run-002-model-search.md) và [LoRA A/B/C](experiments/run-003-lora-lab.md). Không cần chạy lại hai vòng này để tiếp tục dự án. [Run 004](experiments/run-004-seed-stability-protocol.md) đã có runner và preflight Kaggle GPU được review; bước tiếp theo là điền URL notebook và chạy ba seed với lock đã chốt. Chưa có kết quả research training Run 004.
 
 ## Phân biệt các thao tác
 
@@ -91,7 +91,7 @@ Validator v2 tính lại SHA-256 của từng Parquet trên Kaggle và so với 
 
 Mỗi source SHA dùng thư mục checkout riêng (`source-<SHA>`), nên bản notebook mới không dùng nhầm cache code cũ. Sau lỗi ở bước manifest, tải notebook mới, giữ Dataset hiện tại, Restart Session và Run All với `MODE='preflight'`. Giữ ZIP diagnostic cũ để review lịch sử. Chưa có ba research fit nào được báo hoàn tất từ lỗi này.
 
-Sau khi kiểm tra preflight, có thể chuyển notebook sang `MODE='train'`, điền URL Kaggle thật vào `NOTEBOOK_URL` và giữ nguyên `candidate-lock.json`. Nếu phiên bị mất hoặc môi trường/source thay đổi, gửi evidence để xử lý khôi phục trước; không tạo lock giả hoặc đổi hash. Runner kiểm tra lock và ghi `plan.json` trước fit đầu tiên. Không có quy trình tự động đang chạy trong nền.
+Preflight đã được review từ ZIP ngày 2026-11-11; xem [evidence, lock đã chốt và cell bắt đầu train](experiments/run-004-preflight.md). Giữ execution source `bb47737b` và lock SHA-256 `f44720e4…52474d`. Trong session hiện tại, chạy một cell mới để kiểm tra hash lock, đặt `MODE='train'` và điền URL Kaggle thật vào `NOTEBOOK_URL`; sau đó chỉ chạy cell **Chạy và tải evidence**. Nếu phiên bị mất hoặc môi trường/source thay đổi, gửi evidence để xử lý khôi phục trước; không tạo lock giả hoặc đổi hash. Runner kiểm tra lock và ghi `plan.json` trước fit đầu tiên. Không có quy trình tự động đang chạy trong nền.
 
 Ba seed luôn load lại pretrained checkpoint, không dùng adapter từ seed trước. Mỗi seed có `trainer_state.json`, `training_args.json`, loss mỗi step, dự báo cùng 512 hàng, adapter và status riêng. `comparison.json` chỉ xuất khi đủ ba fit, mỗi fit đủ 200 steps, khớp sample và baseline (tolerance rtol 1e-6 / atol 1e-9). Nếu baseline khác trong tolerance, bảng tổng hợp dùng zero-shot seed 42 làm baseline chung; dự báo gốc từng seed vẫn giữ nguyên. Bootstrap dùng chênh lệch **trung bình lỗi của ba seed trên mỗi hàng**, không phải dự báo ensemble.
 
@@ -99,7 +99,7 @@ Các lượt dự báo mới gọi `model.eval()` rõ ràng để tắt dropout 
 
 Output research là `QuantStream_Run004_Output.zip`, tách khỏi Run 003. ZIP giữ evidence partial khi exception; kernel bị kill có thể không chạy được `finally`, nên Save Version/Download các file còn lại. Runner từ chối ghi đè cả thư mục của lần chạy thành công lẫn lần chạy lỗi. Không tự retry hoặc thêm seed thay thế. Giữ `research_only_no_promotion`.
 
-Kiểm tra local dùng dữ liệu tổng hợp và một Chronos nhỏ khởi tạo ngẫu nhiên trên CPU, chưa thay thế full notebook execution với pretrained checkpoint/snapshot thật trên Kaggle GPU. Kết quả các vòng cũ được giữ nguyên.
+Kiểm tra local dùng dữ liệu tổng hợp và một Chronos nhỏ khởi tạo ngẫu nhiên trên CPU. Preflight Kaggle bổ sung evidence một synthetic step với pretrained checkpoint trên Tesla T4, adapter hữu hạn và cùng 512 hàng Run 003. Ba research fit vẫn chưa chạy; kết quả các vòng cũ được giữ nguyên.
 
 ## Cách tự đọc một thí nghiệm
 
