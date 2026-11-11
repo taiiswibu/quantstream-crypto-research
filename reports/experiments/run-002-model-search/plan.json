@@ -1,0 +1,57 @@
+{
+  "protocol": "budget-search-v1",
+  "snapshot_manifest_sha256": "c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0",
+  "code_sha256": {
+    "__init__.py": "2008de7473101a244411840635f236c881fcd36bb16d4e7caeeb7f0354100881",
+    "__main__.py": "c7107e8aa342c028ffdfac7ec6129e0d436105aef750525eb839c35968715c14",
+    "backtest.py": "23825e6d231e89ef7238d2fdec871a806d1beb74089dff141e2b7bbebaf32cc3",
+    "cli.py": "eacd0c7e386e8836a0d86fda0387b45639cd42dce6eb700b2bf74a1984acbbbb",
+    "common.py": "e14d2afe63d4fbd4435dad9c4973a62efcd7f6adade9afc188e3c502b6390cb6",
+    "contracts.py": "32462c81f6bc23bce3904f7c37f92205a59580ddef2dd808c5a609b80d0b696d",
+    "data.py": "7ec4ba9e7e108958d703c83ad30ab6cd6427e1118825b34157a134b819d52e23",
+    "deep.py": "d4aafa90fe1ed97d3d59fc5535c9917fc3d3bf219ce990c52522e49676649ddc",
+    "features.py": "2944b185c86dc2f53f24a0dabc858b9d6b80e1550d38d662464ec33e1377a388",
+    "finetune.py": "0be9425c5c9344c997a26dfc8c73cee8216801974614b7effb893e373183b24a",
+    "monitor.py": "7e3c1080dcaf935e14ec1a501538e2457ea524113238c2f6aed442c5b7e242fe",
+    "paper.py": "2de21669c0eb79579155f753014598b2549044a9606a9fff93a62149b2d60738",
+    "research.py": "9ec38254b4d8755009822912888f847b853e6bc6d7ac1f3b20bf59d3d1e3cd53",
+    "search.py": "8f41791a5f611aab9693e4f46b7eece0f869838dc81aeee41ebebc786378ac13",
+    "stream.py": "fe1dc5fce81c695e1fe428a8df3d8b9d5c7abd60c079ea243ca4a11d40b20ccb"
+  },
+  "source_control": {
+    "commit": "7f4b8ec8eece36452782e1a8f1bc0b3d1160aeb7",
+    "branch": "research/budgeted-model-search",
+    "dirty": false,
+    "status": "available"
+  },
+  "n_trials": 12,
+  "max_epochs": 8,
+  "timeout_seconds": 7200,
+  "seeds": [
+    42,
+    123,
+    2026
+  ],
+  "tuning_folds": [
+    0,
+    1
+  ],
+  "diagnostic_fold": 2,
+  "threshold": 0.006,
+  "objective": "mean fold MSE / zero-return forecast MSE; minimize",
+  "runtime": {
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+cu128",
+      "numpy": "2.0.2",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "xgboost": "3.2.0",
+      "xgboost-cpu": "3.4.1",
+      "optuna": "4.9.0"
+    },
+    "device": "cuda",
+    "gpu": "Tesla T4"
+  },
+  "contains_final_holdout": false
+}

@@ -1,0 +1,99 @@
+{
+  "report": {
+    "params": {
+      "family": "tcn",
+      "lookback": 48,
+      "width": 16,
+      "dropout": 0.0,
+      "lr": 0.0013394334706750498,
+      "weight_decay": 0.0006358358856676254,
+      "batch_size": 256
+    },
+    "seed": 42,
+    "folds": [
+      {
+        "fold": 2,
+        "prediction": {
+          "mse": 0.00013345730812124062,
+          "zero_forecast_mse": 0.0001321617222817195,
+          "mse_ratio_to_zero": 1.0098030338675474,
+          "mae": 0.007460267438367976,
+          "directional_accuracy": 0.522982062780269,
+          "rows": 7136
+        },
+        "strategy": {
+          "total_return": 0.028873049277563956,
+          "sharpe_hourly_estimate": 0.738093715827473,
+          "max_drawdown": -0.05618122646695378,
+          "trades": 49,
+          "win_rate": 0.5306122448979592,
+          "turnover": 98.45809890240508,
+          "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+        },
+        "best_epoch": 3,
+        "inner_cut": "2025-02-17 04:00:00+00:00",
+        "history": [
+          {
+            "epoch": 1,
+            "train_huber": 0.39924600491721596,
+            "inner_validation_mse": 0.00017030102943355302
+          },
+          {
+            "epoch": 2,
+            "train_huber": 0.39281193474908105,
+            "inner_validation_mse": 0.00016982202452818032
+          },
+          {
+            "epoch": 3,
+            "train_huber": 0.39056370588636474,
+            "inner_validation_mse": 0.00016963164024073963
+          },
+          {
+            "epoch": 4,
+            "train_huber": 0.38862966508978414,
+            "inner_validation_mse": 0.00017009270785657012
+          },
+          {
+            "epoch": 5,
+            "train_huber": 0.38639017748715254,
+            "inner_validation_mse": 0.00017039391766901914
+          }
+        ]
+      }
+    ],
+    "objective": 1.0098030338675474,
+    "mean_sharpe_diagnostic": 0.738093715827473
+  },
+  "cost_sensitivity": [
+    {
+      "cost_multiplier": 1.0,
+      "total_return": 0.028873049277563956,
+      "sharpe_hourly_estimate": 0.738093715827473,
+      "max_drawdown": -0.05618122646695378,
+      "trades": 49,
+      "win_rate": 0.5306122448979592,
+      "turnover": 98.45809890240508,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    {
+      "cost_multiplier": 1.5,
+      "total_return": -0.007078642465482288,
+      "sharpe_hourly_estimate": -0.12215172230023405,
+      "max_drawdown": -0.05974537502891131,
+      "trades": 49,
+      "win_rate": 0.4897959183673469,
+      "turnover": 95.95163148193258,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    },
+    {
+      "cost_multiplier": 2.0,
+      "total_return": -0.041241826663346526,
+      "sharpe_hourly_estimate": -0.9764018188452324,
+      "max_drawdown": -0.07119527800020897,
+      "trades": 49,
+      "win_rate": 0.46938775510204084,
+      "turnover": 93.53825655132589,
+      "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+    }
+  ]
+}

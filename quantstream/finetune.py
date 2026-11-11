@@ -8,13 +8,18 @@ import pandas as pd
 from .common import Config, sha256, write_json, write_parquet, utcnow
 
 
-def chronos_experiment(snapshot, output, steps=200, max_windows=512, device="auto", model_id="amazon/chronos-2", revision=None):
+def chronos_experiment(snapshot, output, steps=200, max_windows=512, device="auto", model_id="amazon/chronos-2", revision=None,
+                       learning_rate=1e-5, batch_size=8, context_length=128, seed=42):
     import inspect
     import torch
     import peft  # Explicit import: missing PEFT must not silently fall back to full fine-tuning.
     from chronos import Chronos2Pipeline
     from huggingface_hub import HfApi
+    if steps < 1 or learning_rate <= 0 or batch_size < 1 or context_length < 64 or max_windows < 2:
+        raise ValueError("Invalid fine-tuning budget or window configuration")
     snapshot, output = Path(snapshot), Path(output)
+    if (output / "chronos_report.json").exists():
+        raise FileExistsError("Preserve completed experiments; choose a new experiment output name.")
     output.mkdir(parents=True, exist_ok=True)
     manifest = json.loads((snapshot / "manifest.json").read_text())
     shutil.copy2(snapshot / "manifest.json", output / "training_snapshot_manifest.json")
@@ -28,8 +33,8 @@ def chronos_experiment(snapshot, output, steps=200, max_windows=512, device="aut
         device = "cuda" if torch.cuda.is_available() else "cpu"
     if device == "cpu":
         print("CPU fine-tuning can be slow. Kaggle GPU is recommended; set --steps 2 for a smoke run.", flush=True)
-    torch.manual_seed(cfg.seed)
-    np.random.seed(cfg.seed)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
     torch.set_num_threads(cfg.threads)
     resolved_revision = revision or HfApi().model_info(model_id, timeout=30).sha
     pipe = Chronos2Pipeline.from_pretrained(model_id, revision=resolved_revision, device_map=device,
@@ -41,7 +46,6 @@ def chronos_experiment(snapshot, output, steps=200, max_windows=512, device="aut
     start = pd.Timestamp(manifest["split"]["folds"][-1]["validation_start"])
     training_inputs = []
     contexts, row_ids = [], []
-    context_length = 128
     for symbol, data in bars.groupby("symbol"):
         data = data.sort_values("timestamp").reset_index(drop=True)
         segments = data.timestamp.diff().ne(pd.Timedelta(hours=1)).cumsum()
@@ -74,8 +78,8 @@ def chronos_experiment(snapshot, output, steps=200, max_windows=512, device="aut
 
     before = forecast(pipe)
     tuned = pipe.fit(inputs=training_inputs, prediction_length=horizon, finetune_mode="lora",
-                     context_length=context_length, learning_rate=1e-5, num_steps=steps,
-                     batch_size=8, min_past=64, output_dir=output / "trainer", seed=cfg.seed,
+                     context_length=context_length, learning_rate=learning_rate, num_steps=steps,
+                     batch_size=batch_size, min_past=64, output_dir=output / "trainer", seed=seed,
                      report_to="none", dataloader_num_workers=0, logging_steps=max(1, steps // 5))
     tuned.save_pretrained(output / "adapter")
     after = forecast(tuned)
@@ -86,6 +90,9 @@ def chronos_experiment(snapshot, output, steps=200, max_windows=512, device="aut
     report = {"created_at": utcnow(), "model_id": model_id, "resolved_revision": resolved_revision,
               "source_control": manifest.get("source_control", {"status": "not_recorded_in_legacy_snapshot"}),
               "steps": steps, "mode": "lora", "device": device, "context_length": context_length,
+              "learning_rate": learning_rate, "batch_size": batch_size, "seed": seed,
+              "torch_version": torch.__version__,
+              "gpu": torch.cuda.get_device_name(0) if device == "cuda" else None,
               "peft_version": peft.__version__,
               "evaluation_windows": len(scored), "contains_final_holdout": False,
               "snapshot_manifest_sha256": sha256(snapshot / "manifest.json"),

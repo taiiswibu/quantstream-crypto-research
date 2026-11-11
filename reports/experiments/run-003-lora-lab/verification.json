@@ -1,0 +1,97 @@
+{
+  "run_id": "run-003-lora-lab",
+  "status": "completed_verified_metrics_research_only",
+  "source": "uploaded QuantStream_LoRA_Output.zip",
+  "artifact_sha256": "42ce81ff99b65b2db6d41a1e1215e5c38e36e56bd49adfc868d0a96ad85aeb9d",
+  "source_commit": "7f4b8ec8eece36452782e1a8f1bc0b3d1160aeb7",
+  "snapshot_manifest_sha256": "c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0",
+  "model_id": "amazon/chronos-2",
+  "resolved_revision": "29ec3766d36d6f73f0696f85560a422f50e8498c",
+  "runtime_reported": {
+    "gpu": "Tesla T4",
+    "torch_version": "2.11.0+cu130",
+    "peft_version": "0.21.2",
+    "device": "cuda"
+  },
+  "protocol": {
+    "seed": 42,
+    "context_length": 128,
+    "batch_size": 8,
+    "max_windows": 512
+  },
+  "observation": {
+    "rows": 512,
+    "btc_rows": 256,
+    "eth_rows": 256,
+    "first_decision_time_utc": "2025-08-29T20:00:00Z",
+    "last_decision_time_utc": "2026-01-25T11:00:00Z",
+    "dataset_scope": "historically observed development validation",
+    "contains_final_holdout": false
+  },
+  "zero_shot": {
+    "mae": 0.007835996457512383,
+    "directional_accuracy": 0.501953125,
+    "correct_direction_count": 257
+  },
+  "configurations": [
+    {
+      "id": "A_steps100_lr1e5",
+      "steps": 100,
+      "learning_rate": 0.00001,
+      "mae": 0.008037897906782205,
+      "relative_mae_change_pct": 2.576589338248847,
+      "directional_accuracy": 0.486328125,
+      "correct_direction_count": 249,
+      "btc_mae": 0.0062787090073463895,
+      "eth_mae": 0.009797086806218021,
+      "adapter_sha256": "eabdca9a0e9979d453a349a6bd515951c4f92598b77fe7b39633cf7a208e1d8b"
+    },
+    {
+      "id": "B_steps200_lr1e5",
+      "steps": 200,
+      "learning_rate": 0.00001,
+      "mae": 0.007887454868214353,
+      "relative_mae_change_pct": 0.6566926233438464,
+      "directional_accuracy": 0.4765625,
+      "correct_direction_count": 244,
+      "btc_mae": 0.006204395201256216,
+      "eth_mae": 0.009570514535172492,
+      "adapter_sha256": "fb1769324c59a682ef7b84a674fab1b0275e5ed0e408981cb0e27cc4a094182d"
+    },
+    {
+      "id": "C_steps200_lr3e6",
+      "steps": 200,
+      "learning_rate": 0.000003,
+      "mae": 0.007900164729281808,
+      "relative_mae_change_pct": 0.8188910257598048,
+      "directional_accuracy": 0.482421875,
+      "correct_direction_count": 247,
+      "btc_mae": 0.00621454904218339,
+      "eth_mae": 0.009585780416380226,
+      "adapter_sha256": "36d113041f3b31d1b8cbe932735a0a51e329c4a049196e260b10c2df798bda9c"
+    }
+  ],
+  "checks": {
+    "zip_crc_ok": true,
+    "three_adapters_present": true,
+    "recomputed_all_per_row_mae_and_directional_accuracy": true,
+    "same_symbol_time_targets_and_zero_shot_predictions": true,
+    "no_duplicate_symbol_decision_time_rows": true,
+    "all_prediction_values_finite": true,
+    "report_plan_snapshot_contract_consistent": true,
+    "adapter_weights_finite": true,
+    "adapter_tensor_count_each": 194,
+    "adapter_stored_parameters_each": 1206912,
+    "all_adapter_sha_distinct": true,
+    "original_bars_and_optimizer_step_execution_independently_verified": false
+  },
+  "decision": "research_only_no_promotion",
+  "limitations": [
+    "No unseen independent holdout",
+    "Original input/source market bars and trainer logs not in ZIP",
+    "Pretraining data overlap unverified",
+    "Predicted pre-entry close approximates next entry open",
+    "No post-fee trading backtest in this LoRA lab",
+    "Kaggle notebook execution provenance and environment repair not independently attested"
+  ]
+}

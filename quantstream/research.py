@@ -202,6 +202,7 @@ def export_kaggle(root, cfg):
         write_parquet(folder / f"{name}.parquet", df)
     manifest = {"created_at": utcnow(), "config": cfg.to_dict(), "split": plan, "feature_columns": FEATURES,
                 "source_control": git_provenance(root),
+                "code_files": {"quantstream/" + p.name: sha256(p) for p in sorted((root / "quantstream").glob("*.py"))},
                 "full_features_sha256": sha256(root / "data/processed/features.parquet"),
                 "files": {p.name: sha256(p) for p in folder.glob("*.parquet")},
                 "contains_final_holdout": False}

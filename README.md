@@ -16,14 +16,16 @@ QuantStream turns public BTC/USDT and ETH/USDT candles into checked research sna
 |---|---|
 | Data engineering | 92 Binance monthly archives; SHA-256 checks; UTC normalization; quarantine; duplicate conflicts; gap-aware features |
 | Research | 18 causal features; shared asset-time splits; purged label boundaries; three walk-forward folds |
-| Models | Ridge, Logistic, two XGBoost depths, causal PyTorch TCN |
-| Fine-tuning | Chronos-2 LoRA; pinned base revision; development-only before/after comparison |
+| Models | Ridge, Logistic, XGBoost, causal PyTorch TCN; budgeted Optuna search adds GRU |
+| Fine-tuning | Chronos-2 LoRA; pinned base revision; controlled steps/LR lab; development-only comparison |
 | Backtest | Long/cash; delayed entry; fixed holding; fees/slippage; non-overlap; per-asset drawdown halt |
 | Runtime | Public REST catch-up; late-signal rejection; Streamlit; feature PSI; delayed prediction-quality monitoring |
 | Reproducibility | Config/data/code contracts; model hashes; Git SHA and dirty-tree provenance; final-test lock |
 | Development | Tests; Linux/Windows CI configuration; notebook validation; issue and PR templates |
 
-Reference experiments ran locally on CPU. Kaggle notebooks are ready for reruns on the user's account; no Kaggle GPU run or competition score is claimed.
+Reference experiments ran locally on CPU. The [first uploaded Kaggle TCN artifact](docs/experiments/run-001-kaggle-tcn.md) reports CUDA training; checkpoint hashes and development strategy metrics were verified. The observed eight-epoch run deviates from the planned six epochs; notebook URL/GPU model/runtime versions were not captured. No competition score is claimed.
+
+The [12-trial Kaggle model search](docs/experiments/run-002-model-search.md) is now complete; uploaded runtime reports a Tesla T4. TCN's three-seed mean normalized forecast MSE was 0.99306 on tuning folds, versus 0.99382 for tuned Ridge. On the historically observed last development fold, TCN's forecast MSE was worse than zero-return forecasting; strategy return changed from +2.89% at base costs to -0.71% at 1.5x costs. The candidate remains **research only**. Trial/diagnostic prediction metrics were independently recomputed; extra-seed backtests lack saved predictions for independent recomputation. [Run 003: controlled Chronos-2 LoRA lab](docs/experiments/run-003-lora-lab.md) is now complete on Kaggle. All three adapters had higher MAE than the identical zero-shot baseline on 512 sampled development windows (best adapter B: 0.00788745 versus zero-shot 0.007835996). Per-row forecast metrics and adapter file integrity were checked from the uploaded artifact. No model was promoted and no new independent holdout was evaluated.
 
 ## Reference outcome
 
@@ -100,6 +102,8 @@ Continuous simulated runtime: `python -m quantstream paper --watch --poll-second
 
 Reports preserve the exported Git SHA, branch and dirty state even without Git inside Kaggle. The old reference runs predate Git tracking and intentionally have no newly assigned source commit.
 
+For the next research cycle, use the **newly exported input ZIP** with [04: model search](notebooks/04_Kaggle_Model_Search.ipynb), then separately [05: controlled LoRA lab](notebooks/05_Kaggle_LoRA_Lab.ipynb). Read the [Vietnamese research walkthrough](docs/RESEARCH_LAB_VI.md). Search uses two early development folds, inner chronological early stopping, a fixed trial budget and a multi-seed shortlist. The historically observed last development fold is a diagnostic, not a new independent holdout. Neither notebook promotes a serving model or places orders.
+
 ## Checks and contribution history
 
 ```bash
@@ -109,7 +113,7 @@ python -m ruff check quantstream app.py tests scripts
 python scripts/check_notebooks.py
 ```
 
-17 local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior and Git provenance. The [first remote CI run](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323) passed on both Linux and Windows. The badge reflects subsequent runs. The Linux job includes PyTorch; the core Windows job may skip optional TCN coverage.
+28 local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior, Git provenance, research isolation and notebook setup/evidence preservation. Synthetic CPU fits exercise both TCN/GRU; a real-data Ridge smoke run exercises the new two-fold scoring path. These checks do not constitute completed Kaggle search/LoRA experiments. The [first remote CI run](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323) passed on both Linux and Windows. The badge reflects subsequent runs. The Linux job includes PyTorch/Optuna; the core Windows job may skip optional deep-learning coverage.
 
 Read [CONTRIBUTING](CONTRIBUTING.md), [Vietnamese Git workflow](docs/GIT_WORKFLOW_VI.md), [roadmap](docs/ROADMAP.md) and [changelog](CHANGELOG.md). Use one branch/PR per coherent change or hypothesis. Commit meaningful work, not an artificial contribution count.
 

@@ -1,0 +1,139 @@
+{
+  "archive_sha256": "c55779f1735ba0b1fa9b1517502c054c02c3b1ed42b0f391bf5ff11b841621ec",
+  "source_commit": "7f4b8ec8eece36452782e1a8f1bc0b3d1160aeb7",
+  "snapshot_manifest_sha256": "c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0",
+  "code_checksums_match": true,
+  "selection_seal_matches": true,
+  "selection_before_diagnostic_consistent": true,
+  "all_trials_share_prediction_keys": true,
+  "trial_checks": [
+    {
+      "trial": 0,
+      "family": "ridge",
+      "rows": 14270,
+      "objective": 0.9939227897733218,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 1,
+      "family": "xgboost",
+      "rows": 14270,
+      "objective": 0.999360295297524,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 2,
+      "family": "tcn",
+      "rows": 14270,
+      "objective": 0.9880806200433039,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 3,
+      "family": "gru",
+      "rows": 14270,
+      "objective": 1.0000197155921293,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 4,
+      "family": "tcn",
+      "rows": 14270,
+      "objective": 1.000379859521129,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 5,
+      "family": "tcn",
+      "rows": 14270,
+      "objective": 0.9963599683626709,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 6,
+      "family": "tcn",
+      "rows": 14270,
+      "objective": 0.9940132127303883,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 7,
+      "family": "xgboost",
+      "rows": 14270,
+      "objective": 1.0136453702507047,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 8,
+      "family": "gru",
+      "rows": 14270,
+      "objective": 0.9996344142497051,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 9,
+      "family": "ridge",
+      "rows": 14270,
+      "objective": 0.9938237901385849,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 10,
+      "family": "tcn",
+      "rows": 14270,
+      "objective": 0.9956752720932514,
+      "status": "recomputed_predictions_and_backtest_match"
+    },
+    {
+      "trial": 11,
+      "family": "ridge",
+      "rows": 14270,
+      "objective": 0.9938232334187342,
+      "status": "recomputed_predictions_and_backtest_match"
+    }
+  ],
+  "diagnostic_prediction": {
+    "mse": 0.00013345730812124062,
+    "zero_forecast_mse": 0.0001321617222817195,
+    "mse_ratio_to_zero": 1.0098030338675474,
+    "mae": 0.007460267438367976,
+    "directional_accuracy": 0.522982062780269,
+    "rows": 7136
+  },
+  "cost_checks": [
+    {
+      "cost_multiplier": 1.0,
+      "status": "recomputed_match"
+    },
+    {
+      "cost_multiplier": 1.5,
+      "status": "recomputed_match"
+    },
+    {
+      "cost_multiplier": 2.0,
+      "status": "recomputed_match"
+    }
+  ],
+  "diagnostic_asset_trade_statistics": [
+    {
+      "symbol": "BTCUSDT",
+      "trades": 8,
+      "win_rate": 0.625,
+      "mean_trade_net_return": -0.0014961823354004977
+    },
+    {
+      "symbol": "ETHUSDT",
+      "trades": 41,
+      "win_rate": 0.5121951219512195,
+      "mean_trade_net_return": 0.0018232931511173729
+    }
+  ],
+  "contains_final_holdout": false,
+  "decision": "retain_research_only_no_promotion",
+  "limitations": [
+    "Seed 123/2026 stability reports have no corresponding prediction files; their arithmetic was checked but their predictions/backtests cannot be independently recomputed from this ZIP.",
+    "Runtime GPU/package values and timestamps are uploaded metadata, not an independent execution attestation.",
+    "Both xgboost and xgboost-cpu distributions are installed with different reported versions; the loaded module version was not separately recorded.",
+    "The last development fold was historically observed; no independent final test was opened."
+  ]
+}
