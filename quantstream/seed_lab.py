@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 import platform
 import random
+import shutil
 import traceback
 import zipfile
 
@@ -26,7 +27,9 @@ REVISION = "29ec3766d36d6f73f0696f85560a422f50e8498c"
 SNAPSHOT_SHA = "c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0"
 SEEDS = (42, 123, 2026)
 STEPS, CONTEXT, BATCH, WINDOWS = 200, 128, 8, 512
-PROTOCOL = "run-004-seed-stability-v1"
+PROTOCOL = "run-004-seed-stability-v2"
+RUN003_REFERENCE = Path(__file__).resolve().parents[1] / "reports/experiments/run-003-lora-lab/training_snapshot_manifest.json"
+EXPORT_METADATA = {"created_at", "source_control", "code_files"}
 TARGETS = ["self_attention.q", "self_attention.v", "self_attention.k", "self_attention.o",
            "output_patch_embedding.output_layer"]
 
@@ -78,10 +81,43 @@ def sample_sha256(frame):
     return hashlib.sha256(rows.to_json(orient="split", index=False, double_precision=15).encode()).hexdigest()
 
 
+def verify_run003_snapshot(snapshot):
+    """Verify scientific identity, retaining each export's original manifest/provenance.
+
+    Old exports can carry different dates/code metadata even when the four Parquet
+    files and every data/split/config field are identical. Never rewrite a manifest
+    or accept files merely because their self-reported checksums match each other.
+    """
+    snapshot = Path(snapshot)
+    if sha256(RUN003_REFERENCE) != SNAPSHOT_SHA:
+        raise ValueError("Run 003 reference manifest checksum mismatch in source checkout")
+    reference = json.loads(RUN003_REFERENCE.read_text())
+    path = snapshot / "manifest.json"
+    current = json.loads(path.read_text())
+    if current.get("contains_final_holdout") is not False:
+        raise ValueError("Development-only input required")
+    reference_contract = {k: v for k, v in reference.items() if k not in EXPORT_METADATA}
+    current_contract = {k: v for k, v in current.items() if k not in EXPORT_METADATA}
+    changed = [key for key in sorted(set(reference_contract) | set(current_contract))
+               if reference_contract.get(key) != current_contract.get(key)
+               or (key in reference_contract) != (key in current_contract)]
+    if changed:
+        raise ValueError("Snapshot data contract differs from Run 003: " + ", ".join(changed))
+    actual_files = {}
+    for name, expected in reference["files"].items():
+        actual_files[name] = sha256(snapshot / name)
+        if actual_files[name] != expected:
+            raise ValueError("Data file differs from Run 003: " + name)
+    actual_manifest = sha256(path)
+    return {"manifest_sha256": actual_manifest, "reference_manifest_sha256": SNAPSHOT_SHA,
+            "manifest_relation": "exact" if actual_manifest == SNAPSHOT_SHA else "data_equivalent_metadata_diff",
+            "metadata_differences": sorted(key for key in EXPORT_METADATA if current.get(key) != reference.get(key)),
+            "data_file_hashes": actual_files}
+
+
 def inputs_identity(snapshot):
     snapshot = Path(snapshot)
-    if sha256(snapshot / "manifest.json") != SNAPSHOT_SHA:
-        raise ValueError("Run 004 needs the exact Run 003 snapshot; do not rebuild the dataset")
+    verified = verify_run003_snapshot(snapshot)
     # Check both the development contract and the exact historical LoRA sampling path.
     from .search import load_snapshot
     load_snapshot(snapshot)
@@ -95,7 +131,7 @@ def inputs_identity(snapshot):
         train_hash.update(str(series.shape).encode())
         train_hash.update(np.asarray(series, dtype="<f4").tobytes())
     context_hash = hashlib.sha256(np.asarray(contexts, dtype="<f4").tobytes()).hexdigest()
-    return {"manifest_sha256": SNAPSHOT_SHA, "sample_sha256": sample_sha256(scored),
+    return {**verified, "sample_sha256": sample_sha256(scored),
             "contexts_sha256": context_hash, "training_sha256": train_hash.hexdigest(),
             "training_series": len(training), "training_lengths": [len(s) for s in training],
             "rows": len(scored), "horizon": cfg.horizon + cfg.execution_lag_bars}
@@ -199,6 +235,8 @@ def preflight_run004(snapshot, output, device="cuda"):
         # Version-only requirements: no editable/private URLs or credentials in the evidence.
         (output / "requirements-environment.txt").write_text(
             "".join(f"{name}=={version}\n" for name, version in env["packages"].items()), encoding="utf-8")
+        shutil.copy2(Path(snapshot) / "manifest.json", output / "input_snapshot_manifest.json")
+        shutil.copy2(RUN003_REFERENCE, output / "reference_snapshot_manifest.json")
         identity, source, lora = inputs_identity(snapshot), source_identity(), resolved_lora()
         write_json(output / "preflight-plan.json", {"protocol": PROTOCOL, "source": source,
             "inputs": identity, "lora": lora, "model_id": MODEL, "revision": REVISION,

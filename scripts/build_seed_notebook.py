@@ -19,7 +19,7 @@ def build(source_commit, destination):
 
 ## Mục tiêu
 
-**Lần đầu giữ `MODE='preflight'` rồi Run All.** Dùng đúng Dataset đã chạy Run 003, bật Internet và GPU, chạy từ session mới. Không tạo lại dataset. Chưa có kết quả Run 004; lần đầu chỉ thử một optimizer step trên chuỗi sin/cos, không train trên dữ liệu tài chính.
+**Lần đầu giữ `MODE='preflight'` rồi Run All.** Dùng Dataset có đúng dữ liệu Run 003, bật Internet và GPU, chạy từ session mới. Không tạo lại dataset. Metadata export có thể khác; cell kiểm tra tính lại hash cả bốn Parquet và đối chiếu cấu hình/split/features với bản tham chiếu. Chưa có kết quả Run 004; lần đầu chỉ thử một optimizer step trên chuỗi sin/cos, không train trên dữ liệu tài chính.
 
 Notebook tải code mới theo Git SHA cố định; chỉ lấy snapshot từ Dataset cũ. Không dùng code cũ nằm trong input ZIP.
 
@@ -30,7 +30,7 @@ Kế hoạch research: giữ LoRA B (200 steps, LR 1e-5), seeds 42/123/2026, con
         code(setup),
         md("## 2. Chọn chế độ\n\nGiữ nguyên các tham số. `NOTEBOOK_URL` chỉ cần điền trước khi chuyển sang train sau khi preflight được kiểm tra. Thư mục output cũ được giữ để tránh âm thầm chạy lại trial lỗi."),
         code(f"""from pathlib import Path
-import sys, subprocess, json, zipfile, shutil, hashlib
+import sys, subprocess, json, zipfile, shutil
 from IPython.display import display, FileLink
 
 MODE='preflight'
@@ -38,7 +38,7 @@ NOTEBOOK_URL=''  # Khi train: URL thật https://www.kaggle.com/code/<user>/<not
 SOURCE_COMMIT='{source_commit}'
 WORK=Path('/kaggle/working/quantstream_run004')
 WORK.mkdir(parents=True,exist_ok=True)
-CODE=WORK/'source'
+CODE=WORK/('source-'+SOURCE_COMMIT[:12])
 SNAPSHOT=WORK/'snapshot'
 PREFLIGHT=WORK/'preflight'
 OUTPUT=WORK/'run-004-seed-stability'
@@ -46,7 +46,7 @@ LOCK=PREFLIGHT/'candidate-lock.json'
 if MODE not in {{'preflight','train'}}:
     raise ValueError('MODE phải là preflight hoặc train')
 print('Mode:',MODE,'Source:',SOURCE_COMMIT)"""),
-        md("## 3. Nạp đúng code và snapshot\n\nSnapshot manifest phải có SHA-256 `c8e01129…747fd0`. Nếu khác, dừng và giữ lỗi để kiểm tra; không đổi hash cho qua. Không đọc final holdout."),
+        md("## 3. Nạp đúng code và snapshot\n\nĐối chiếu với manifest Run 003 gốc (`c8e01129…747fd0`). Chấp nhận metadata xuất khác khi hash của cả bốn Parquet và toàn bộ cấu hình/split/features giống bản gốc. Notebook tính lại hash từng file, giữ nguyên manifest đang dùng và ghi cả hai hash. Không đọc final holdout."),
         code("""if not CODE.exists():
     subprocess.check_call(['git','init','-q',str(CODE)])
     subprocess.check_call(['git','-C',str(CODE),'remote','add','origin',
@@ -81,10 +81,12 @@ if not SNAPSHOT.exists():
         if len(manifests)!=1:
             raise FileNotFoundError('Add Input đúng dataset cũ đã chạy Run 003')
         shutil.copytree(manifests[0].parent,SNAPSHOT)
-from quantstream.seed_lab import preflight_run004,run_seed_lab,archive_evidence,SNAPSHOT_SHA
-if hashlib.sha256((SNAPSHOT/'manifest.json').read_bytes()).hexdigest()!=SNAPSHOT_SHA:
-    raise ValueError('Snapshot không phải bản Run 003 đã khóa. Gửi lỗi để kiểm tra.')
-print('Source và manifest đúng SHA. Chưa chạy research fit.')"""),
+from quantstream.seed_lab import preflight_run004,run_seed_lab,archive_evidence,verify_run003_snapshot,SNAPSHOT_SHA
+verified=verify_run003_snapshot(SNAPSHOT)
+print('Snapshot:',verified['manifest_relation'])
+print('Manifest hiện tại:',verified['manifest_sha256'])
+print('Manifest Run 003:',verified['reference_manifest_sha256'])
+print('Bốn file dữ liệu và cấu hình khớp Run 003. Chưa chạy research fit.')"""),
         md("""## 4. Chạy và tải evidence
 
 `preflight` tải checkpoint cố định và thử fit/predict với dữ liệu tổng hợp trên GPU. Lưu phiên bản Python/PyTorch/CUDA, package versions, cấu hình LoRA đầy đủ, source/data hashes và số optimizer step thật. Đây là bước kiểm tra môi trường, tách khỏi ngân sách 600 steps nghiên cứu.

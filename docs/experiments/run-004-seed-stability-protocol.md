@@ -18,7 +18,7 @@ Chọn B vì nó có MAE thấp nhất trong ba adapter Run 003. Đây là lựa
 | Seeds | 42, 123, 2026 |
 | Tổng training | 3 lần fit mới, tối đa 600 optimizer steps cộng lại |
 | Context / batch / cửa sổ | 128 / 8 / cùng 512 cửa sổ Run 003 |
-| Dữ liệu | cùng snapshot development; manifest SHA-256 c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0 |
+| Dữ liệu | cùng bốn Parquet và data contract của Run 003; manifest tham chiếu SHA-256 c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0 |
 | So sánh | dự báo lợi suất 0, Chronos zero-shot, LoRA B ở cả ba seed |
 
 Mỗi fit bắt đầu từ cùng pretrained checkpoint. Seed 42 chạy lại là kiểm tra tái lập, không được tính kết quả Run 003 cũ thành một lần lặp độc lập mới. Giữ nguyên training series, thứ tự sample, target, horizon và cách xấp xỉ entry của Run 003. Không thay rank/target modules hoặc tune threshold. Khóa cấu hình LoRA mặc định đã resolve trong plan trước fit, thay vì chỉ ghi “default”.
@@ -48,6 +48,8 @@ Ba seed là ngân sách nhỏ, chưa đủ để mô tả đầy đủ phân ph�
 Runner `quantstream/seed_lab.py` đã triển khai các điều kiện về fit isolation, alignment và artifact completeness. Notebook 06 mặc định `MODE='preflight'`: nạp source Git SHA cố định tách khỏi code trong input Dataset cũ, giữ snapshot manifest nguyên bản. Một fit synthetic sin/cos 1 step kiểm tra đường Chronos/PEFT trên GPU, tách khỏi ngân sách 600 research steps; không tạo metric trên development hoặc adapter ứng viên. Preflight xuất candidate lock và evidence để kiểm tra trước ba seed. Xem [hướng dẫn chạy](../RESEARCH_LAB_VI.md#run-004--kiểm-tra-môi-trường-trước-ba-seed).
 
 Kaggle environment lock **chưa được xác minh**. Khi chạy research, runner yêu cầu cùng môi trường/source/data/LoRA với lock, URL notebook thật, và ghi plan trước fit. Lock là inventory versions/hashes thực tế, không phải cam kết dựng lại bitwise. Mỗi fit ghi TrainingArguments đã resolve trước optimizer step đầu và TrainerState mỗi step; loss được ghi mỗi step. Nếu khác sample/target hoặc zero-shot lệch quá rtol 1e-6 / atol 1e-9, dừng và giữ partial evidence. Trong tolerance, summary dùng baseline zero-shot seed 42 chung và vẫn giữ forecast gốc của mọi seed. Không tự chọn seed bằng MAE hoặc PnL.
+
+Validator v2 xử lý metadata export: manifest `ba321d82…ae5b37` trong ZIP diagnostic chỉ khác bản Run 003 ở `created_at`, `source_control`, `code_files`; config/split/features/full-feature hash và bốn hash Parquet được báo khớp. Bản tham chiếu được lấy nguyên bytes từ ZIP Run 003 đã kiểm chứng; code kiểm tra SHA của tham chiếu, đối chiếu toàn bộ trường ngoài ba metadata trên và tính lại hash từng file thật trên Kaggle. Ghi hash manifest thực tế và hash tham chiếu riêng; không ghi đè hoặc sửa provenance của export cũ. Thay đổi validator không thay seed, cửa sổ, dữ liệu hay ngân sách training. Xem [audit scope](../../reports/experiments/run-004-seed-stability/snapshot-compatibility.json). Lỗi cũ xảy ra trước preflight/fit; chưa có metric mới.
 
 Local kiểm tra bằng synthetic data và Chronos nhỏ khởi tạo ngẫu nhiên trên CPU, chưa phải full notebook execution với pretrained checkpoint và snapshot thật trên Kaggle GPU. Tài liệu này không xác nhận một thí nghiệm đã đăng ký và thực thi đầy đủ.
 

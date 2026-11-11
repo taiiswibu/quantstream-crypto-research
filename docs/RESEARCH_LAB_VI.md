@@ -75,13 +75,21 @@ Nguồn lỗi: [PEFT issue #3964](https://github.com/huggingface/peft/issues/396
 
 Notebook: `notebooks/06_Kaggle_LoRA_Seed_Stability.ipynb` (tải từ nhánh `research/run-004`, không lấy notebook 05).
 
-1. Import notebook 06 vào Kaggle; Add Input **đúng Dataset đã chạy Run 003**. Không rebuild hoặc xuất dataset mới vì manifest phải giữ SHA-256 `c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0`.
+1. Import notebook 06 vào Kaggle; dùng Dataset có đúng bốn Parquet của Run 003. Notebook đối chiếu với manifest gốc SHA-256 `c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0`. Metadata xuất khác được chấp nhận chỉ khi dữ liệu/cấu hình/split/features khớp; không rebuild dữ liệu để chữa lỗi manifest.
 2. Bật Internet, chọn GPU khả dụng, bắt đầu session mới. Giữ `MODE='preflight'`; chưa cần điền `NOTEBOOK_URL`. Chọn Run All.
 3. Notebook gỡ torchao, kiểm tra adapter, tải source bằng Git SHA cố định rồi chỉ lấy snapshot từ Dataset cũ. Source mới và provenance dataset cũ được ghi riêng; không tự sửa manifest để hợp thức hóa code mới.
 4. Preflight tải checkpoint Chronos cố định, chạy **một optimizer step với chuỗi sin/cos tổng hợp** trên GPU và thử predict/đọc lại adapter. Đây không phải trial trên dữ liệu tài chính và tách khỏi ngân sách 600 steps của ba seed.
 5. Tải `QuantStream_Run004_Preflight.zip` gửi kiểm tra. Nếu lỗi, gửi ZIP nếu được tạo cùng traceback. Không xóa output để chạy lại; giữ dấu vết lỗi. Bước đầu chưa train Run 004 trên dữ liệu tài chính.
 
 Preflight thành công cần `status.json: completed`, `candidate-lock.json`, smoke `global_step=1`, loss log, adapter hashes và forecast hữu hạn. Lock ghi đầy đủ Python, packages, GPU/CUDA/cuDNN, source/snapshot/sample/context/training hashes và cấu hình LoRA đã resolve. Đây là inventory môi trường thực tế trước fit, chưa phải image/container có thể bảo đảm tái dựng bitwise.
+
+### Manifest khác metadata nhưng dữ liệu giống nhau
+
+ZIP kiểm tra ngày 2026-11-11 có manifest `ba321d82…ae5b37`; chỉ khác Run 003 ở `created_at`, `source_control` và thiếu `code_files`. Bốn hash Parquet do cell diagnostic tính đều khớp manifest Run 003. Manifest được so sánh trực tiếp; bytes của Parquet hiện tại chưa được gửi để kiểm tra độc lập. Xem [bằng chứng đối chiếu](../reports/experiments/run-004-seed-stability/snapshot-compatibility.json).
+
+Validator v2 tính lại SHA-256 của từng Parquet trên Kaggle và so với bản tham chiếu Run 003 đã kiểm chứng trong Git. Đồng thời so toàn bộ trường manifest trừ đúng ba metadata xuất nói trên. Dữ liệu, cấu hình, split, feature order hoặc trường khác thay đổi đều bị từ chối. Không sửa manifest đầu vào, không thay hash gốc; lưu cả manifest đầu vào và tham chiếu trong preflight ZIP, ghi hai hash riêng trong lock.
+
+Mỗi source SHA dùng thư mục checkout riêng (`source-<SHA>`), nên bản notebook mới không dùng nhầm cache code cũ. Sau lỗi ở bước manifest, tải notebook mới, giữ Dataset hiện tại, Restart Session và Run All với `MODE='preflight'`. Giữ ZIP diagnostic cũ để review lịch sử. Chưa có ba research fit nào được báo hoàn tất từ lỗi này.
 
 Sau khi kiểm tra preflight, có thể chuyển notebook sang `MODE='train'`, điền URL Kaggle thật vào `NOTEBOOK_URL` và giữ nguyên `candidate-lock.json`. Nếu phiên bị mất hoặc môi trường/source thay đổi, gửi evidence để xử lý khôi phục trước; không tạo lock giả hoặc đổi hash. Runner kiểm tra lock và ghi `plan.json` trước fit đầu tiên. Không có quy trình tự động đang chạy trong nền.
 

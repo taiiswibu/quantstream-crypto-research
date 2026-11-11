@@ -180,6 +180,8 @@ def test_notebook_defaults_to_preflight_and_pinned_source(tmp_path):
     nbformat.validate(notebook)
     cells = "\n".join(cell.source for cell in notebook.cells if cell.cell_type == "code")
     assert "MODE='preflight'" in cells and f"SOURCE_COMMIT='{'a' * 40}'" in cells
+    assert "CODE=WORK/('source-'+SOURCE_COMMIT[:12])" in cells
+    assert "verified=verify_run003_snapshot(SNAPSHOT)" in cells
     assert "archive_evidence(target,archive)" in cells
     assert "if target.exists() or archive.exists():" in cells
     with pytest.raises(ValueError, match="immutable"):

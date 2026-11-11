@@ -1,0 +1,95 @@
+{
+  "created_at": "2026-11-10T16:50:34.233613+00:00",
+  "config": {
+    "symbols": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "interval": "1h",
+    "start_month": "2023-01",
+    "end_month": "2026-10",
+    "horizon": 4,
+    "execution_lag_bars": 1,
+    "fee_bps": 10,
+    "slippage_bps": 5,
+    "position_fraction": 0.95,
+    "drawdown_halt": 0.2,
+    "test_fraction": 0.2,
+    "walk_forward_folds": 3,
+    "minimum_trades": 20,
+    "seed": 42,
+    "threads": 4,
+    "lookback": 48
+  },
+  "split": {
+    "test_start": "2026-01-25T17:00:00+00:00",
+    "end": "2026-11-01T00:00:00+00:00",
+    "folds": [
+      {
+        "validation_start": "2024-11-05T03:00:00+00:00",
+        "validation_end": "2025-04-02T23:00:00+00:00"
+      },
+      {
+        "validation_start": "2025-04-02T23:00:00+00:00",
+        "validation_end": "2025-08-29T20:00:00+00:00"
+      },
+      {
+        "validation_start": "2025-08-29T20:00:00+00:00",
+        "validation_end": "2026-01-25T17:00:00+00:00"
+      }
+    ],
+    "rule": "train.label_end_time < validation_start; validation.label_end_time < validation_end",
+    "multi_asset_split": "all symbols share UTC boundaries"
+  },
+  "feature_columns": [
+    "ret_1",
+    "ret_4",
+    "ret_12",
+    "ret_24",
+    "vol_12",
+    "vol_48",
+    "rsi_14",
+    "macd",
+    "atr_14",
+    "volume_z",
+    "range_pct",
+    "body_pct",
+    "taker_ratio",
+    "ema_gap",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos"
+  ],
+  "source_control": {
+    "commit": "7f4b8ec8eece36452782e1a8f1bc0b3d1160aeb7",
+    "branch": "research/budgeted-model-search",
+    "dirty": false,
+    "status": "available"
+  },
+  "code_files": {
+    "quantstream/__init__.py": "2008de7473101a244411840635f236c881fcd36bb16d4e7caeeb7f0354100881",
+    "quantstream/__main__.py": "c7107e8aa342c028ffdfac7ec6129e0d436105aef750525eb839c35968715c14",
+    "quantstream/backtest.py": "23825e6d231e89ef7238d2fdec871a806d1beb74089dff141e2b7bbebaf32cc3",
+    "quantstream/cli.py": "eacd0c7e386e8836a0d86fda0387b45639cd42dce6eb700b2bf74a1984acbbbb",
+    "quantstream/common.py": "e14d2afe63d4fbd4435dad9c4973a62efcd7f6adade9afc188e3c502b6390cb6",
+    "quantstream/contracts.py": "32462c81f6bc23bce3904f7c37f92205a59580ddef2dd808c5a609b80d0b696d",
+    "quantstream/data.py": "7ec4ba9e7e108958d703c83ad30ab6cd6427e1118825b34157a134b819d52e23",
+    "quantstream/deep.py": "d4aafa90fe1ed97d3d59fc5535c9917fc3d3bf219ce990c52522e49676649ddc",
+    "quantstream/features.py": "2944b185c86dc2f53f24a0dabc858b9d6b80e1550d38d662464ec33e1377a388",
+    "quantstream/finetune.py": "0be9425c5c9344c997a26dfc8c73cee8216801974614b7effb893e373183b24a",
+    "quantstream/monitor.py": "7e3c1080dcaf935e14ec1a501538e2457ea524113238c2f6aed442c5b7e242fe",
+    "quantstream/paper.py": "2de21669c0eb79579155f753014598b2549044a9606a9fff93a62149b2d60738",
+    "quantstream/research.py": "9ec38254b4d8755009822912888f847b853e6bc6d7ac1f3b20bf59d3d1e3cd53",
+    "quantstream/search.py": "8f41791a5f611aab9693e4f46b7eece0f869838dc81aeee41ebebc786378ac13",
+    "quantstream/stream.py": "fe1dc5fce81c695e1fe428a8df3d8b9d5c7abd60c079ea243ca4a11d40b20ccb"
+  },
+  "full_features_sha256": "57980ab33b0fd7af78da048073906cddd617c84d30a7fed7c6de57ead0d79c83",
+  "files": {
+    "train.parquet": "6e67cf5d1866715c3ae469d01ab3eb35c294440cc5d9ecc2eeabac354d845fa4",
+    "validation.parquet": "17ff4fa7b6edea663e75cb324090f1a307acb64cab2b5e7f2f357a524a26bb7b",
+    "development.parquet": "2620c723dd9af007469ab38adebfd7ccf8cb5c7e950dd9ef715320d98c1b5b5a",
+    "bars.parquet": "37ff9fbcbb6ff3720549b9159bd70ef5e67fb9bdc0d1e09448ff0ef6eb6d84ed"
+  },
+  "contains_final_holdout": false
+}
