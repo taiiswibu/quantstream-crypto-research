@@ -6,6 +6,8 @@ TCN đã train thành công trên CUDA. Run 001 chọn epoch 3/4/2 trong ba fold
 
 Một researcher cần biết **câu hỏi, thiết kế kiểm tra, kết quả và giới hạn**, thay vì chỉ có nhiều file model. Giữ cả thí nghiệm không cải thiện trong Git.
 
+Run 002 và Run 003 đã hoàn tất: xem [model search](experiments/run-002-model-search.md) và [LoRA A/B/C](experiments/run-003-lora-lab.md). Không cần chạy lại hai vòng này để tiếp tục dự án. [Run 004](experiments/run-004-seed-stability-protocol.md) mới là bản thiết kế kiểm tra độ ổn định qua seed; chưa có runner hoàn chỉnh hoặc kết quả training.
+
 ## Phân biệt các thao tác
 
 | Thao tác | Ví dụ trong dự án | Bạn học gì? |

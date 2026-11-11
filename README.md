@@ -102,7 +102,9 @@ Continuous simulated runtime: `python -m quantstream paper --watch --poll-second
 
 Reports preserve the exported Git SHA, branch and dirty state even without Git inside Kaggle. The old reference runs predate Git tracking and intentionally have no newly assigned source commit.
 
-For the next research cycle, use the **newly exported input ZIP** with [04: model search](notebooks/04_Kaggle_Model_Search.ipynb), then separately [05: controlled LoRA lab](notebooks/05_Kaggle_LoRA_Lab.ipynb). Read the [Vietnamese research walkthrough](docs/RESEARCH_LAB_VI.md). Search uses two early development folds, inner chronological early stopping, a fixed trial budget and a multi-seed shortlist. The historically observed last development fold is a diagnostic, not a new independent holdout. Neither notebook promotes a serving model or places orders.
+To reproduce the recorded development labs, use an input ZIP with matching source/snapshot contracts and [04: model search](notebooks/04_Kaggle_Model_Search.ipynb), then separately [05: controlled LoRA lab](notebooks/05_Kaggle_LoRA_Lab.ipynb). Read the [Vietnamese research walkthrough](docs/RESEARCH_LAB_VI.md). Search uses two early development folds, inner chronological early stopping, a fixed trial budget and a multi-seed shortlist. The historically observed last development fold is a diagnostic, not a new independent holdout. Neither notebook promotes a serving model or places orders.
+
+The next proposed experiment is [Run 004: LoRA seed stability](docs/experiments/run-004-seed-stability-protocol.md). It is a **draft protocol, not an executed run**: repeat one fixed configuration across three seeds, report all outcomes, and define prospective evaluation separately. Its runner and Kaggle environment lock are not yet complete; no new training result is claimed.
 
 ## Checks and contribution history
 

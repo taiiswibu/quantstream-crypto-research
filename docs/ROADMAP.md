@@ -18,6 +18,8 @@
 - [x] Verify all 12 model-search trial predictions, diagnostic/cost metrics and record a research-only decision.
 - [x] Execute the predeclared Chronos-2 LoRA A/B/C lab; independently recompute exported development metrics and retain research-only status.
 - [x] Commit notebook 05 torchao remediation, CPU adapter preflight and runtime evidence capture (full Kaggle GPU rerun still unverified).
+- [x] Draft [Run 004 seed-stability protocol](experiments/run-004-seed-stability-protocol.md), with explicit training budget and separate prospective gates; not executed.
+- [ ] Implement Run 004 runner, verify the Kaggle environment and freeze the execution plan before training.
 - [ ] Make sleeve vs portfolio turnover units explicit with accounting coverage.
 - [ ] Add block-based uncertainty and per-regime validation.
 - [ ] Define new future evaluation before assessing a revised model.
