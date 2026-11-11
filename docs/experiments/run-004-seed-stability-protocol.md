@@ -1,6 +1,6 @@
 # Run 004 — độ ổn định của LoRA qua nhiều seed
 
-Trạng thái: **bản thiết kế, chưa chạy**. Không có metric mới hoặc model được promote. Thiết kế này nối tiếp Run 003; chưa phải bằng chứng ngoài mẫu độc lập.
+Trạng thái: **đã triển khai runner; chờ Kaggle GPU preflight, chưa chạy ba research fit**. Không có metric mới hoặc model được promote. Thiết kế này nối tiếp Run 003; chưa phải bằng chứng ngoài mẫu độc lập.
 
 ## Câu hỏi và phạm vi
 
@@ -23,6 +23,8 @@ Chọn B vì nó có MAE thấp nhất trong ba adapter Run 003. Đây là lựa
 
 Mỗi fit bắt đầu từ cùng pretrained checkpoint. Seed 42 chạy lại là kiểm tra tái lập, không được tính kết quả Run 003 cũ thành một lần lặp độc lập mới. Giữ nguyên training series, thứ tự sample, target, horizon và cách xấp xỉ entry của Run 003. Không thay rank/target modules hoặc tune threshold. Khóa cấu hình LoRA mặc định đã resolve trong plan trước fit, thay vì chỉ ghi “default”.
 
+Inference ở Run 004 gọi `model.eval()` rõ ràng trước dự báo cả zero-shot và tuned, để tắt dropout sau `Trainer.train()`; `no_grad` không thay thế eval mode. Run 003 không xuất training/eval flag của model khi predict, nên chưa xác minh độc lập được flag đó hoặc mức ảnh hưởng lên số liệu cũ. Giữ nguyên evidence lịch sử; seed 42 mới không được coi là bản sao bitwise của kết quả Run 003.
+
 Nếu hết quota hoặc lỗi, giữ evidence, ghi trạng thái partial/failed và số step thật. Không thêm seed để bù cho kết quả xấu; không chạy lại trial lỗi mà xóa dấu vết.
 
 ## Đo lường và cách đọc kết quả
@@ -43,7 +45,11 @@ Ba seed là ngân sách nhỏ, chưa đủ để mô tả đầy đủ phân ph�
 - Ghi notebook version/URL, GPU, Python/package versions. Xuất trainer global_step/log_history, dự báo từng seed, adapter hashes và trạng thái hoàn tất/lỗi.
 - Dùng output Run 004 riêng, không ghi đè Run 003 và không mở final holdout cũ.
 
-Hiện các điều kiện runner và Kaggle environment lock **chưa hoàn tất**. Tài liệu này không xác nhận một thí nghiệm đã đăng ký và thực thi đầy đủ.
+Runner `quantstream/seed_lab.py` đã triển khai các điều kiện về fit isolation, alignment và artifact completeness. Notebook 06 mặc định `MODE='preflight'`: nạp source Git SHA cố định tách khỏi code trong input Dataset cũ, giữ snapshot manifest nguyên bản. Một fit synthetic sin/cos 1 step kiểm tra đường Chronos/PEFT trên GPU, tách khỏi ngân sách 600 research steps; không tạo metric trên development hoặc adapter ứng viên. Preflight xuất candidate lock và evidence để kiểm tra trước ba seed. Xem [hướng dẫn chạy](../RESEARCH_LAB_VI.md#run-004--kiểm-tra-môi-trường-trước-ba-seed).
+
+Kaggle environment lock **chưa được xác minh**. Khi chạy research, runner yêu cầu cùng môi trường/source/data/LoRA với lock, URL notebook thật, và ghi plan trước fit. Lock là inventory versions/hashes thực tế, không phải cam kết dựng lại bitwise. Mỗi fit ghi TrainingArguments đã resolve trước optimizer step đầu và TrainerState mỗi step; loss được ghi mỗi step. Nếu khác sample/target hoặc zero-shot lệch quá rtol 1e-6 / atol 1e-9, dừng và giữ partial evidence. Trong tolerance, summary dùng baseline zero-shot seed 42 chung và vẫn giữ forecast gốc của mọi seed. Không tự chọn seed bằng MAE hoặc PnL.
+
+Local kiểm tra bằng synthetic data và Chronos nhỏ khởi tạo ngẫu nhiên trên CPU, chưa phải full notebook execution với pretrained checkpoint và snapshot thật trên Kaggle GPU. Tài liệu này không xác nhận một thí nghiệm đã đăng ký và thực thi đầy đủ.
 
 ## Đánh giá độc lập tiếp theo
 

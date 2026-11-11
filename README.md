@@ -104,7 +104,7 @@ Reports preserve the exported Git SHA, branch and dirty state even without Git i
 
 To reproduce the recorded development labs, use an input ZIP with matching source/snapshot contracts and [04: model search](notebooks/04_Kaggle_Model_Search.ipynb), then separately [05: controlled LoRA lab](notebooks/05_Kaggle_LoRA_Lab.ipynb). Read the [Vietnamese research walkthrough](docs/RESEARCH_LAB_VI.md). Search uses two early development folds, inner chronological early stopping, a fixed trial budget and a multi-seed shortlist. The historically observed last development fold is a diagnostic, not a new independent holdout. Neither notebook promotes a serving model or places orders.
 
-The next proposed experiment is [Run 004: LoRA seed stability](docs/experiments/run-004-seed-stability-protocol.md). It is a **draft protocol, not an executed run**: repeat one fixed configuration across three seeds, report all outcomes, and define prospective evaluation separately. Its runner and Kaggle environment lock are not yet complete; no new training result is claimed.
+The next experiment is [Run 004: LoRA seed stability](docs/experiments/run-004-seed-stability-protocol.md): repeat one fixed configuration across three seeds and report all outcomes. Its runner is implemented; Kaggle GPU preflight and the environment lock are still pending. Start notebook 06 in its default **preflight-only** mode and return the evidence ZIP before the three research fits. It loads pinned source separately from the original Run 003 dataset. No Run 004 research fit, new metric or prospective evaluation is claimed. See the [Kaggle handoff](docs/RESEARCH_LAB_VI.md#run-004--kiểm-tra-môi-trường-trước-ba-seed).
 
 ## Checks and contribution history
 
@@ -115,7 +115,7 @@ python -m ruff check quantstream app.py tests scripts
 python scripts/check_notebooks.py
 ```
 
-28 local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior, Git provenance, research isolation and notebook setup/evidence preservation. Synthetic CPU fits exercise both TCN/GRU; a real-data Ridge smoke run exercises the new two-fold scoring path. These checks do not constitute completed Kaggle search/LoRA experiments. The [first remote CI run](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323) passed on both Linux and Windows. The badge reflects subsequent runs. The Linux job includes PyTorch/Optuna; the core Windows job may skip optional deep-learning coverage.
+Local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior, Git provenance, seed/sample isolation and notebook evidence preservation. With the optional Chronos/PEFT environment installed, a tiny random Chronos model exercises an actual CPU LoRA optimizer step, trainer logs, serialization and prediction. This does not test the pretrained checkpoint on Kaggle GPU. The [first remote CI run](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323) passed on both Linux and Windows. The badge reflects subsequent runs. The Linux job includes PyTorch/Optuna; the core Windows job may skip optional deep-learning coverage.
 
 Read [CONTRIBUTING](CONTRIBUTING.md), [Vietnamese Git workflow](docs/GIT_WORKFLOW_VI.md), [roadmap](docs/ROADMAP.md) and [changelog](CHANGELOG.md). Use one branch/PR per coherent change or hypothesis. Commit meaningful work, not an artificial contribution count.
 
