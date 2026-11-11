@@ -18,13 +18,15 @@
 - [x] Verify all 12 model-search trial predictions, diagnostic/cost metrics and record a research-only decision.
 - [x] Execute the predeclared Chronos-2 LoRA A/B/C lab; independently recompute exported development metrics and retain research-only status.
 - [x] Commit notebook 05 torchao remediation, CPU adapter preflight and runtime evidence capture (full Kaggle GPU rerun still unverified).
-- [x] Draft [Run 004 seed-stability protocol](experiments/run-004-seed-stability-protocol.md), with explicit training budget and separate prospective gates; not executed.
+- [x] Draft [Run 004 seed-stability protocol](experiments/run-004-seed-stability-protocol.md), with explicit training budget and separate prospective gates.
 - [x] Implement Run 004 runner with independent fits, shared-sample checks, trainer/adapter evidence and weekly paired bootstrap.
 - [x] Review notebook 06 Kaggle GPU preflight, adapter/step evidence and freeze the environment lock with source/data/budget identities.
-- [ ] Record the actual Kaggle notebook URL and materialize the frozen per-run plan before the first research fit.
-- [ ] Execute all three Run 004 seeds (or record an interrupted/partial run) and independently verify the output.
+- [x] Record the Kaggle notebook URL and frozen per-run plan before the first research fit (immutable saved-version ID not supplied).
+- [x] Execute all three Run 004 seeds and verify all forecast metrics, 600 step/loss records, adapter integrity and weekly paired bootstrap; retain research-only status.
+- [x] Verify seed-42 adapter bytes reproduce Run 003 B and document the inference/evaluation comparison limit.
 - [ ] Make sleeve vs portfolio turnover units explicit with accounting coverage.
-- [ ] Add block-based uncertainty and per-regime validation.
+- [x] Add descriptive paired calendar-week block uncertainty for Run 004 development MAE.
+- [ ] Add per-regime validation in a separately defined experiment.
 - [ ] Define new future evaluation before assessing a revised model.
 - [ ] Record a forward paper-trading observation period.
 

@@ -1,0 +1,108 @@
+{
+  "status": "completed_verified_development_research_only",
+  "artifact_sha256": "0c53a0dabcd2c67e3c36993628d9495c4027d950840be5a28673f9a0b849c333",
+  "execution_source_commit": "bb47737b5bc400169a8bbd75f8c7534503ba18d5",
+  "preflight_lock_sha256": "b8e06d61a24e3f42b067d0877f67dfd2f166a84e52a540539730a5ccad1a3900",
+  "notebook_url_recorded": "https://www.kaggle.com/code/vovantai36/notebook4406f3b5f0/edit",
+  "plan_created_at_utc": "2026-11-11T17:13:48.315354+00:00",
+  "finished_at_utc": "2026-11-11T17:15:41.289221+00:00",
+  "steps_evidenced": 600,
+  "seed_evidence": [
+    {
+      "seed": 42,
+      "global_step": 200,
+      "logged_loss_steps": 200,
+      "adapter_sha256": "fb1769324c59a682ef7b84a674fab1b0275e5ed0e408981cb0e27cc4a094182d",
+      "adapter_tensors": 194,
+      "adapter_stored_parameters": 1206912,
+      "adapter_tensor_values_sha256": "452c449edf6dcfdd41271e854fb24e7f37f2ff9af9889dd41b18690c333600e1",
+      "prediction_sha256": "da063b07065b3d587cd6ac08c70e007b7406b32c366f9783f413431a859e397b",
+      "first20_mean_training_loss": 1.0654834121465684,
+      "last20_mean_training_loss": 0.9820817083120346,
+      "training_seconds_recorded": 29.4573
+    },
+    {
+      "seed": 123,
+      "global_step": 200,
+      "logged_loss_steps": 200,
+      "adapter_sha256": "5384b051e74e861b6c0faf2e7f2a60577f1ea2d56ac27758335ce66145ae9369",
+      "adapter_tensors": 194,
+      "adapter_stored_parameters": 1206912,
+      "adapter_tensor_values_sha256": "4977ecd0b6e347436ce029171ec1bb31a565ac710d8158e5c8e307456da8c779",
+      "prediction_sha256": "01e5e473348047d5fb4c45ec76a24d533ba8cd550c7e3c4dc213063c799c09dc",
+      "first20_mean_training_loss": 1.3159413039684296,
+      "last20_mean_training_loss": 1.119428637623787,
+      "training_seconds_recorded": 29.6604
+    },
+    {
+      "seed": 2026,
+      "global_step": 200,
+      "logged_loss_steps": 200,
+      "adapter_sha256": "4b42bc3806ae3d054d69f8c8a4a99157a4759d559c00243422b8a21098dee3e0",
+      "adapter_tensors": 194,
+      "adapter_stored_parameters": 1206912,
+      "adapter_tensor_values_sha256": "bfccfa2efd0f91453d8d0c92700b20e469a0c421580a3cd90f13351ddce61b7d",
+      "prediction_sha256": "d72d52a53ac53a82a2ca43ae76c1c792b4d85ef98e4a7d34d8752468e32279f5",
+      "first20_mean_training_loss": 0.9984207391738892,
+      "last20_mean_training_loss": 1.1155057460069657,
+      "training_seconds_recorded": 29.5054
+    }
+  ],
+  "unique_evaluation_windows": 512,
+  "forecast_rows_across_seeds": 1536,
+  "first_decision_time_utc": "2025-08-29 20:00:00+00:00",
+  "last_decision_time_utc": "2026-01-25 11:00:00+00:00",
+  "rows_per_asset_per_seed": {
+    "BTCUSDT": 256,
+    "ETHUSDT": 256
+  },
+  "sample_sha256": "c024cd77d9f37fca3909c97b682b560d466c3f203e77d263794d52bea445a28c",
+  "checks": {
+    "zip_crc_ok": true,
+    "plan_matches_reviewed_lock": true,
+    "source_hashes_match_git": true,
+    "all_rows_finite_unique_and_aligned": true,
+    "baseline_identical_across_seeds": true,
+    "all_15_metric_rows_and_csv_recomputed": true,
+    "seed_mean_std_recomputed": true,
+    "weekly_paired_bootstrap_independently_recomputed": true,
+    "all_adapter_hashes_and_tensors_checked": true,
+    "all_600_loss_log_steps_finite": true
+  },
+  "pooled_seed_mean": {
+    "mae": 0.007815293979879878,
+    "mae_std_ddof1": 4.008817270886014e-06,
+    "mae_relative_change_vs_zero_shot_pct": -0.2641971285305744,
+    "mae_relative_change_vs_zero_return_pct": 3.7211793238045576,
+    "directional_accuracy": 0.4973958333333333
+  },
+  "paired_mae_bootstrap": {
+    "estimate": -2.0702477632506845e-05,
+    "percentile_95": [
+      -3.1180722587537924e-05,
+      -9.992817014853355e-06
+    ],
+    "calendar_week_blocks": 22,
+    "repetitions": 2000,
+    "rng_seed": 2026,
+    "scope": "Descriptive development CI conditional on the fixed three seeds, not independent alpha evidence."
+  },
+  "historical_comparison": {
+    "checked": true,
+    "run003_B_adapter_same_bytes_as_seed42": true,
+    "same_sample_targets_and_zero_shot_predictions": true,
+    "run003_B_mae": 0.007887454868214353,
+    "run004_seed42_mae": 0.007819842740928461,
+    "interpretation": "The learned adapter did not change. Historical score differences concern inference/evaluation, not a better learned seed-42 adapter; exact causal effects were not isolated."
+  },
+  "diagnostic_decision": "keep_for_further_research",
+  "deployment_status": "research_only_no_promotion",
+  "limitations": [
+    "Previously observed development sample; B was selected after Run 003.",
+    "Raw market Parquet inputs, base weights and live GPU execution were not independently observed.",
+    "Recorded Kaggle URL is an editable notebook path; an immutable saved-version ID is absent.",
+    "Train loss alone and endpoint-only development scores do not establish overfitting timing.",
+    "No new holdout, post-fee PnL or prospective result; pretraining overlap remains unverified.",
+    "Three seeds and 22 resampled calendar weeks do not remove selection bias or characterize all seeds."
+  ]
+}

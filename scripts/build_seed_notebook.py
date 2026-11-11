@@ -19,7 +19,9 @@ def build(source_commit, destination):
 
 ## Mục tiêu
 
-**Lần đầu giữ `MODE='preflight'` rồi Run All.** Dùng Dataset có đúng dữ liệu Run 003, bật Internet và GPU, chạy từ session mới. Không tạo lại dataset. Metadata export có thể khác; cell kiểm tra tính lại hash cả bốn Parquet và đối chiếu cấu hình/split/features với bản tham chiếu. Chưa có kết quả Run 004; lần đầu chỉ thử một optimizer step trên chuỗi sin/cos, không train trên dữ liệu tài chính.
+**Run 004 đã hoàn thành ba seed × 200 steps.** Xem [báo cáo kết quả](https://github.com/taiiswibu/quantstream-crypto-research/blob/research/run-004/docs/experiments/run-004-seed-stability.md); bản notebook này không nhúng các output Kaggle đã chạy. Không cần train thêm để hoàn thành vòng nghiên cứu.
+
+Khi tái lập có chủ đích, **lần đầu giữ `MODE='preflight'` rồi Run All**. Dùng Dataset có đúng dữ liệu Run 003, bật Internet và GPU, chạy từ session mới. Không tạo lại dataset. Metadata export có thể khác; cell kiểm tra tính lại hash cả bốn Parquet và đối chiếu cấu hình/split/features với bản tham chiếu. Preflight chỉ thử một optimizer step trên chuỗi sin/cos, không train trên dữ liệu tài chính.
 
 Notebook tải code mới theo Git SHA cố định; chỉ lấy snapshot từ Dataset cũ. Không dùng code cũ nằm trong input ZIP.
 
@@ -93,7 +95,7 @@ print('Bốn file dữ liệu và cấu hình khớp Run 003. Chưa chạy resea
 
 Chỉ dùng `train` sau khi kiểm tra ZIP preflight và giữ nguyên lock/môi trường. Khi đó mỗi seed nạp lại pretrained model; ghi train loss mỗi step, trạng thái lỗi, dự báo và adapter riêng. Nếu phiên mất dữ liệu, gửi ZIP đã tải để được hướng dẫn khôi phục; không xóa trial rồi chạy lại nhằm lấy kết quả đẹp.
 
-Nếu Kaggle bị kill cả process, `finally` có thể không chạy: Save Version/Download thư mục output còn lại. Notebook chưa chạy hết trên Kaggle GPU khi được phát hành; preflight này là bước cần bạn thực hiện trước."""),
+Nếu Kaggle bị kill cả process, `finally` có thể không chạy: Save Version/Download thư mục output còn lại. Preflight và ba fit của runner đã có evidence Kaggle được review; đây vẫn là bước kiểm tra cần thiết khi tái lập trên một môi trường mới."""),
         code("""target=PREFLIGHT if MODE=='preflight' else OUTPUT
 filename='QuantStream_Run004_Preflight.zip' if MODE=='preflight' else 'QuantStream_Run004_Output.zip'
 archive=WORK.parent/filename

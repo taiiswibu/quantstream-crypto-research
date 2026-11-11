@@ -1,6 +1,6 @@
 # Run 004 — độ ổn định của LoRA qua nhiều seed
 
-Trạng thái: **GPU preflight đã được review và environment lock đã chốt; chưa chạy ba research fit**. Xem [preflight evidence và cách bắt đầu](run-004-preflight.md). Không có metric tài chính mới hoặc model được promote. Thiết kế này nối tiếp Run 003; chưa phải bằng chứng ngoài mẫu độc lập.
+Trạng thái: **đã hoàn thành ba research fit; kết quả development đã được kiểm tra**. Xem [báo cáo kết quả](run-004-seed-stability.md) và [preflight evidence](run-004-preflight.md). Giữ `research_only_no_promotion`; chưa có bằng chứng ngoài mẫu độc lập hoặc PnL mới. Protocol thực thi được pin ở commit `bb47737b`; các cập nhật trạng thái sau chạy không thay đổi kế hoạch gốc.
 
 ## Câu hỏi và phạm vi
 
@@ -53,7 +53,7 @@ Lượt synthetic preflight chạy lại được review ngày 2026-11-12 có ra
 
 Validator v2 xử lý metadata export: manifest `ba321d82…ae5b37` trong ZIP diagnostic chỉ khác bản Run 003 ở `created_at`, `source_control`, `code_files`; config/split/features/full-feature hash và bốn hash Parquet được báo khớp. Bản tham chiếu được lấy nguyên bytes từ ZIP Run 003 đã kiểm chứng; code kiểm tra SHA của tham chiếu, đối chiếu toàn bộ trường ngoài ba metadata trên và tính lại hash từng file thật trên Kaggle. Ghi hash manifest thực tế và hash tham chiếu riêng; không ghi đè hoặc sửa provenance của export cũ. Thay đổi validator không thay seed, cửa sổ, dữ liệu hay ngân sách training. Xem [audit scope](../../reports/experiments/run-004-seed-stability/snapshot-compatibility.json). Lỗi cũ xảy ra trước preflight/fit; chưa có metric mới.
 
-Local kiểm tra bằng synthetic data và Chronos nhỏ khởi tạo ngẫu nhiên trên CPU. ZIP Kaggle mới ghi một synthetic optimizer step với pretrained checkpoint trên Tesla T4; source hashes, trainer evidence và adapter được review như [báo cáo preflight](run-004-preflight.md). Chưa có ba research fit hoặc kết quả development Run 004 mới; URL notebook còn cần điền trước khi fit.
+Output research sau hai ZIP preflight đã được cung cấp: đủ ba seed, mỗi seed ghi 200 steps, 512 dự báo và adapter riêng. URL notebook được ghi trong plan trước fit, nhưng chưa có immutable saved-version ID. Source hashes, mọi forecast metric, loss log, adapter và bootstrap đã được kiểm tra; xem [kết quả và giới hạn](run-004-seed-stability.md). Không thêm seed hoặc thay cấu hình sau khi xem kết quả này.
 
 ## Đánh giá độc lập tiếp theo
 
