@@ -18,17 +18,39 @@ The 512-row sample hash was independently recomputed from the Run 003 B predicti
 
 ## Start the research fits
 
-In the same Kaggle session, keep the existing source checkout, snapshot and preflight directory. Run a new cell, replacing the notebook-URL placeholder with the actual URL:
+In the same Kaggle session, keep the existing source checkout, snapshot and preflight directory. Run this complete cell on its own, replacing the notebook-URL placeholder with the actual URL. It calls the research runner directly and does not depend on `MODE` or on rerunning an earlier cell:
 
 ```python
 from quantstream.common import sha256
-assert sha256(LOCK) == 'f44720e43fd6404e3b95b7fa8481f61b03ad96cb2ab6af34f86406974c52474d'
-MODE = 'train'
+from quantstream.seed_lab import run_seed_lab, archive_evidence
+from IPython.display import display, FileLink
+
+reviewed_locks = {
+    'f44720e43fd6404e3b95b7fa8481f61b03ad96cb2ab6af34f86406974c52474d',
+    'b8e06d61a24e3f42b067d0877f67dfd2f166a84e52a540539730a5ccad1a3900',
+}
+assert sha256(LOCK) in reviewed_locks, 'Preflight lock has not been reviewed'
 NOTEBOOK_URL = 'DAN_URL_NOTEBOOK_KAGGLE_THAT_VAO_DAY'
+TRAIN_ZIP = WORK.parent / 'QuantStream_Run004_Output.zip'
+if OUTPUT.exists() or TRAIN_ZIP.exists():
+    raise FileExistsError('Preserve existing research evidence for review')
+try:
+    result = run_seed_lab(SNAPSHOT, OUTPUT, LOCK, NOTEBOOK_URL)
+    print('Completed all three research seeds')
+finally:
+    saved = archive_evidence(OUTPUT, TRAIN_ZIP)
+    if saved:
+        display(FileLink(saved))
 ```
 
-Then run only the existing **Chạy và tải evidence** code cell. The setup/source cells are not needed in the already initialized session. The runner validates the actual environment/source/data/LoRA against the reviewed lock, records the notebook URL and freezes `plan.json` before its first fit. If the session has been lost, restore the saved preflight evidence and pinned source before attempting a fit; never manufacture a replacement lock or erase earlier attempts.
+The setup/source cells are not needed in the already initialized session. The runner validates the actual environment/source/data/LoRA against the reviewed lock, records the notebook URL and freezes `plan.json` before its first fit. If the session has been lost, restore the saved preflight evidence and pinned source before attempting a fit; never manufacture a replacement lock or erase earlier attempts.
 
 Budget remains seeds **42/123/2026**, **200 steps each**, learning rate **1e-5**, context **128**, batch **8** and the same **512** development windows. Each seed reloads the pretrained checkpoint. Download `QuantStream_Run004_Output.zip` after the run, including partial evidence if it fails. No seed replacement or automatic retry is authorized by this preflight review.
 
 The notebook URL/version is absent from preflight and must be recorded before the research fits. The lock is a version inventory, not a container image or a guarantee of bitwise reproduction. There is no new independent holdout, PnL result or model promotion; retain **`research_only_no_promotion`**.
+
+## Repeated preflight — 2026-11-12
+
+The second supplied ZIP again records `scope=preflight_only`, `global_step=1`, `research_fits_started=0`. Its source, environment, data/sample/training identities, LoRA configuration and research budget are identical to the first reviewed lock. The smoke safetensors bytes are also identical. Only the serialized ordering of the same `target_modules` names in `adapter_config.json` differs, changing that file's hash and therefore the raw lock hash. This is not another financial trial or an additional seed result.
+
+The second [lock](../../reports/experiments/run-004-seed-stability/kaggle-preflight-lock-rerun-001.json) is preserved as received, SHA-256 **`b8e06d61a24e3f42b067d0877f67dfd2f166a84e52a540539730a5ccad1a3900`**. Its [verification record](../../reports/experiments/run-004-seed-stability/preflight-rerun-001-verification.json) retains the original lock hash and repeated ZIP hash. Both reviewed locks are accepted by the handoff cell; runtime validation still requires the exact environment, pinned source, data and scientific settings in the selected lock. The original lock and evidence remain unchanged.
