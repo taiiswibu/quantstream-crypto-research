@@ -57,6 +57,18 @@ Mỗi cấu hình khởi tạo lại từ cùng base, không nối adapter của
 
 ZIP output giữ adapter, dự báo từng hàng và metadata. Giữ trainer log ở Kaggle để xem quá trình học. Không train full model hoặc mở rộng hàng trăm trial khi chưa phân tích vòng nhỏ.
 
+### Môi trường Kaggle và lỗi torchao
+
+Run 003 đã hoàn thành; xem [báo cáo](experiments/run-003-lora-lab.md). Không cần train lại để sửa môi trường. Notebook 05 mới dành cho lần tái lập có chủ đích:
+
+1. Restart Session rồi Run All, Internet On và GPU khả dụng. Nếu đã import PEFT/Chronos/Transformers/torchao, cell đầu dừng trước khi thay đổi thư viện và yêu cầu restart.
+2. Cell gỡ optional `torchao`, cài Chronos `2.3.2` và PEFT `0.21.2`, giữ PyTorch/CUDA của Kaggle. Lab dùng float32, không cần torchao quantization. Không nâng torchao tùy ý vì còn phụ thuộc phiên bản PyTorch.
+3. Trước khi tải checkpoint, thử gắn LoRA vào một lớp Linear và chạy backward trên CPU. Kiểm tra này phát hiện đường lỗi adapter injection; chưa kiểm chứng toàn bộ Chronos/GPU training.
+4. Lưu `environment.json`, `pip-freeze.txt` và trainer JSON/JSONL/log nếu được tạo. Các package còn lại có khoảng phiên bản, nên đây **chưa phải environment lock đầy đủ** hoặc bảo đảm bitwise reproducibility.
+5. Lần chạy mới dùng `run-003-lora-lab-rerun` và `QuantStream_LoRA_Rerun_Output.zip`, giữ nguyên evidence Run 003 cũ. ZIP vẫn xuất khi lỗi; cần đủ A/B/C và `comparison.json` mới xem là hoàn tất.
+
+Nguồn lỗi: [PEFT issue #3964](https://github.com/huggingface/peft/issues/3964). Upstream đã sửa trên main; notebook pin PEFT theo phiên bản được ghi trong artifact Run 003 và xử lý dependency cũ rõ ràng, không dựa vào main chưa cố định.
+
 ## Cách tự đọc một thí nghiệm
 
 Sau mỗi lượt chạy, trả lời bằng số liệu:

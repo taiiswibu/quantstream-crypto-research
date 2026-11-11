@@ -113,7 +113,7 @@ python -m ruff check quantstream app.py tests scripts
 python scripts/check_notebooks.py
 ```
 
-23 local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior, Git provenance and research isolation. Synthetic CPU fits exercise both TCN/GRU; a real-data Ridge smoke run exercises the new two-fold scoring path. These checks do not constitute completed Kaggle search/LoRA experiments. The [first remote CI run](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323) passed on both Linux and Windows. The badge reflects subsequent runs. The Linux job includes PyTorch/Optuna; the core Windows job may skip optional deep-learning coverage.
+28 local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior, Git provenance, research isolation and notebook setup/evidence preservation. Synthetic CPU fits exercise both TCN/GRU; a real-data Ridge smoke run exercises the new two-fold scoring path. These checks do not constitute completed Kaggle search/LoRA experiments. The [first remote CI run](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323) passed on both Linux and Windows. The badge reflects subsequent runs. The Linux job includes PyTorch/Optuna; the core Windows job may skip optional deep-learning coverage.
 
 Read [CONTRIBUTING](CONTRIBUTING.md), [Vietnamese Git workflow](docs/GIT_WORKFLOW_VI.md), [roadmap](docs/ROADMAP.md) and [changelog](CHANGELOG.md). Use one branch/PR per coherent change or hypothesis. Commit meaningful work, not an artificial contribution count.
 

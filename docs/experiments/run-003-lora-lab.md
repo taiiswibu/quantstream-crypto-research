@@ -33,3 +33,9 @@ The 512 rows comprise 256 BTCUSDT and 256 ETHUSDT decision windows from **2025-0
 Keep **`research_only_no_promotion`**. Do not choose B for deployment simply because it beats A and C: it still loses to zero-shot, and the single-seed sample is development-only. No final-test reuse or trading performance estimation was performed by this lab.
 
 For a next *distinct* hypothesis, record a protocol and environment lock before re-running: verify the complete training environment, test alternative fine-tuning data objectives and horizons, add multiple random seeds and use fresh prospective windows for independent evaluation. Report both prediction error and trading results after costs only after the strategy is specified in advance. The three planned A/B/C outcomes should remain unchanged historical evidence.
+
+## Runtime follow-up — 2026-11-11
+
+Notebook 05 and its generator now remove optional torchao before importing PEFT, pin Chronos 2.3.2 / PEFT 0.21.2, reject stale imported modules and run a small CPU LoRA injection/backward preflight. A rerun writes a separate output folder/ZIP, captures package versions and preserves lightweight trainer logs if produced. Historical Run 003 files and metrics are unchanged.
+
+Local validation reproduced the exact ImportError with torchao 0.10.0 and PEFT 0.21.2; the revised setup cell then uninstalled torchao and passed injection/backward with PyTorch 2.15.0+cpu / Python 3.12.14. All 28 tests, lint, notebook schema/syntax checks and compilation passed. This checks the reported failure path, **not** the full Kaggle GPU training run or an exact reconstruction of its historical environment. See [runtime instructions](../RESEARCH_LAB_VI.md#môi-trường-kaggle-và-lỗi-torchao).

@@ -17,7 +17,7 @@
 - [x] Prepare a controlled Chronos LoRA steps/learning-rate lab.
 - [x] Verify all 12 model-search trial predictions, diagnostic/cost metrics and record a research-only decision.
 - [x] Execute the predeclared Chronos-2 LoRA A/B/C lab; independently recompute exported development metrics and retain research-only status.
-- [ ] Capture Kaggle notebook/runtime environment remediation in committed source for a fully reproducible rerun.
+- [x] Commit notebook 05 torchao remediation, CPU adapter preflight and runtime evidence capture (full Kaggle GPU rerun still unverified).
 - [ ] Make sleeve vs portfolio turnover units explicit with accounting coverage.
 - [ ] Add block-based uncertainty and per-regime validation.
 - [ ] Define new future evaluation before assessing a revised model.

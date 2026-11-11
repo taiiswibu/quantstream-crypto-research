@@ -49,10 +49,16 @@ print('Development only. Final holdout included:',manifest['contains_final_holdo
 
 
 def save(name, cells):
+    path = FOLDER / name
+    if path.exists():
+        previous = nbf.read(path, as_version=4)
+        for old, new in zip(previous.cells, cells):
+            if old.cell_type == new.cell_type:
+                new.id = old.id
     nb = nbf.v4.new_notebook(cells=cells)
     nb.metadata.kernelspec = {"display_name": "Python 3", "language": "python", "name": "python3"}
     nb.metadata.language_info = {"name": "python", "version": "3.12"}
-    nbf.write(nb, FOLDER / name)
+    nbf.write(nb, path)
 
 
 save("04_Kaggle_Model_Search.ipynb", [
@@ -120,14 +126,44 @@ md("""# QuantStream — phòng thực hành fine-tuning Chronos-2 + LoRA
 
 **Chạy riêng sau notebook 04**, dùng cùng Dataset input mới, Internet On và GPU còn quota. Notebook này tải pretrained model, học adapter và so sánh với zero-shot trên cùng 512 cửa sổ development. Không chạy đồng thời với notebook 04.
 
+Chạy từ **session mới** (Restart Session rồi Run All). Cell cài đặt gỡ `torchao` vì lab không dùng lượng tử hóa; bản cũ có thể làm PEFT lỗi ngay khi gắn LoRA. Cell cũng thử gắn adapter nhỏ trên CPU trước khi tải checkpoint. Không cài lại PyTorch/CUDA của Kaggle. Đây là bản sửa môi trường cho lần chạy sau, không thay thế evidence Run 003 đã hoàn thành.
+
 Đây là fine-tuning thật: cập nhật adapter trọng số từ mô hình đã pretrained. TCN/GRU ở notebook 04 được train từ đầu. Pretraining overlap chưa xác minh nên kết quả Chronos chỉ phục vụ nghiên cứu/học tập, không chứng minh alpha độc lập.
 
 Ba cấu hình được đặt trước: (100 steps, LR 1e-5), (200 steps, LR 1e-5), (200 steps, LR 3e-6). So A/B để học tác động số bước, B/C để học tác động learning rate. Giữ seed, context, batch size, base revision và cửa sổ chấm điểm cố định."""),
-code("""import subprocess,sys,os
+code("""import subprocess,sys,os,importlib.util,importlib.metadata,platform
+# Package discovery is cached after imports; changing pip packages cannot clear it safely.
+loaded=[name for name in ('peft','torchao','chronos','transformers')
+        if any(module==name or module.startswith(name+'.') for module in sys.modules)]
+if loaded:
+    raise RuntimeError('Restart Session rồi Run All trước khi cài thư viện: '+', '.join(loaded))
 os.environ['HF_HUB_DISABLE_XET']='1'
+# This lab uses ordinary float32 weights, not torchao quantization.
+subprocess.check_call([sys.executable,'-m','pip','uninstall','-y','torchao'])
 subprocess.check_call([sys.executable,'-m','pip','install','-q',
-    'chronos-forecasting==2.3.2','peft>=0.18.1,<1','accelerate>=1.1,<2',
-    'datasets>=3,<5','pyarrow>=17,<27','scikit-learn>=1.5,<2'])"""),
+    'chronos-forecasting==2.3.2','peft==0.21.2','accelerate>=1.1,<2',
+    'datasets>=3,<5','pyarrow>=17,<27','scikit-learn>=1.5,<2'])
+importlib.invalidate_caches()
+if importlib.util.find_spec('torchao') is not None:
+    raise RuntimeError('torchao vẫn còn sau khi gỡ; kiểm tra pip output và Restart Session.')
+import torch
+from peft import LoraConfig,get_peft_model
+from peft.import_utils import is_torchao_available
+if is_torchao_available():
+    raise RuntimeError('Lab yêu cầu PEFT chạy không có torchao.')
+# Exercise the same adapter-injection path that previously failed, without a download.
+smoke=get_peft_model(torch.nn.Sequential(torch.nn.Linear(4,4)),
+                    LoraConfig(r=2,lora_alpha=4,target_modules=['0']))
+smoke(torch.ones(1,4)).sum().backward()
+if not any(p.requires_grad and p.grad is not None for p in smoke.parameters()):
+    raise RuntimeError('LoRA preflight không tạo được gradient cho adapter.')
+del smoke
+LORA_ENVIRONMENT={'python':platform.python_version(),'torch':torch.__version__,
+    'packages':{name:importlib.metadata.version(name) for name in
+        ('chronos-forecasting','peft','transformers','accelerate','datasets')},
+    'torchao_installed':False,'lora_injection_backward_ok':True}
+LORA_PIP_FREEZE=subprocess.check_output([sys.executable,'-m','pip','freeze'],text=True)
+print('LoRA preflight OK:',LORA_ENVIRONMENT)"""),
 code(BOOTSTRAP),
 code("""import torch,gc
 from quantstream.search import load_snapshot
@@ -141,7 +177,7 @@ BASE_REVISION='29ec3766d36d6f73f0696f85560a422f50e8498c'
 CONFIGS=[{'id':'A_steps100_lr1e5','steps':100,'learning_rate':1e-5},
          {'id':'B_steps200_lr1e5','steps':200,'learning_rate':1e-5},
          {'id':'C_steps200_lr3e6','steps':200,'learning_rate':3e-6}]
-OUTPUT=WORK/'run-003-lora-lab'
+OUTPUT=WORK/'run-003-lora-lab-rerun'
 OUTPUT.mkdir(exist_ok=True)
 plan={'base_revision':BASE_REVISION,'configurations':CONFIGS,'seed':42,
       'context_length':128,'batch_size':8,'max_windows':512,
@@ -149,12 +185,22 @@ plan={'base_revision':BASE_REVISION,'configurations':CONFIGS,'seed':42,
 from quantstream.common import write_json
 if (OUTPUT/'plan.json').exists() and json.loads((OUTPUT/'plan.json').read_text())!=plan:
     raise ValueError('Không thay đổi protocol của thí nghiệm đã bắt đầu.')
-write_json(OUTPUT/'plan.json',plan)"""),
+write_json(OUTPUT/'plan.json',plan)
+environment_path=OUTPUT/'environment.json'
+if environment_path.exists() and json.loads(environment_path.read_text())!=LORA_ENVIRONMENT:
+    raise ValueError('Môi trường đã đổi; giữ output cũ để review trước khi chạy tiếp.')
+write_json(environment_path,LORA_ENVIRONMENT)
+freeze_path=OUTPUT/'pip-freeze.txt'
+if freeze_path.exists() and freeze_path.read_text(encoding='utf-8')!=LORA_PIP_FREEZE:
+    raise ValueError('Danh sách package đã đổi; giữ output cũ để review trước khi chạy tiếp.')
+freeze_path.write_text(LORA_PIP_FREEZE,encoding='utf-8')"""),
 md("""## Fine-tune và xuất evidence
 
 Mỗi cấu hình bắt đầu từ **cùng pretrained checkpoint**, không nối tiếp adapter A → B → C. Nếu B kém A, chưa thể kết luận thêm bước luôn xấu; cần xem loss/seed ở vòng nghiên cứu sau. Không chỉnh cấu hình ngay sau khi thấy kết quả để rồi gọi validation là test.
 
-Output giữ adapter, báo cáo, cùng các hàng dự báo zero-shot/LoRA. Các optimizer checkpoint lớn được bỏ khỏi ZIP chia sẻ. Nếu phiên bị ngắt, Save Version/Download output; không xóa bằng chứng trial lỗi."""),
+Output mới dùng thư mục `run-003-lora-lab-rerun` và ZIP `QuantStream_LoRA_Rerun_Output.zip`, giữ riêng evidence Run 003 cũ. Không cần chạy lại A/B/C chỉ để xác nhận bản sửa cài đặt. Nếu chủ động chạy lại, đây vẫn là development diagnostic, không phải thí nghiệm ngoài mẫu mới.
+
+ZIP giữ adapter, báo cáo, dự báo, phiên bản thư viện và trainer log dạng JSON/JSONL/log nếu có. Các optimizer checkpoint lớn được bỏ khỏi ZIP chia sẻ. Nếu phiên bị ngắt, Save Version/Download output; không xóa bằng chứng trial lỗi. ZIP được tạo cả khi lỗi, nên chỉ xem là hoàn tất khi có đủ ba báo cáo và `comparison.json`."""),
 code("""reports=[]
 try:
     for spec in CONFIGS:
@@ -170,19 +216,21 @@ try:
         gc.collect();torch.cuda.empty_cache()
     write_json(OUTPUT/'comparison.json',reports)
 finally:
-    # Package adapter/evidence only, while retaining trainer logs in Kaggle Output.
-    with zipfile.ZipFile(WORK.parent/'QuantStream_LoRA_Output.zip','w',zipfile.ZIP_DEFLATED) as z:
+    # Include lightweight trainer evidence, never model/optimizer checkpoint binaries.
+    with zipfile.ZipFile(WORK.parent/'QuantStream_LoRA_Rerun_Output.zip','w',zipfile.ZIP_DEFLATED) as z:
         for path in OUTPUT.rglob('*'):
-            if path.is_file() and 'trainer' not in path.relative_to(OUTPUT).parts:
-                z.write(path,path.relative_to(OUTPUT))
-    display(FileLink(str(WORK.parent/'QuantStream_LoRA_Output.zip')))"""),
+            if path.is_file():
+                relative=path.relative_to(OUTPUT)
+                if 'trainer' not in relative.parts or path.suffix in {'.json','.jsonl','.log'}:
+                    z.write(path,relative)
+    display(FileLink(str(WORK.parent/'QuantStream_LoRA_Rerun_Output.zip')))"""),
 code("""import pandas as pd
 table=pd.DataFrame(reports)
 table['mae_change']=table.finetuned_mae-table.zero_shot_mae
 display(table[['experiment','steps','learning_rate','zero_shot_mae','finetuned_mae',
                'mae_change','zero_shot_directional_accuracy','finetuned_directional_accuracy']])
 print('mae_change < 0: sai số giảm trên các cửa sổ development này. Chưa phải lợi nhuận giao dịch.')
-print('Gửi QuantStream_LoRA_Output.zip để review adapter và ghi kết quả lên Git.')"""),
+print('Gửi QuantStream_LoRA_Rerun_Output.zip để review adapter và ghi kết quả lên Git.')"""),
 ])
 
 print("Built notebooks 04 and 05")
