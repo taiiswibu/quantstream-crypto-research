@@ -1,5 +1,7 @@
 # Roadmap
 
+Phạm vi sản phẩm, tiêu chí chốt model, yêu cầu biểu đồ notebook và vai trò LLM/agent: [Kế hoạch ứng dụng local](PRODUCT_PLAN_VI.md). Đây là kế hoạch đề xuất; GPU budget và cấu hình máy local chưa được chốt.
+
 ## Completed local work
 - [x] Real ingestion, checksum, quarantine and gap handling.
 - [x] Causal features, purged splits and three-fold model research.

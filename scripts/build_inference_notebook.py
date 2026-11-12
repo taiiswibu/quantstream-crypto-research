@@ -89,7 +89,51 @@ except BaseException:
     display(FileLink(str(ARCHIVE)))
     raise
 print('Dependency setup completed. No fitting or backward pass was performed.')"""),
-        md("""## 3. Chạy đối chứng và tải ZIP
+        md("""## 3. Xem Run 004 đã học và so baseline
+
+Các biểu đồ dưới đây đọc **600 log training và 15 dòng metric đã được xác minh**, lưu cùng source đã pin. Đây là kết quả Run 004, không phải lượt train mới. Đường đậm là trung bình trượt 20 bước để dễ nhìn; đường nhạt giữ nguyên loss minibatch. Loss này khác đơn vị với MAE lợi suất.
+
+Run 004 **không ghi validation loss tại từng bước**, vì vậy chưa thể xác định lúc bắt đầu overfit. Baseline return bằng 0 phải xuất hiện cùng Chronos zero-shot và cả ba seed; không chỉ so với baseline yếu hơn. Giới hạn này cũng áp dụng khi training loss giảm."""),
+        code("""import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+VISUALS=WORK/'visual-review'
+VISUALS.mkdir(exist_ok=True)
+review=CODE/'reports/experiments/run-004-seed-stability'
+loss=pd.read_csv(review/'training-loss-verified.csv')
+historical=pd.read_csv(review/'metrics-verified.csv')
+if len(loss)!=600 or set(loss.seed)!={42,123,2026}:
+    raise ValueError('Run 004 verified training records differ')
+fig,axes=plt.subplots(2,2,figsize=(14,9),layout='constrained')
+for seed,part in loss.groupby('seed',sort=True):
+    part=part.sort_values('step')
+    line=axes[0,0].plot(part.step,part.loss,alpha=.15)[0]
+    axes[0,0].plot(part.step,part.loss.rolling(20,min_periods=1).mean(),
+                   color=line.get_color(),label=f'Seed {seed}: rolling 20')
+    axes[0,1].plot(part.step,part.learning_rate,label=f'Seed {seed}')
+    axes[1,0].plot(part.step,part.grad_norm,label=f'Seed {seed}',alpha=.7)
+axes[0,0].set(title='Run 004 training loss: minibatch / rolling mean',xlabel='Optimizer step',ylabel='Training objective')
+axes[0,1].set(title='Recorded learning-rate schedule',xlabel='Optimizer step',ylabel='Learning rate')
+axes[1,0].set(title='Recorded gradient norm',xlabel='Optimizer step',ylabel='Gradient norm')
+pooled=historical[historical.asset.eq('ALL')].copy()
+names=[f'LoRA seed {int(row.seed)}' if row.model=='lora_B' else row.model for row in pooled.itertuples()]
+axes[1,1].barh(names,pooled.mae*1e4,color=['#64748b','#94a3b8','#2563eb','#0891b2','#0d9488'])
+axes[1,1].invert_yaxis()
+axes[1,1].set(title='Same 512 development windows; lower MAE is better',xlabel='MAE (basis points of return)')
+for ax in axes.flat:
+    ax.grid(alpha=.2)
+for ax in (axes[0,0],axes[0,1],axes[1,0]):
+    ax.legend(fontsize=8)
+fig.suptitle('Run 004 evidence — no step-wise validation curve was recorded',fontsize=14)
+fig.savefig(VISUALS/'run004-training-and-baselines.png',dpi=150)
+plt.show()
+plt.close(fig)
+display(historical[['asset','model','seed','rows','mae','mse','directional_accuracy']])
+settings={key:old_lock[key] for key in ('model_id','revision','steps','seeds','context_length','batch_size','learning_rate')}
+settings.update({key:old_lock['lora'][key] for key in ('r','lora_alpha','lora_dropout','target_modules')})
+display(pd.DataFrame({'setting':list(settings),'recorded_value':[str(value) for value in settings.values()]}))"""),
+        md("""## 4. Chạy đối chứng và tải ZIP
 
 Runner dùng cùng checkpoint, adapter, batch 16, context 128, horizon và cách chuyển forecast log-price thành return của Run 004. Adapter được nạp không merge; tất cả parameters bị freeze. Mỗi lượt ghi mode, RNG fingerprints, full model-state hash trước/sau, dự báo từng hàng và metric theo tài sản.
 
@@ -115,6 +159,57 @@ finally:
     saved=archive_evidence(OUTPUT,ARCHIVE)
     if saved:
         display(FileLink(saved))"""),
+        md("""## 5. Xem từng lượt inference, cấu hình model và control
+
+Chỉ vẽ từ output đã chạy hoàn tất. So **tất cả tám lượt**, cùng zero-return và zero-shot trên đúng các dòng đó. Biểu đồ scatter giữ vị trí thời gian thật của mẫu thưa; không nối thành giá thị trường liên tục. Không có validation/training curve mới vì Run 005 không train.
+
+`dense_act_fn`/`feed_forward_proj`, nếu có trong model config thực tế, được hiển thị nguyên trạng. Run này giữ kiến trúc checkpoint cố định, không đổi activation rồi gọi đó là cùng pretrained model. Các hình được thêm vào ZIP sau khi vẽ; nếu cell vẽ lỗi, ZIP evidence của cell trước vẫn còn."""),
+        code("""if report['completed_passes']!=8:
+    raise ValueError('Need the completed eight-pass diagnostic before plotting')
+reference=pd.read_parquet(OUTPUT/'reference_predictions.parquet')
+base=pd.read_parquet(OUTPUT/'base_control.parquet')
+passes={row['case']:pd.read_parquet(OUTPUT/'passes'/(row['case']+'.parquet')) for row in report['passes']}
+labels=['zero_return','zero_shot',*passes]
+fig,axes=plt.subplots(1,3,figsize=(16,6),layout='constrained')
+for ax,asset in zip(axes,('ALL','BTCUSDT','ETHUSDT')):
+    mask=np.ones(len(reference),dtype=bool) if asset=='ALL' else reference.symbol.eq(asset).to_numpy()
+    truth=reference.target_return.to_numpy()[mask]
+    values=[np.mean(abs(truth)),np.mean(abs(base.prediction.to_numpy()[mask]-truth))]
+    values.extend(np.mean(abs(frame.prediction.to_numpy()[mask]-truth)) for frame in passes.values())
+    ax.barh(labels,np.asarray(values)*1e4,color=['#64748b','#94a3b8']+['#2563eb' if name.startswith('eval') else '#d97706' for name in passes])
+    ax.invert_yaxis()
+    ax.set(title=f'{asset}: {mask.sum()} rows',xlabel='MAE (basis points of return)')
+    ax.grid(axis='x',alpha=.2)
+fig.suptitle('Run 005: fixed adapter, every predeclared pass — lower error is better')
+fig.savefig(VISUALS/'run005-baselines-and-passes.png',dpi=150)
+plt.show()
+plt.close(fig)
+fig,axes=plt.subplots(2,1,figsize=(14,8),layout='constrained')
+for ax,asset in zip(axes,('BTCUSDT','ETHUSDT')):
+    mask=reference.symbol.eq(asset).to_numpy()
+    times=pd.to_datetime(reference.loc[mask,'decision_time'],utc=True)
+    ax.scatter(times,reference.target_return.to_numpy()[mask]*1e4,s=10,alpha=.5,label='Actual target return')
+    for case,color in (('eval_42_a','#2563eb'),('dropout_42_a','#d97706')):
+        ax.scatter(times,passes[case].prediction.to_numpy()[mask]*1e4,s=10,alpha=.6,label=case,color=color)
+    ax.axhline(0,color='#64748b',linewidth=.7)
+    ax.set(title=f'{asset}: the same sampled development windows',xlabel='Decision time (UTC)',ylabel='Return (basis points)')
+    ax.legend(fontsize=8)
+    ax.grid(alpha=.2)
+fig.savefig(VISUALS/'run005-actual-and-predicted-returns.png',dpi=150)
+plt.show()
+plt.close(fig)
+checks=pd.DataFrame(report['checks']).T
+display(checks)
+display(pd.DataFrame(report['passes'])[['case','rng_seed','model_training_before','model_training_after',
+    'active_dropout_modules','merged_lora_layers','state_unchanged','trainable_parameters','optimizer_steps']])
+config=json.loads((OUTPUT/'base_model_config.json').read_text())
+keys=('model_type','architectures','d_model','d_ff','d_kv','num_layers','num_heads','dropout_rate','dense_act_fn','feed_forward_proj')
+display(pd.DataFrame({'config_key':keys,'actual_value':[str(config.get(key,'not recorded in this config')) for key in keys]}))
+import shutil
+shutil.copytree(VISUALS,OUTPUT/'figures',dirs_exist_ok=True)
+saved=archive_evidence(OUTPUT,ARCHIVE)
+display(FileLink(saved))
+print('ZIP updated with figures. All model decisions and optimizer_steps=0 remain unchanged.')"""),
         md("""## Cách đọc kết quả
 
 `completed` xác nhận đủ lượt đã chạy, không tự xác nhận control/reference đều đạt. Đọc riêng `controls_passed`, `reference_reproduced`, model-state hashes và mọi dự báo. Các RNG seed trong lab là seed của **inference**, không phải training seed mới; adapter luôn là bản seed 42.
