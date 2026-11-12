@@ -101,6 +101,16 @@ Output research là `QuantStream_Run004_Output.zip`, tách khỏi Run 003. ZIP g
 
 Run 004 đã chạy đủ ba fit; [báo cáo kết quả](experiments/run-004-seed-stability.md) có bảng seed/asset/baseline, bootstrap và script kiểm tra ZIP. Seed 42 tái tạo đúng bytes adapter B của Run 003, dù MAE dự báo khác; không quy chênh lệch đó cho một adapter mới được train tốt hơn. Run 004 dùng `model.eval()` rõ ràng, còn artifact cũ không ghi train/eval flag hoặc toàn bộ môi trường. Giữ số liệu lịch sử và ghi giới hạn so sánh; chưa có holdout độc lập, PnL mới hay model được promote.
 
+## Run 005 — đối chứng inference, không fine-tune lại
+
+PR #3 đã merge Run 004 vào `main`. Vòng tiếp theo là [protocol Run 005](experiments/run-005-inference-protocol.md), kiểm tra mode/RNG trong khi giữ cố định checkpoint, adapter, dữ liệu và môi trường. Chọn adapter seed 42 vì trùng bytes với Run 003 B, không vì nó có MAE tốt nhất.
+
+Notebook `07_Kaggle_Inference_Check.ipynb` dùng **một luồng Run All**, không đổi `MODE`. Trên Kaggle, Add Input Dataset snapshot cũ và thêm output Run 004 đã hoàn thành; bản ZIP nguyên vẹn hoặc thư mục Kaggle tự giải nén đều được đối chiếu bằng hash. Chọn Tesla T4, bật Internet và bắt đầu session mới.
+
+Runner thực hiện một lượt base zero-shot rồi tám lượt adapter: eval cùng/khác RNG, dropout bật cùng/khác RNG và eval lại sau đó. Toàn bộ parameters được freeze, `torch.inference_mode()` tắt gradient, không có `.fit`, optimizer hoặc merge adapter. Model-state hashes được kiểm tra sau từng lượt. RNG seed ở đây là seed của inference, không phải model training mới.
+
+Tải `QuantStream_Run005_Output.zip` gửi lại; nếu lỗi, giữ ZIP partial/traceback. Môi trường khác Run 004 sẽ bị chặn trước checkpoint và được ghi trong diagnostics. Hiện mới có kiểm tra CPU tổng hợp và xác minh input artifact; chưa có kết quả Run 005 trên Kaggle. Mode effect ở một runtime không tự tái dựng được toàn bộ runtime/RNG lịch sử chưa lưu; đây vẫn là diagnostic trên development cũ, không phải kiểm tra alpha ngoài mẫu.
+
 ## Cách tự đọc một thí nghiệm
 
 Sau mỗi lượt chạy, trả lời bằng số liệu:

@@ -108,6 +108,8 @@ To reproduce the recorded development labs, use an input ZIP with matching sourc
 
 [Run 004 results](docs/experiments/run-004-seed-stability.md), its [predeclared protocol](docs/experiments/run-004-seed-stability-protocol.md) and [reviewed Kaggle preflight](docs/experiments/run-004-preflight.md) are recorded. Execution source remains pinned to `bb47737b`; notebook 06 defaults to preflight for deliberate reproduction, not an instruction to keep adding trials. See the [Vietnamese handoff](docs/RESEARCH_LAB_VI.md#run-004--kiểm-tra-môi-trường-trước-ba-seed). No prospective evaluation has started.
 
+The next diagnostic is [Run 005: fixed-weight inference controls](docs/experiments/run-005-inference-protocol.md). Notebook 07 uses the already trained seed-42 adapter, loads it without merging and compares eval/dropout modes and inference RNG under a frozen model state. It has one Run All path and **zero optimizer steps**. The runner has local synthetic CPU checks; the full Kaggle diagnostic is not yet executed.
+
 ## Checks and contribution history
 
 ```bash
