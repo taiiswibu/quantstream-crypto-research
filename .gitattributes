@@ -4,3 +4,5 @@
 *.parquet binary
 *.pt binary
 *.safetensors binary
+# Preserve the byte identity of the audited Run 003 reference on every OS.
+reports/experiments/run-003-lora-lab/training_snapshot_manifest.json -text

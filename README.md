@@ -6,7 +6,7 @@
 
 QuantStream turns public BTC/USDT and ETH/USDT candles into checked research snapshots, compares classical ML and a PyTorch TCN, evaluates trading rules after costs, and runs a local paper-trading dashboard. A separate Chronos-2 LoRA experiment compares pretrained and fine-tuned forecasts.
 
-**Research status:** the reference TCN strategy lost **14.46% after costs** on its final holdout. LoRA did not improve sampled validation MAE. This is an executable research project, not evidence of a profitable strategy.
+**Research status:** the reference TCN strategy lost **14.46% after costs** on its final holdout. Run 004 LoRA reduced mean development MAE by **0.264% versus zero-shot**, but remained **3.72% worse than zero-return forecasting** on previously observed windows. This is an executable research project, not evidence of a profitable strategy.
 
 ![Reference holdout equity and drawdown](reports/reference/equity.png)
 
@@ -26,6 +26,8 @@ QuantStream turns public BTC/USDT and ETH/USDT candles into checked research sna
 Reference experiments ran locally on CPU. The [first uploaded Kaggle TCN artifact](docs/experiments/run-001-kaggle-tcn.md) reports CUDA training; checkpoint hashes and development strategy metrics were verified. The observed eight-epoch run deviates from the planned six epochs; notebook URL/GPU model/runtime versions were not captured. No competition score is claimed.
 
 The [12-trial Kaggle model search](docs/experiments/run-002-model-search.md) is now complete; uploaded runtime reports a Tesla T4. TCN's three-seed mean normalized forecast MSE was 0.99306 on tuning folds, versus 0.99382 for tuned Ridge. On the historically observed last development fold, TCN's forecast MSE was worse than zero-return forecasting; strategy return changed from +2.89% at base costs to -0.71% at 1.5x costs. The candidate remains **research only**. Trial/diagnostic prediction metrics were independently recomputed; extra-seed backtests lack saved predictions for independent recomputation. [Run 003: controlled Chronos-2 LoRA lab](docs/experiments/run-003-lora-lab.md) is now complete on Kaggle. All three adapters had higher MAE than the identical zero-shot baseline on 512 sampled development windows (best adapter B: 0.00788745 versus zero-shot 0.007835996). Per-row forecast metrics and adapter file integrity were checked from the uploaded artifact. No model was promoted and no new independent holdout was evaluated.
+
+[Run 004: three-seed LoRA stability](docs/experiments/run-004-seed-stability.md) is complete: three fixed 200-step fits, 600 finite step/loss records and 1,536 forecast rows on the same 512 windows. Every seed slightly beats zero-shot MAE, while zero-return forecasting remains better on both BTC and ETH. Mean LoRA MAE is 0.007815294 versus 0.007835996 zero-shot and 0.007534907 zero-return. Seed 42 reproduces Run 003 B's adapter bytes exactly, so its changed historical score concerns inference/evaluation rather than newly learned weights. Run 004 explicitly uses eval mode; the exact causal contribution of that change was not isolated. Keep **research_only_no_promotion**.
 
 ## Reference outcome
 
@@ -102,7 +104,9 @@ Continuous simulated runtime: `python -m quantstream paper --watch --poll-second
 
 Reports preserve the exported Git SHA, branch and dirty state even without Git inside Kaggle. The old reference runs predate Git tracking and intentionally have no newly assigned source commit.
 
-For the next research cycle, use the **newly exported input ZIP** with [04: model search](notebooks/04_Kaggle_Model_Search.ipynb), then separately [05: controlled LoRA lab](notebooks/05_Kaggle_LoRA_Lab.ipynb). Read the [Vietnamese research walkthrough](docs/RESEARCH_LAB_VI.md). Search uses two early development folds, inner chronological early stopping, a fixed trial budget and a multi-seed shortlist. The historically observed last development fold is a diagnostic, not a new independent holdout. Neither notebook promotes a serving model or places orders.
+To reproduce the recorded development labs, use an input ZIP with matching source/snapshot contracts and [04: model search](notebooks/04_Kaggle_Model_Search.ipynb), then separately [05: controlled LoRA lab](notebooks/05_Kaggle_LoRA_Lab.ipynb). Read the [Vietnamese research walkthrough](docs/RESEARCH_LAB_VI.md). Search uses two early development folds, inner chronological early stopping, a fixed trial budget and a multi-seed shortlist. The historically observed last development fold is a diagnostic, not a new independent holdout. Neither notebook promotes a serving model or places orders.
+
+[Run 004 results](docs/experiments/run-004-seed-stability.md), its [predeclared protocol](docs/experiments/run-004-seed-stability-protocol.md) and [reviewed Kaggle preflight](docs/experiments/run-004-preflight.md) are recorded. Execution source remains pinned to `bb47737b`; notebook 06 defaults to preflight for deliberate reproduction, not an instruction to keep adding trials. See the [Vietnamese handoff](docs/RESEARCH_LAB_VI.md#run-004--kiểm-tra-môi-trường-trước-ba-seed). No prospective evaluation has started.
 
 ## Checks and contribution history
 
@@ -113,7 +117,7 @@ python -m ruff check quantstream app.py tests scripts
 python scripts/check_notebooks.py
 ```
 
-28 local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior, Git provenance, research isolation and notebook setup/evidence preservation. Synthetic CPU fits exercise both TCN/GRU; a real-data Ridge smoke run exercises the new two-fold scoring path. These checks do not constitute completed Kaggle search/LoRA experiments. The [first remote CI run](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323) passed on both Linux and Windows. The badge reflects subsequent runs. The Linux job includes PyTorch/Optuna; the core Windows job may skip optional deep-learning coverage.
+Local tests cover causal features, label purging, cost accounting, snapshot integrity, paper behavior, Git provenance, seed/sample isolation and notebook evidence preservation. With the optional Chronos/PEFT environment installed, a tiny random Chronos model exercises an actual CPU LoRA optimizer step, trainer logs, serialization and prediction. This does not test the pretrained checkpoint on Kaggle GPU. The [first remote CI run](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323) passed on both Linux and Windows. The badge reflects subsequent runs. The Linux job includes PyTorch/Optuna; the core Windows job may skip optional deep-learning coverage.
 
 Read [CONTRIBUTING](CONTRIBUTING.md), [Vietnamese Git workflow](docs/GIT_WORKFLOW_VI.md), [roadmap](docs/ROADMAP.md) and [changelog](CHANGELOG.md). Use one branch/PR per coherent change or hypothesis. Commit meaningful work, not an artificial contribution count.
 

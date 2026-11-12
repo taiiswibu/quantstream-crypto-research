@@ -1,0 +1,25 @@
+{
+  "accepted": true,
+  "artifact_sha256": "02a63ea81025e6b5d9a337e85d90f65201c7f46884ef0111a5405d9be3c87185",
+  "lock_sha256": "b8e06d61a24e3f42b067d0877f67dfd2f166a84e52a540539730a5ccad1a3900",
+  "prior_lock_sha256": "f44720e43fd6404e3b95b7fa8481f61b03ad96cb2ab6af34f86406974c52474d",
+  "same_source_environment_inputs_budget_lora": true,
+  "same_smoke_weight_bytes": true,
+  "adapter_config_diff": "target_modules list ordering only; same semantic configuration",
+  "global_step": 1,
+  "loss": 0.1805589497089386,
+  "grad_norm": 0.9547756314277649,
+  "adapter_tensors": 194,
+  "adapter_parameters": 1206912,
+  "finished_at_utc": "2026-11-11T17:02:13.648817+00:00",
+  "research_fits_started": 0,
+  "status": "repeated_synthetic_preflight_verified_research_not_started",
+  "execution_source_commit": "bb47737b5bc400169a8bbd75f8c7534503ba18d5",
+  "counts_as_independent_financial_trial": false,
+  "accepted_lock_file": "kaggle-preflight-lock-rerun-001.json",
+  "deployment_status": "research_only_no_promotion",
+  "limitations": [
+    "This is a second synthetic preflight, not one of the three financial seed fits.",
+    "Raw market Parquet bytes and numerical smoke forecasts are not included; the same audit boundaries as the first preflight apply."
+  ]
+}

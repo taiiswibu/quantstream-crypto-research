@@ -1,0 +1,22 @@
+{
+  "status": "metadata_only_manifest_difference; Kaggle preflight still pending",
+  "original_artifact_sha256": "42ce81ff99b65b2db6d41a1e1215e5c38e36e56bd49adfc868d0a96ad85aeb9d",
+  "reference_manifest_sha256": "c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0",
+  "current_manifest_sha256": "ba321d82a4dffb031a19168682f3b6dbd0c13814460238376626b47ad0ae5b37",
+  "metadata_differences": [
+    "code_files",
+    "created_at",
+    "source_control"
+  ],
+  "scientific_manifest_fields_equal": true,
+  "reported_data_file_hashes_match_reference": true,
+  "reported_data_file_hashes": {
+    "train.parquet": "6e67cf5d1866715c3ae469d01ab3eb35c294440cc5d9ecc2eeabac354d845fa4",
+    "validation.parquet": "17ff4fa7b6edea663e75cb324090f1a307acb64cab2b5e7f2f357a524a26bb7b",
+    "development.parquet": "2620c723dd9af007469ab38adebfd7ccf8cb5c7e950dd9ef715320d98c1b5b5a",
+    "bars.parquet": "37ff9fbcbb6ff3720549b9159bd70ef5e67fb9bdc0d1e09448ff0ef6eb6d84ed"
+  },
+  "verification_scope": "Manifest bytes independently compared. Current Parquet bytes were not supplied; hashes were computed by the user-executed diagnostic. The revised Kaggle validator rehashes every file against the reference before accepting it.",
+  "research_fits_started": 0,
+  "deployment_status": "research_only_no_promotion"
+}

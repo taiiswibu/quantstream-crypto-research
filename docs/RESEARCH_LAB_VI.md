@@ -6,6 +6,8 @@ TCN đã train thành công trên CUDA. Run 001 chọn epoch 3/4/2 trong ba fold
 
 Một researcher cần biết **câu hỏi, thiết kế kiểm tra, kết quả và giới hạn**, thay vì chỉ có nhiều file model. Giữ cả thí nghiệm không cải thiện trong Git.
 
+Run 002, Run 003 và [Run 004](experiments/run-004-seed-stability.md) đã hoàn tất. Run 004 có đủ ba seed × 200 steps và 1.536 dòng dự báo trên cùng 512 mẫu development; MAE trung bình giảm 0,264% so với zero-shot nhưng vẫn cao hơn dự báo lợi suất 0 khoảng 3,72%. Giữ `research_only_no_promotion`. Không cần train thêm trên mẫu cũ để hoàn thành vòng này.
+
 ## Phân biệt các thao tác
 
 | Thao tác | Ví dụ trong dự án | Bạn học gì? |
@@ -68,6 +70,36 @@ Run 003 đã hoàn thành; xem [báo cáo](experiments/run-003-lora-lab.md). Kh�
 5. Lần chạy mới dùng `run-003-lora-lab-rerun` và `QuantStream_LoRA_Rerun_Output.zip`, giữ nguyên evidence Run 003 cũ. ZIP vẫn xuất khi lỗi; cần đủ A/B/C và `comparison.json` mới xem là hoàn tất.
 
 Nguồn lỗi: [PEFT issue #3964](https://github.com/huggingface/peft/issues/3964). Upstream đã sửa trên main; notebook pin PEFT theo phiên bản được ghi trong artifact Run 003 và xử lý dependency cũ rõ ràng, không dựa vào main chưa cố định.
+
+## Run 004 — kiểm tra môi trường trước ba seed
+
+Notebook: `notebooks/06_Kaggle_LoRA_Seed_Stability.ipynb` (tải từ nhánh `research/run-004`, không lấy notebook 05).
+
+1. Import notebook 06 vào Kaggle; dùng Dataset có đúng bốn Parquet của Run 003. Notebook đối chiếu với manifest gốc SHA-256 `c8e0112916e6cea733338ead4412d6e9553e4c5844a2d200d1fd38e31c747fd0`. Metadata xuất khác được chấp nhận chỉ khi dữ liệu/cấu hình/split/features khớp; không rebuild dữ liệu để chữa lỗi manifest.
+2. Bật Internet, chọn GPU khả dụng, bắt đầu session mới. Giữ `MODE='preflight'`; chưa cần điền `NOTEBOOK_URL`. Chọn Run All.
+3. Notebook gỡ torchao, kiểm tra adapter, tải source bằng Git SHA cố định rồi chỉ lấy snapshot từ Dataset cũ. Source mới và provenance dataset cũ được ghi riêng; không tự sửa manifest để hợp thức hóa code mới.
+4. Preflight tải checkpoint Chronos cố định, chạy **một optimizer step với chuỗi sin/cos tổng hợp** trên GPU và thử predict/đọc lại adapter. Đây không phải trial trên dữ liệu tài chính và tách khỏi ngân sách 600 steps của ba seed.
+5. Tải `QuantStream_Run004_Preflight.zip` gửi kiểm tra. Nếu lỗi, gửi ZIP nếu được tạo cùng traceback. Không xóa output để chạy lại; giữ dấu vết lỗi. Bước đầu chưa train Run 004 trên dữ liệu tài chính.
+
+Preflight thành công cần `status.json: completed`, `candidate-lock.json`, smoke `global_step=1`, loss log, adapter hashes và forecast hữu hạn. Lock ghi đầy đủ Python, packages, GPU/CUDA/cuDNN, source/snapshot/sample/context/training hashes và cấu hình LoRA đã resolve. Đây là inventory môi trường thực tế trước fit, chưa phải image/container có thể bảo đảm tái dựng bitwise.
+
+### Manifest khác metadata nhưng dữ liệu giống nhau
+
+ZIP kiểm tra ngày 2026-11-11 có manifest `ba321d82…ae5b37`; chỉ khác Run 003 ở `created_at`, `source_control` và thiếu `code_files`. Bốn hash Parquet do cell diagnostic tính đều khớp manifest Run 003. Manifest được so sánh trực tiếp; bytes của Parquet hiện tại chưa được gửi để kiểm tra độc lập. Xem [bằng chứng đối chiếu](../reports/experiments/run-004-seed-stability/snapshot-compatibility.json).
+
+Validator v2 tính lại SHA-256 của từng Parquet trên Kaggle và so với bản tham chiếu Run 003 đã kiểm chứng trong Git. Đồng thời so toàn bộ trường manifest trừ đúng ba metadata xuất nói trên. Dữ liệu, cấu hình, split, feature order hoặc trường khác thay đổi đều bị từ chối. Không sửa manifest đầu vào, không thay hash gốc; lưu cả manifest đầu vào và tham chiếu trong preflight ZIP, ghi hai hash riêng trong lock.
+
+Mỗi source SHA dùng thư mục checkout riêng (`source-<SHA>`), nên bản notebook mới không dùng nhầm cache code cũ. Sau lỗi ở bước manifest, tải notebook mới, giữ Dataset hiện tại, Restart Session và Run All với `MODE='preflight'`. Giữ ZIP diagnostic cũ để review lịch sử. Chưa có ba research fit nào được báo hoàn tất từ lỗi này.
+
+Preflight đã được review từ ZIP ngày 2026-11-11 và lượt chạy lại ngày 2026-11-12; xem [evidence, hai lock đã chốt và cell bắt đầu train hoàn chỉnh](experiments/run-004-preflight.md). Giữ execution source `bb47737b`. Hai raw lock đã review có SHA-256 `f44720e4…52474d` và `b8e06d61…1a3900`; khác biệt chỉ do thứ tự serialize tên target modules trong metadata adapter, trọng số smoke và mọi cấu hình nghiên cứu giống nhau. Trong session hiện tại, điền URL Kaggle thật và chạy **riêng cell gọi `run_seed_lab(...)` trực tiếp** ở hướng dẫn đó; cell này không phụ thuộc biến `MODE`. Nếu phiên bị mất hoặc môi trường/source thay đổi, gửi evidence để xử lý khôi phục trước; không tạo lock giả hoặc đổi hash. Runner kiểm tra lock và ghi `plan.json` trước fit đầu tiên. Không có quy trình tự động đang chạy trong nền.
+
+Ba seed luôn load lại pretrained checkpoint, không dùng adapter từ seed trước. Mỗi seed có `trainer_state.json`, `training_args.json`, loss mỗi step, dự báo cùng 512 hàng, adapter và status riêng. `comparison.json` chỉ xuất khi đủ ba fit, mỗi fit đủ 200 steps, khớp sample và baseline (tolerance rtol 1e-6 / atol 1e-9). Nếu baseline khác trong tolerance, bảng tổng hợp dùng zero-shot seed 42 làm baseline chung; dự báo gốc từng seed vẫn giữ nguyên. Bootstrap dùng chênh lệch **trung bình lỗi của ba seed trên mỗi hàng**, không phải dự báo ensemble.
+
+Các lượt dự báo mới gọi `model.eval()` rõ ràng để tắt dropout sau training. `no_grad` chỉ tắt gradient. Artifact Run 003 không ghi model training/eval flag khi predict, nên không quy kết mức ảnh hưởng hoặc sửa lại metric cũ; seed 42 mới là lần kiểm tra tái lập có ghi giới hạn này.
+
+Output research là `QuantStream_Run004_Output.zip`, tách khỏi Run 003. ZIP giữ evidence partial khi exception; kernel bị kill có thể không chạy được `finally`, nên Save Version/Download các file còn lại. Runner từ chối ghi đè cả thư mục của lần chạy thành công lẫn lần chạy lỗi. Không tự retry hoặc thêm seed thay thế. Giữ `research_only_no_promotion`.
+
+Run 004 đã chạy đủ ba fit; [báo cáo kết quả](experiments/run-004-seed-stability.md) có bảng seed/asset/baseline, bootstrap và script kiểm tra ZIP. Seed 42 tái tạo đúng bytes adapter B của Run 003, dù MAE dự báo khác; không quy chênh lệch đó cho một adapter mới được train tốt hơn. Run 004 dùng `model.eval()` rõ ràng, còn artifact cũ không ghi train/eval flag hoặc toàn bộ môi trường. Giữ số liệu lịch sử và ghi giới hạn so sánh; chưa có holdout độc lập, PnL mới hay model được promote.
 
 ## Cách tự đọc một thí nghiệm
 
