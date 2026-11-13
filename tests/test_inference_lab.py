@@ -79,7 +79,7 @@ def test_notebook_has_one_path_and_setup_failure_keeps_zero_step_evidence(tmp_pa
         ast.parse(cell)
     assert not any("MODE=" in cell or "MODE =" in cell for cell in cells)
     assert any("report=run_inference_lab(" in cell for cell in cells)
-    setup = next(cell for cell in cells if cell.startswith("import os, importlib.util"))
+    setup = next(cell for cell in cells if cell.startswith("import os, shutil"))
     code = tmp_path / "source"
     lock = code / "reports/experiments/run-004-seed-stability/kaggle-preflight-lock-rerun-001.json"
     lock.parent.mkdir(parents=True)
@@ -94,10 +94,11 @@ def test_notebook_has_one_path_and_setup_failure_keeps_zero_step_evidence(tmp_pa
     with pytest.raises(RuntimeError, match="Python base image"):
         exec(compile(setup, "inference-setup", "exec"), namespace)
     assert calls == []
-    assert (tmp_path / "run004-constraints.txt").read_text() == "peft==0.21.2\nnumpy==1.26.4\n"
+    assert not (tmp_path / "run004-constraints.txt").exists()
     with zipfile.ZipFile(archive) as saved:
         assert json.loads(saved.read("status.json"))["optimizer_steps"] == 0
         assert "setup-error.txt" in saved.namelist()
+        assert json.loads(saved.read("setup/setup.json"))["status"] == "setup_failed_or_interrupted"
 
 
 def test_real_peft_reload_and_chronos_mode_controls_without_training(tmp_path, monkeypatch):

@@ -2,7 +2,7 @@
 
 Status: **protocol and runner implemented; full Kaggle diagnostic not executed**. No Run 005 score, model promotion or prospective evaluation is claimed.
 
-Current blocker: reported NumPy metadata mismatch (`2.1.3` vs locked `1.26.4`). The lock also records Python 3.13, outside NumPy 1.26.4's official Python support. See the [runtime incident and read-only probe](run-005-runtime-incident.md). Preserve this protocol/lock; do not force a downgrade or silently relax the environment comparison. Inference remains pending diagnostic evidence.
+Bootstrap revision: **`run-005-inference-v1-runtime-fix-001`**. The uploaded probe confirms duplicate NumPy metadata: first match/imported 2.1.3, legacy last match 1.26.4. The only legacy inventory differences are missing Chronos 2.3.2 and extra torchao 0.10.0. See the [verified runtime incident](run-005-runtime-incident.md). Preserve the historical lock and all prediction treatments; repair only these two package differences without dependencies, require the complete legacy inventory match and add an explicit loaded-module contract from the probe. No historical loaded NumPy identity is claimed. Full inference remains pending the corrected Kaggle run.
 
 ## Question and fixed controls
 
@@ -20,7 +20,7 @@ The adapter is selected **because of the historical byte match**, not because se
 | Loading | Explicit pinned base + `PeftModel.from_pretrained(..., is_trainable=False)`; **unmerged** |
 | Context / prediction batch / horizon | 128 / 16 / 5 closes, preserving the 4-hour-return transformation with one-bar execution lag |
 | Data | Same four Parquet bytes/data contract, 512 sample rows, contexts and training-series fingerprints as Run 004 |
-| Runtime | Same full Run 004 Python/package/GPU/CUDA/cuDNN inventory; stop and preserve diagnostics on a difference |
+| Runtime | Same full legacy Run 004 Python/package/GPU/CUDA/cuDNN inventory, plus imported-module validation from the reviewed probe; stop and preserve diagnostics on a difference |
 | Tolerance | `rtol=1e-6`, `atol=1e-9`; also report exact equality and maximum/mean absolute prediction difference |
 | Optimization | **0 optimizer steps**; all parameters frozen and every forecast under `torch.inference_mode()` |
 
@@ -59,6 +59,6 @@ Full market inputs and numerical predictions are supplied by the user's snapshot
 
 ## Kaggle handoff and execution limits
 
-Notebook: `notebooks/07_Kaggle_Inference_Check.ipynb`. Add the original snapshot Dataset plus the completed `QuantStream_Run004_Output.zip` as another input (raw or automatically expanded), use Tesla T4 and Internet, start a fresh session and **Run All once**. There is no `MODE` variable or manual train-cell handoff. Output is `QuantStream_Run005_Output.zip`; preserve/send partial evidence or traceback on failure.
+Notebook: `notebooks/07_Kaggle_Inference_Check.ipynb`, **Retry001**. Add the original snapshot Dataset plus the completed `QuantStream_Run004_Output.zip` as another input (raw or automatically expanded), use Tesla T4 and Internet, start a fresh session and **Run All once**. There is no `MODE` variable or manual train-cell handoff. Output is `QuantStream_Run005_Retry001_Output.zip`; the new working folder preserves the earlier setup-failure evidence. Preserve/send partial evidence or traceback on failure.
 
 Local checks use a small randomly initialized Chronos model with synthetic fixture adapter weights: reload through PEFT without merging, all eight mode/RNG passes with zero fitting, unchanged-state checks and partial-evidence guards. These checks do not claim a full pretrained Kaggle run or a Run 005 research result. The full Kaggle output and immutable saved notebook-version ID remain outstanding.

@@ -109,7 +109,7 @@ Notebook `07_Kaggle_Inference_Check.ipynb` dùng **một luồng Run All**, khô
 
 Runner thực hiện một lượt base zero-shot rồi tám lượt adapter: eval cùng/khác RNG, dropout bật cùng/khác RNG và eval lại sau đó. Toàn bộ parameters được freeze, `torch.inference_mode()` tắt gradient, không có `.fit`, optimizer hoặc merge adapter. Model-state hashes được kiểm tra sau từng lượt. RNG seed ở đây là seed của inference, không phải model training mới.
 
-Tải `QuantStream_Run005_Output.zip` gửi lại; nếu lỗi, giữ ZIP partial/traceback. Môi trường khác Run 004 sẽ bị chặn trước checkpoint và được ghi trong diagnostics. Hiện mới có kiểm tra CPU tổng hợp và xác minh input artifact; chưa có kết quả Run 005 trên Kaggle. Mode effect ở một runtime không tự tái dựng được toàn bộ runtime/RNG lịch sử chưa lưu; đây vẫn là diagnostic trên development cũ, không phải kiểm tra alpha ngoài mẫu.
+Sau khi probe xác nhận duplicate metadata NumPy, dùng bản **Retry001** cập nhật và tải `QuantStream_Run005_Retry001_Output.zip` gửi lại; nếu lỗi, giữ ZIP partial/traceback. Bootstrap giữ NumPy/Torch, chỉ gỡ torchao/cài Chronos còn thiếu rồi kiểm tra full inventory và loaded modules; xem [incident đã review](experiments/run-005-runtime-incident.md). Hiện đã có probe Kaggle và kiểm tra CPU tổng hợp, chưa có kết quả inference Run 005 trên Kaggle. Mode effect ở một runtime không tự tái dựng được toàn bộ runtime/RNG lịch sử chưa lưu; đây vẫn là diagnostic trên development cũ, không phải kiểm tra alpha ngoài mẫu.
 
 ## Cách tự đọc một thí nghiệm
 

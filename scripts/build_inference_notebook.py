@@ -15,14 +15,16 @@ def build(source_commit, destination):
     cells = [
         md("""# QuantStream — Run 005: đối chứng inference với trọng số cố định
 
-**Chỉ cần Run All một lần. Không có biến MODE và không fine-tune lại.** Runner dùng adapter seed 42 đã chạy ở Run 004, nạp dạng PEFT không merge và so sánh `eval()` với dropout bật dưới `torch.inference_mode()`.
+**Bản sửa runtime Retry001: Run All một lần, không có MODE và không fine-tune lại.** Runner dùng adapter seed 42 đã chạy ở Run 004, nạp dạng PEFT không merge và so sánh `eval()` với dropout bật dưới `torch.inference_mode()`.
+
+Bản này sửa bootstrap sau lỗi setup NumPy, dùng thư mục/ZIP mới để giữ nguyên evidence lần lỗi. Giữ nguyên checkpoint, adapter, dữ liệu, tám lượt đối chứng và 0 optimizer steps.
 
 Trước khi chạy:
 
 1. Import notebook này vào Kaggle, bật Internet và chọn **Tesla T4 như Run 004**. Bắt đầu session mới.
 2. Add Input **Dataset snapshot cũ** đang dùng cho Run 004.
 3. Add Input thêm **`QuantStream_Run004_Output.zip`** đã gửi để review. Nếu Kaggle giải nén ZIP thành các thư mục `seed-42`, `seed-123`, `seed-2026`, runner vẫn kiểm tra đúng file/hashes. Không dùng ZIP preflight.
-4. Chọn **Run All**. Tải `QuantStream_Run005_Output.zip` gửi lại, kể cả khi có lỗi. Nếu lỗi trước khi ZIP được tạo, gửi traceback.
+4. Chọn **Run All**. Tải `QuantStream_Run005_Retry001_Output.zip` gửi lại, kể cả khi có lỗi. Nếu lỗi trước khi ZIP được tạo, gửi traceback.
 
 Ngân sách cố định: một lượt zero-shot để đối chiếu và tám lượt cùng adapter, mỗi lượt 512 cửa sổ development đã xem; **0 optimizer steps**. Chưa có kết quả Run 005 trên Kaggle khi phát hành notebook này. Mục tiêu là đo ảnh hưởng của mode/RNG, không tìm model hoặc seed mới."""),
         md("## 1. Nạp source đã pin\n\nMỗi source SHA dùng checkout riêng. Dữ liệu và output nằm ngoài thư mục source để giữ Git tree sạch."),
@@ -35,11 +37,11 @@ loaded=[name for name in ('peft','torchao','chronos','transformers','quantstream
 if loaded:
     raise RuntimeError('Restart Session rồi Run All: '+', '.join(loaded))
 SOURCE_COMMIT='{source_commit}'
-WORK=Path('/kaggle/working/quantstream_run005')
+WORK=Path('/kaggle/working/quantstream_run005_retry001')
 WORK.mkdir(parents=True,exist_ok=True)
 CODE=WORK/('source-'+SOURCE_COMMIT[:12])
 OUTPUT=WORK/'run-005-inference'
-ARCHIVE=WORK.parent/'QuantStream_Run005_Output.zip'
+ARCHIVE=WORK.parent/'QuantStream_Run005_Retry001_Output.zip'
 if OUTPUT.exists() or ARCHIVE.exists():
     raise FileExistsError('Đã có evidence Run 005; tải lại để review, không xóa nhằm chạy lại.')
 if not CODE.exists():
@@ -53,48 +55,34 @@ if actual!=SOURCE_COMMIT or subprocess.check_output(['git','-C',str(CODE),'statu
     raise ValueError('Cần source SHA đã pin và checkout sạch')
 sys.path.insert(0,str(CODE))
 print('Pinned source:',SOURCE_COMMIT)"""),
-        md("""## 2. Giữ môi trường Run 004
+        md("""## 2. Khôi phục bootstrap đã đối chiếu với probe
 
-Cell giữ PyTorch/CUDA/NumPy do Kaggle cung cấp, gỡ optional torchao và cài đúng phiên bản thư viện đã review. Constraint inventory lấy từ lock Run 004. Runner sẽ so toàn bộ inventory trước khi tải checkpoint; nếu metadata khác, dừng và xuất ZIP để kiểm tra.
+Probe Kaggle đã xác minh NumPy **thực sự import là 2.1.3**. Metadata 1.26.4 ở thư mục hệ thống đứng sau là giá trị mà lock cũ ghi; không dùng nó làm pip constraint. Giữ nguyên NumPy, PyTorch/CUDA và toàn bộ package nền.
 
-**Đang chờ chẩn đoán lock/runtime:** lock Run 004 ghi Python 3.13.16 + NumPy 1.26.4, trong khi NumPy 1.26.4 chỉ hỗ trợ chính thức Python 3.9–3.12. Nếu gặp lỗi NumPy 2.1.3, chưa ép downgrade hoặc sửa lock; chạy `07b_Kaggle_Runtime_Probe.ipynb` và gửi ZIP. Metadata trùng tên có thể khiến các cách đọc version khác nhau; chưa xác minh đây là nguyên nhân ở phiên Kaggle của bạn.
+Cell chỉ gỡ optional `torchao==0.10.0` và cài phần còn thiếu `chronos-forecasting==2.3.2` bằng `--no-deps`. Trước/sau đều so full inventory với lock bằng cùng cách thu thập cũ, đồng thời kiểm tra phiên bản/module path thực, dependencies của stack research và một forward PEFT tổng hợp trên CPU. Không có backward, fit hoặc tải checkpoint trong setup.
 
-Lock là version inventory, chưa phải container image hoặc bảo đảm bitwise tái lập. Python/PyTorch của base image khác sẽ được báo ra, không tự thay PyTorch GPU."""),
-        code("""import os, importlib.util
+Nếu xuất hiện drift ngoài hai thay đổi đã review, dừng và giữ ZIP; không tự sửa lock. Run 004 chưa ghi loaded NumPy version/path, nên metadata inventory khớp không tự chứng minh lịch sử dùng đúng module version này."""),
+        code("""import os, shutil
+from quantstream.inference_setup import prepare_runtime
 os.environ['HF_HUB_DISABLE_XET']='1'
 old_lock=json.loads((CODE/'reports/experiments/run-004-seed-stability/kaggle-preflight-lock-rerun-001.json').read_text())
-expected=old_lock['environment']
-constraints=WORK/'run004-constraints.txt'
-constraints.write_text(''.join(f'{name}=={version}\\n' for name,version in expected['packages'].items()),encoding='utf-8')
+SETUP=WORK/'setup-evidence'
 try:
-    if platform.python_version()!=expected['python']:
-        raise RuntimeError('Python base image khác Run 004: '+platform.python_version())
-    for name in ('torch','numpy'):
-        actual=importlib.metadata.version(name)
-        if actual!=expected['packages'][name]:
-            if name=='numpy':
-                raise RuntimeError('NumPy metadata khác Run 004: '+actual+
-                    '; expected '+expected['packages'][name]+'. Chạy Notebook 07b Runtime Probe và gửi ZIP; '+
-                    'chưa downgrade NumPy, sửa lock hoặc chạy inference.')
-            raise RuntimeError(name+' base image khác Run 004: '+actual)
-    subprocess.check_call([sys.executable,'-m','pip','uninstall','-y','torchao'])
-    packages=('chronos-forecasting','peft','transformers','accelerate','datasets',
-              'huggingface-hub','safetensors','pyarrow','pandas','scikit-learn','tokenizers')
-    subprocess.check_call([sys.executable,'-m','pip','install','-q','-c',str(constraints),
-                          *[name+'=='+expected['packages'][name] for name in packages]])
-    importlib.invalidate_caches()
-    if importlib.util.find_spec('torchao') is not None:
-        raise RuntimeError('torchao vẫn còn; giữ traceback và Restart Session sau review')
+    setup_report=prepare_runtime(old_lock['environment'],SETUP)
 except BaseException:
     OUTPUT.mkdir(parents=True,exist_ok=False)
+    if SETUP.exists():
+        shutil.copytree(SETUP,OUTPUT/'setup',dirs_exist_ok=True)
     (OUTPUT/'setup-error.txt').write_text(traceback.format_exc(),encoding='utf-8')
     (OUTPUT/'status.json').write_text(json.dumps({'status':'setup_failed','optimizer_steps':0}),encoding='utf-8')
     with zipfile.ZipFile(ARCHIVE,'w',zipfile.ZIP_DEFLATED) as archive:
-        for path in OUTPUT.iterdir():
-            archive.write(path,path.name)
+        for path in OUTPUT.rglob('*'):
+            if path.is_file():
+                archive.write(path,path.relative_to(OUTPUT))
     display(FileLink(str(ARCHIVE)))
     raise
-print('Dependency setup completed. No fitting or backward pass was performed.')"""),
+print('Setup completed. NumPy imported:',setup_report['loaded_runtime']['modules']['numpy']['version'])
+print('Full legacy inventory matches Run 004. No fitting or backward pass was performed.')"""),
         md("""## 3. Xem Run 004 đã học và so baseline
 
 Các biểu đồ dưới đây đọc **600 log training và 15 dòng metric đã được xác minh**, lưu cùng source đã pin. Đây là kết quả Run 004, không phải lượt train mới. Đường đậm là trung bình trượt 20 bước để dễ nhìn; đường nhạt giữ nguyên loss minibatch. Loss này khác đơn vị với MAE lợi suất.
@@ -154,7 +142,7 @@ try:
     print('Optimizer steps:',report['optimizer_steps'])
     print('Controls passed:',report['controls_passed'])
     print('Run 004 reference reproduced:',report['reference_reproduced'])
-    print('Đã xong inference diagnostic. Tải QuantStream_Run005_Output.zip và gửi lại.')
+    print('Đã xong inference diagnostic. Tải QuantStream_Run005_Retry001_Output.zip và gửi lại.')
 except BaseException:
     if not OUTPUT.exists():
         OUTPUT.mkdir(parents=True)
@@ -162,6 +150,8 @@ except BaseException:
         (OUTPUT/'status.json').write_text(json.dumps({'status':'input_failed','optimizer_steps':0}),encoding='utf-8')
     raise
 finally:
+    if OUTPUT.exists() and SETUP.exists():
+        shutil.copytree(SETUP,OUTPUT/'setup',dirs_exist_ok=True)
     saved=archive_evidence(OUTPUT,ARCHIVE)
     if saved:
         display(FileLink(saved))"""),

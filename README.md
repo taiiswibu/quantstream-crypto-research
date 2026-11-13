@@ -110,7 +110,7 @@ To reproduce the recorded development labs, use an input ZIP with matching sourc
 
 The next diagnostic is [Run 005: fixed-weight inference controls](docs/experiments/run-005-inference-protocol.md). Notebook 07 uses the already trained seed-42 adapter, loads it without merging and compares eval/dropout modes and inference RNG under a frozen model state. It has one Run All path and **zero optimizer steps**. The runner has local synthetic CPU checks; the full Kaggle diagnostic is not yet executed.
 
-Notebook 07 is currently blocked by a reported NumPy metadata mismatch. Use the standalone [07b runtime probe](notebooks/07b_Kaggle_Runtime_Probe.ipynb) and return its ZIP before changing packages or the historical lock; see the [incident notes](docs/experiments/run-005-runtime-incident.md).
+The [uploaded runtime probe](reports/experiments/run-005-runtime-probe/verification.json) verified duplicate NumPy metadata. Updated Notebook 07 Retry001 preserves imported NumPy 2.1.3/Torch, repairs only missing Chronos and extra torchao, and adds loaded-module validation alongside the unchanged full legacy-inventory check. Return `QuantStream_Run005_Retry001_Output.zip`; full Kaggle inference is still pending. See the [incident notes](docs/experiments/run-005-runtime-incident.md).
 
 ## Checks and contribution history
 

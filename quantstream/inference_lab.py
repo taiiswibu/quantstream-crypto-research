@@ -15,10 +15,11 @@ import pandas as pd
 
 from .common import git_provenance, sha256, utcnow, write_json, write_parquet
 from .finetune import chronos_inputs
+from .inference_setup import AUDIT, loaded_runtime, validate_loaded
 from .seed_lab import CONTEXT, MODEL, REVISION, inputs_identity, runtime, sample_sha256
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = "run-005-inference-v1"
+PROTOCOL = "run-005-inference-v1-runtime-fix-001"
 RUN004_SHA = "0c53a0dabcd2c67e3c36993628d9495c4027d950840be5a28673f9a0b849c333"
 ADAPTER_SHA = "fb1769324c59a682ef7b84a674fab1b0275e5ed0e408981cb0e27cc4a094182d"
 REFERENCE_FILES = {
@@ -271,6 +272,10 @@ def run_inference_lab(snapshot, artifact, output, device="cuda"):
         write_json(output / "environment-diff.json", differences)
         if differences:
             raise ValueError("Environment differs from Run 004; send the diagnostic ZIP before inference")
+        audit = json.loads(AUDIT.read_text())
+        effective = loaded_runtime()
+        write_json(output / "effective-runtime.json", effective)
+        validate_loaded(effective, previous["environment"], audit)
         if device != "cuda" or not torch.cuda.is_available():
             raise ValueError("This registered diagnostic requires the same Kaggle CUDA runtime")
         identity = inputs_identity(snapshot)
@@ -287,6 +292,7 @@ def run_inference_lab(snapshot, artifact, output, device="cuda"):
             raise ValueError("Use the clean pinned Run 005 source checkout")
         source["files"] = {str(p.relative_to(ROOT)): sha256(p) for p in sorted((ROOT / "quantstream").glob("*.py"))}
         source["protocol_sha256"] = sha256(ROOT / "docs/experiments/run-005-inference-protocol.md")
+        source["runtime_probe_verification_sha256"] = sha256(AUDIT)
         plan = {"protocol": PROTOCOL, "created_at": utcnow(), "source": source, "environment": environment,
             "inputs": identity, "run004_artifact_sha256": RUN004_SHA, "adapter_sha256": ADAPTER_SHA,
             "adapter_training_seed": 42, "selection_reason": "Historical byte-identical adapter, not the lowest Run 004 MAE",
@@ -294,7 +300,9 @@ def run_inference_lab(snapshot, artifact, output, device="cuda"):
             "cases": [{"id": name, "dropout_on": mode, "inference_rng_seed": seed} for name, mode, seed in CASES],
             "base_reference_passes": 1, "adapter_passes": 8, "windows_per_pass": 512,
             "context_length": CONTEXT, "forecast_batch_size": 16, "rtol": RTOL, "atol": ATOL,
-            "optimizer_steps": 0, "model_merge_operations": 0}
+            "optimizer_steps": 0, "model_merge_operations": 0, "effective_runtime": effective,
+            "runtime_fix_revision": "001", "historical_loaded_numpy_recorded": False,
+            "runtime_probe_artifact_sha256": audit["artifact_sha256"]}
         write_json(output / "plan.json", plan)
         shutil.copy2(Path(snapshot) / "manifest.json", output / "input_snapshot_manifest.json")
         torch.set_num_threads(cfg.threads)
@@ -315,6 +323,7 @@ def run_inference_lab(snapshot, artifact, output, device="cuda"):
         pipe.inner_model = pipe.model
         pipe.model.requires_grad_(False)
         result = controlled_passes(pipe, contexts, scored, cfg, output, reference)
+        result["limitations"].append("Run 004 recorded last-wins distribution metadata, not its imported NumPy version/path; historical loaded-module identity remains unverified.")
         result["zero_shot_reference"] = baseline_check
         result["reference_reproduced"] = baseline_check["within_tolerance"] and result["checks"]["run004_eval_reference"]["within_tolerance"]
         result["ready_within_diagnostic_scope"] = result["controls_passed"] and result["reference_reproduced"]
