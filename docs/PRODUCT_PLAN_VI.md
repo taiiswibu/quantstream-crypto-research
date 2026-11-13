@@ -8,7 +8,7 @@
 - Run 004 đã chạy 3 seed × 200 steps. Mean LoRA MAE 0.007815294, cao hơn zero-return 0.007534907 khoảng 3,72% trên cùng 512 cửa sổ development. Không thể gọi LoRA hiện tại là model tốt nhất hoặc model sinh lời.
 - Run 005 chỉ đối chứng inference với cùng trọng số; không train, không tìm siêu tham số. Chờ output Kaggle để xem control/reference có khớp hay không.
 - Repo đã có ingestion dữ liệu thực, kiểm tra chất lượng, causal features, backtest có chi phí, dashboard và paper worker. Những thành phần này vẫn cần kiểm tra tích hợp trên máy triển khai của người dùng.
-- Chưa biết cấu hình máy local hoặc ngân sách GPU cụ thể. Chưa chốt số trial/epoch/steps, model LLM hay cam kết thời gian hoàn tất.
+- Người dùng đã cung cấp Ryzen 7 4800H, RAM 16 GB, GTX 1650 4 GB và giao quyền chọn ngân sách hiệu quả. Chốt trần kế hoạch **6 giờ bật GPU Kaggle**, mục tiêu dùng 2–4 giờ nếu đủ kết quả; xem [kế hoạch tài nguyên](RESOURCE_PLAN_VI.md). Chưa đo hiệu năng trên máy thật, chưa chạy đợt nghiên cứu mới.
 
 ## Khi nào chốt model?
 
@@ -41,7 +41,7 @@ Tiêu chí chọn dự báo và tiêu chí chọn chiến lược phải tách b
 
 TCN hiện tại dùng GELU trong causal blocks và head hồi quy tuyến tính. GRU có gate sigmoid/tanh theo kiến trúc của nó. Kiến trúc/activation của Chronos phải đọc từ checkpoint/config thực tế; đổi activation của pretrained model là thay đổi thí nghiệm, không phải nút chỉnh mặc định.
 
-Không biến mọi tổ hợp thành một grid khổng lồ. Đề xuất Optuna TPE và pruning/early stopping, sau đó kiểm tra nhiều seed cho shortlist đã chọn. Số trial, giới hạn từng fit và thời gian GPU vẫn cần chốt trước đợt mới. Không tái mở hay mở rộng ngân sách Run 002/004 đã kết thúc.
+Không biến mọi tổ hợp thành một grid khổng lồ. Hướng triển khai là Optuna TPE và pruning/early stopping, sau đó kiểm tra nhiều seed cho shortlist đã chọn. Trần kế hoạch đợt mới: 24 cấu hình ML/DL, hai fold tuning, tối đa 12 epoch mỗi neural fit và top 2 × 3 seed. Đây chưa phải runner/notebook mới đã chạy; cần khóa protocol/source/data và triển khai timeout toàn job trước khi bàn giao. Không tái mở hay mở rộng ngân sách Run 002/004 đã kết thúc.
 
 ## Mỗi notebook nghiên cứu phải cho xem gì?
 
@@ -81,14 +81,14 @@ Artifact đem về local gồm model hoặc adapter **kèm base revision cần t
 
 Đề xuất thêm sau khi pipeline số liệu ổn định. Agent hỗ trợ đọc báo cáo, giải thích feature/metric có nguồn, truy vấn experiment và tóm tắt cảnh báo qua các tool chỉ đọc. Các con số phải được tính bởi code và trả về từ tool, không để LLM tự bịa kết quả.
 
-Qwen3-4B là một ứng viên LLM local cần benchmark sau khi biết RAM/VRAM; Ollama có tool-calling API. Đây không phải lựa chọn đã chốt và không bảo đảm phù hợp máy người dùng. Chưa cần fine-tune LLM: trước hết dùng retrieval/tool calling với báo cáo nội bộ và đánh giá câu trả lời. Agent không được tự mở lệnh tiền thật, thay risk limits hoặc tự launch một đợt train tốn tài nguyên.
+Với RAM 16 GB và GTX 1650 4 GB, ưu tiên benchmark **Ollama `qwen3:1.7b` Q4_K_M**, context mục tiêu ban đầu 2.048 token, output giới hạn 512 token, một request tại một thời điểm. Tag này có package khoảng 1,4 GB theo trang Ollama; đó không phải tổng RAM/VRAM runtime. Qwen3-4B giữ làm ứng viên phụ nếu bản nhỏ chưa đáp ứng và benchmark tài nguyên cho phép. Chưa xác nhận driver, GPU offload, latency hoặc chất lượng trên máy người dùng. Chưa fine-tune LLM: trước hết dùng retrieval/tool calling với báo cáo nội bộ và đánh giá câu trả lời. Agent không được tự mở lệnh tiền thật, thay risk limits hoặc tự launch một đợt train tốn tài nguyên.
 
 ## Thứ tự thực hiện
 
 1. Hoàn tất Run 005 hoặc review lỗi môi trường/inference nếu có.
-2. Chốt GPU budget và local hardware; thiết kế đợt nghiên cứu mới với data/tuning/evaluation boundaries, baseline và các đồ thị nêu trên.
+2. Đã chốt phần cứng mục tiêu và trần ngân sách; tiếp tục thiết kế đợt nghiên cứu mới với data/tuning/evaluation boundaries, baseline và các đồ thị nêu trên. Chưa triển khai/chạy runner đợt mới.
 3. Chạy budgeted search, review tất cả outputs, freeze shortlist và đánh giá mới theo protocol đã đăng ký.
 4. Đóng gói candidate đủ điều kiện, benchmark local và chạy paper observation; nếu không có candidate đạt thì công bố kết quả đó.
 5. Hoàn thiện vận hành/dashboard rồi bổ sung LLM assistant chỉ đọc nếu còn giá trị sử dụng.
 
-Nguồn kỹ thuật chính thức: [Binance API](https://developers.binance.com/en/docs/products/spot/rest-api), [Optuna sampling/pruning](https://optuna.readthedocs.io/en/stable/tutorial/10_key_features/003_efficient_optimization_algorithms.html), [PEFT LoRA](https://huggingface.co/docs/peft/developer_guides/lora), [Chronos](https://github.com/amazon-science/chronos-forecasting), [Qwen3-4B model card](https://huggingface.co/Qwen/Qwen3-4B), [Ollama tool calling](https://docs.ollama.com/capabilities/tool-calling).
+Nguồn kỹ thuật chính thức: [Binance API](https://developers.binance.com/en/docs/products/spot/rest-api), [Optuna sampling/pruning](https://optuna.readthedocs.io/en/stable/tutorial/10_key_features/003_efficient_optimization_algorithms.html), [PEFT LoRA](https://huggingface.co/docs/peft/developer_guides/lora), [Chronos](https://github.com/amazon-science/chronos-forecasting), [Qwen3-1.7B model card](https://huggingface.co/Qwen/Qwen3-1.7B), [Ollama qwen3:1.7b](https://ollama.com/library/qwen3:1.7b), [Ollama tool calling](https://docs.ollama.com/capabilities/tool-calling).

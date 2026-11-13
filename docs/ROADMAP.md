@@ -1,6 +1,6 @@
 # Roadmap
 
-Phạm vi sản phẩm, tiêu chí chốt model, yêu cầu biểu đồ notebook và vai trò LLM/agent: [Kế hoạch ứng dụng local](PRODUCT_PLAN_VI.md). Đây là kế hoạch đề xuất; GPU budget và cấu hình máy local chưa được chốt.
+Phạm vi sản phẩm, tiêu chí chốt model, yêu cầu biểu đồ notebook và vai trò LLM/agent: [Kế hoạch ứng dụng local](PRODUCT_PLAN_VI.md). [Phần cứng và ngân sách](RESOURCE_PLAN_VI.md) đã chốt trần 6 giờ bật GPU Kaggle cho đợt mới; runner/đánh giá mới và benchmark local vẫn chưa thực hiện.
 
 ## Completed local work
 - [x] Real ingestion, checksum, quarantine and gap handling.
