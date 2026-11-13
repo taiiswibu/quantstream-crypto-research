@@ -1,5 +1,7 @@
 # Roadmap
 
+Phạm vi sản phẩm, tiêu chí chốt model, yêu cầu biểu đồ notebook và vai trò LLM/agent: [Kế hoạch ứng dụng local](PRODUCT_PLAN_VI.md). [Phần cứng và ngân sách](RESOURCE_PLAN_VI.md) đã chốt trần 6 giờ bật GPU Kaggle cho đợt mới; runner/đánh giá mới và benchmark local vẫn chưa thực hiện.
+
 ## Completed local work
 - [x] Real ingestion, checksum, quarantine and gap handling.
 - [x] Causal features, purged splits and three-fold model research.
@@ -24,6 +26,12 @@
 - [x] Record the Kaggle notebook URL and frozen per-run plan before the first research fit (immutable saved-version ID not supplied).
 - [x] Execute all three Run 004 seeds and verify all forecast metrics, 600 step/loss records, adapter integrity and weekly paired bootstrap; retain research-only status.
 - [x] Verify seed-42 adapter bytes reproduce Run 003 B and document the inference/evaluation comparison limit.
+- [x] Merge Run 004 code and verified results into main through PR #3.
+- [x] Prepare [Run 005 fixed-weight inference controls](experiments/run-005-inference-protocol.md), PEFT unmerged reload, model-state/RNG checks and a single Run All notebook path.
+- [x] Add a read-only [Run 005 runtime probe](experiments/run-005-runtime-incident.md) for the reported NumPy mismatch; preserve all metadata candidates and fresh-process imported versions without changing the old lock.
+- [x] Review the user's runtime-probe ZIP: imported NumPy 2.1.3 vs duplicate legacy metadata 1.26.4; only missing Chronos and extra torchao differ from the full old inventory.
+- [x] Implement Retry001 bootstrap preserving NumPy/Torch, repairing only the two reviewed package differences, and recording actual loaded modules alongside the unchanged legacy lock.
+- [ ] Execute Run 005 on the same Kaggle runtime and independently review every inference/control output.
 - [ ] Make sleeve vs portfolio turnover units explicit with accounting coverage.
 - [x] Add descriptive paired calendar-week block uncertainty for Run 004 development MAE.
 - [ ] Add per-regime validation in a separately defined experiment.
