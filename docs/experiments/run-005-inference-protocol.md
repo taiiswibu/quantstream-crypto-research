@@ -2,6 +2,8 @@
 
 Status: **protocol and runner implemented; full Kaggle diagnostic not executed**. No Run 005 score, model promotion or prospective evaluation is claimed.
 
+Current blocker: reported NumPy metadata mismatch (`2.1.3` vs locked `1.26.4`). The lock also records Python 3.13, outside NumPy 1.26.4's official Python support. See the [runtime incident and read-only probe](run-005-runtime-incident.md). Preserve this protocol/lock; do not force a downgrade or silently relax the environment comparison. Inference remains pending diagnostic evidence.
+
 ## Question and fixed controls
 
 Run 004 seed 42 reproduces Run 003 B's adapter bytes exactly, but their stored forecasts/MAE differ. Run 004 explicitly uses eval mode; the historical artifact lacks a model train/eval flag and complete runtime inventory. This diagnostic measures mode and RNG effects under one controlled runtime. It cannot uniquely reconstruct the old unrecorded state or establish the complete cause of its historical score.

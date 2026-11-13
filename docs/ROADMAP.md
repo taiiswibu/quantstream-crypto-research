@@ -28,6 +28,8 @@ Phạm vi sản phẩm, tiêu chí chốt model, yêu cầu biểu đồ noteboo
 - [x] Verify seed-42 adapter bytes reproduce Run 003 B and document the inference/evaluation comparison limit.
 - [x] Merge Run 004 code and verified results into main through PR #3.
 - [x] Prepare [Run 005 fixed-weight inference controls](experiments/run-005-inference-protocol.md), PEFT unmerged reload, model-state/RNG checks and a single Run All notebook path.
+- [x] Add a read-only [Run 005 runtime probe](experiments/run-005-runtime-incident.md) for the reported NumPy mismatch; preserve all metadata candidates and fresh-process imported versions without changing the old lock.
+- [ ] Review the user's runtime-probe ZIP before deciding an environment/bootstrap correction or a separately registered runtime revision.
 - [ ] Execute Run 005 on the same Kaggle runtime and independently review every inference/control output.
 - [ ] Make sleeve vs portfolio turnover units explicit with accounting coverage.
 - [x] Add descriptive paired calendar-week block uncertainty for Run 004 development MAE.

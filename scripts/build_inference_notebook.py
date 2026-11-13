@@ -55,7 +55,9 @@ sys.path.insert(0,str(CODE))
 print('Pinned source:',SOURCE_COMMIT)"""),
         md("""## 2. Giữ môi trường Run 004
 
-Cell giữ PyTorch/CUDA/NumPy do Kaggle cung cấp, gỡ optional torchao và cài đúng phiên bản thư viện đã review. Constraint inventory lấy từ lock Run 004. Runner sẽ so toàn bộ inventory trước khi tải checkpoint; nếu môi trường khác, dừng và xuất ZIP để kiểm tra.
+Cell giữ PyTorch/CUDA/NumPy do Kaggle cung cấp, gỡ optional torchao và cài đúng phiên bản thư viện đã review. Constraint inventory lấy từ lock Run 004. Runner sẽ so toàn bộ inventory trước khi tải checkpoint; nếu metadata khác, dừng và xuất ZIP để kiểm tra.
+
+**Đang chờ chẩn đoán lock/runtime:** lock Run 004 ghi Python 3.13.16 + NumPy 1.26.4, trong khi NumPy 1.26.4 chỉ hỗ trợ chính thức Python 3.9–3.12. Nếu gặp lỗi NumPy 2.1.3, chưa ép downgrade hoặc sửa lock; chạy `07b_Kaggle_Runtime_Probe.ipynb` và gửi ZIP. Metadata trùng tên có thể khiến các cách đọc version khác nhau; chưa xác minh đây là nguyên nhân ở phiên Kaggle của bạn.
 
 Lock là version inventory, chưa phải container image hoặc bảo đảm bitwise tái lập. Python/PyTorch của base image khác sẽ được báo ra, không tự thay PyTorch GPU."""),
         code("""import os, importlib.util
@@ -70,6 +72,10 @@ try:
     for name in ('torch','numpy'):
         actual=importlib.metadata.version(name)
         if actual!=expected['packages'][name]:
+            if name=='numpy':
+                raise RuntimeError('NumPy metadata khác Run 004: '+actual+
+                    '; expected '+expected['packages'][name]+'. Chạy Notebook 07b Runtime Probe và gửi ZIP; '+
+                    'chưa downgrade NumPy, sửa lock hoặc chạy inference.')
             raise RuntimeError(name+' base image khác Run 004: '+actual)
     subprocess.check_call([sys.executable,'-m','pip','uninstall','-y','torchao'])
     packages=('chronos-forecasting','peft','transformers','accelerate','datasets',
