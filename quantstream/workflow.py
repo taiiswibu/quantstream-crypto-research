@@ -1,4 +1,4 @@
-"""Run 006: chronological data-to-model workflow with a fixed whole-job budget."""
+"""Chronological data-to-model research with a fixed whole-job budget."""
 
 from __future__ import annotations
 import argparse
@@ -200,7 +200,22 @@ def neural_train(
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=params["lr"], weight_decay=params["weight_decay"]
     )
-    loss_fn = nn.HuberLoss()
+    loss_name = params.get("loss", "huber")
+    if loss_name not in ("huber", "mse"):
+        raise ValueError("Expected huber or mse loss")
+    loss_fn = nn.HuberLoss() if loss_name == "huber" else nn.MSELoss()
+    schedule = params.get("lr_schedule", "constant")
+    if schedule not in ("constant", "cosine"):
+        raise ValueError("Expected constant or cosine learning rate")
+    scheduler = (
+        torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer,
+            T_max=params.get("schedule_epochs", epochs),
+            eta_min=params["lr"] * 0.05,
+        )
+        if schedule == "cosine"
+        else None
+    )
     history = []
     best = None
     best_mse = float("inf")
@@ -226,17 +241,19 @@ def neural_train(
             grad.append(float(norm))
         row = {
             "epoch": epoch,
-            "train_huber_scaled": loss_sum / count,
+            "train_loss_scaled": loss_sum / count,
+            "loss_name": loss_name,
+            "learning_rate": optimizer.param_groups[0]["lr"],
             "gradient_norm_mean": float(np.mean(grad)),
         }
+        if loss_name == "huber":
+            row["train_huber_scaled"] = row["train_loss_scaled"]
         if validation is not None:
             prediction = predict_tcn(
                 model, validation, mean, std, params["lookback"], device
             )
-            mask = (
-                validation.is_validation & validation.eligible_window
-            ).to_numpy() & np.isfinite(prediction)
-            if not mask.any():
+            mask = (validation.is_validation & validation.eligible_window).to_numpy()
+            if not mask.any() or not np.isfinite(prediction[mask]).all():
                 raise ValueError("No validation windows")
             mse = float(
                 np.mean(
@@ -254,7 +271,9 @@ def neural_train(
         history.append(row)
         pd.DataFrame(history).to_csv(Path(folder) / "history.csv", index=False)
         print(Path(folder).name, row, flush=True)
-        if validation is not None and stale >= 3:
+        if scheduler is not None:
+            scheduler.step()
+        if validation is not None and stale >= params.get("patience", 3):
             break
     if best is not None:
         model.load_state_dict(best)
@@ -266,6 +285,14 @@ def fit_model(train, params, seed, epochs, cfg, device, budget, folder):
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     budget.check()
+    days = params.get("train_window_days", 0)
+    if days:
+        train = train[
+            train.decision_time.ge(train.decision_time.max() - pd.Timedelta(days=days))
+        ].copy()
+    if train.empty:
+        raise ValueError("Empty training window")
+    epochs = min(epochs, params.get("epoch_cap", epochs))
     write_json(
         folder / "fit.json",
         {
@@ -273,6 +300,7 @@ def fit_model(train, params, seed, epochs, cfg, device, budget, folder):
             "seed": seed,
             "rows": len(train),
             "last_label": str(train.label_end_time.max()),
+            "first_decision": str(train.decision_time.min()),
         },
     )
     if params["family"] in ("tcn", "gru"):
@@ -297,6 +325,9 @@ def fit_model(train, params, seed, epochs, cfg, device, budget, folder):
             "epochs": chosen,
             "params": params,
             "device": device,
+            "training_rows": len(train),
+            "training_first_decision": str(train.decision_time.min()),
+            "training_last_label": str(train.label_end_time.max()),
         }
     if params["family"] == "ridge":
         from sklearn.pipeline import make_pipeline
@@ -312,7 +343,7 @@ def fit_model(train, params, seed, epochs, cfg, device, budget, folder):
             max_depth=params["max_depth"],
             learning_rate=params["learning_rate"],
             min_child_weight=30,
-            reg_lambda=10,
+            reg_lambda=params.get("reg_lambda", 10),
             subsample=0.85,
             colsample_bytree=0.85,
             tree_method="hist",
@@ -332,7 +363,14 @@ def fit_model(train, params, seed, epochs, cfg, device, budget, folder):
                 "last_label": str(train.label_end_time.max()),
             },
         )
-    return {"model": model, "params": params, "epochs": None}
+    return {
+        "model": model,
+        "params": params,
+        "epochs": None,
+        "training_rows": len(train),
+        "training_first_decision": str(train.decision_time.min()),
+        "training_last_label": str(train.label_end_time.max()),
+    }
 
 
 def predict(fitted, frame):
@@ -420,7 +458,9 @@ def evaluate(features, bars, split, params, seed, epochs, cfg, device, budget, f
     return report
 
 
-def export_model(root, fitted, cfg, manifest, selection, test_report, context):
+def export_model(
+    root, fitted, cfg, manifest, selection, test_report, context, run_name="run006"
+):
     import torch
     from .workflow_model import check_parity
 
@@ -462,7 +502,8 @@ def export_model(root, fitted, cfg, manifest, selection, test_report, context):
         "format": "quantstream-notebook-v1",
         "created_at": utcnow(),
         "type": "portable",
-        "model": "run006_" + family,
+        "model": run_name + "_" + family,
+        "research_run": run_name,
         "hyperparameters": params,
         "features": FEATURES,
         "threshold": 0.006,
@@ -471,12 +512,15 @@ def export_model(root, fitted, cfg, manifest, selection, test_report, context):
         "sequence_code_sha256": sha256(Path(__file__).with_name("search.py")),
         "source_control": git_provenance(Path(__file__).resolve().parents[1]),
         "training_rows": fitted["training_rows"],
+        "training_first_decision": fitted.get("training_first_decision"),
+        "training_last_label": fitted.get("training_last_label"),
         "selected_epochs": fitted["epochs"],
         "training_runtime": runtime_record(fitted.get("device", "cpu")),
         "training_features_sha256": manifest["files"][
             "data/processed/features.parquet"
         ],
         "validation": selection["validation"],
+        "validation_gate": selection.get("validation_gate"),
         "test": test_report,
         "test_is_independent": False,
         "deployment_status": "research_only_paper",
@@ -523,20 +567,27 @@ def export_model(root, fitted, cfg, manifest, selection, test_report, context):
     return str(output)
 
 
-def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
+def run(
+    root, n_trials=24, max_epochs=12, seconds=7200, device="auto", protocol="run006"
+):
     import optuna
     import torch
     from .search import with_context
     from .backtest import evaluate_strategy, simulate
 
     root = Path(root)
+    if protocol not in ("run006", "run007"):
+        raise ValueError("Unknown research protocol")
+    limits = (24, 12, 21600) if protocol == "run006" else (48, 60, 14400)
     if (
-        not 4 <= n_trials <= 24
-        or not 1 <= max_epochs <= 12
-        or not 1 <= seconds <= 21600
+        not (4 if protocol == "run006" else 14) <= n_trials <= limits[0]
+        or not 1 <= max_epochs <= limits[1]
+        or not 1 <= seconds <= limits[2]
     ):
-        raise ValueError("Budget: 4..24 trials, 1..12 epochs, at most 6 hours")
+        raise ValueError(f"Budget outside {protocol} limits: {limits}")
     manifest = json.loads((root / "dataset_manifest.json").read_text())
+    if protocol == "run007" and manifest.get("research_protocol") != "run007-depth-v1":
+        raise ValueError("Prepare the three-fold Run 007 dataset before training")
     for name, digest in manifest["files"].items():
         if sha256(root / name) != digest:
             raise ValueError("Dataset changed: " + name)
@@ -550,7 +601,7 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
     if device == "auto":
         device = "cuda" if torch.cuda.is_available() else "cpu"
     plan = {
-        "protocol": "run006-e2e-v1",
+        "protocol": "run006-e2e-v1" if protocol == "run006" else "run007-depth-v1",
         "trials": n_trials,
         "epochs": max_epochs,
         "seconds": seconds,
@@ -578,7 +629,7 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
         & features.target_return.notna()
     ]
     study = optuna.create_study(
-        study_name="run006",
+        study_name=protocol,
         storage="sqlite:///" + str((root / "study.sqlite").resolve()),
         direction="minimize",
         sampler=optuna.samplers.TPESampler(seed=42),
@@ -606,6 +657,11 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
             "weight_decay": 0.001,
         },
     ]
+    suggest_params = suggest
+    if protocol == "run007":
+        from .extended_training import anchors, suggest as extended_suggest
+
+        initial, suggest_params = anchors(), extended_suggest
     for candidate in initial:
         study.enqueue_trial(candidate)
 
@@ -614,7 +670,7 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
             dev,
             bars,
             split,
-            suggest(trial),
+            suggest_params(trial),
             42,
             max_epochs,
             cfg,
@@ -627,8 +683,8 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
 
     try:
         write_json(root / "status.json", {"status": "running", "started_at": utcnow()})
-        for _ in range(n_trials):
-            if time.monotonic() >= search_end:
+        for trial_index in range(n_trials):
+            if time.monotonic() >= search_end and trial_index >= len(initial):
                 break
             budget.check()
             study.optimize(objective, n_trials=1, catch=(ValueError,))
@@ -640,10 +696,13 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
             raise ValueError(
                 "Not all four model families completed; keep partial evidence"
             )
-        leaders = sorted(completed, key=lambda t: (t.value, t.number))[:2]
+        leaders = sorted(completed, key=lambda t: (t.value, t.number))[
+            : (2 if protocol == "run006" else 3)
+        ]
         shortlist = []
         for trial in leaders:
             scores = []
+            seed_reports = []
             for seed in [42, 123, 2026]:
                 folder = root / "stability" / f"{trial.number:03}-seed-{seed}"
                 if seed == 42:
@@ -676,12 +735,16 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
                         folder,
                     )
                 scores.append(report["objective"])
+                seed_reports.append(report)
+            from .extended_training import validation_gate
+
             shortlist.append(
                 {
                     "trial": trial.number,
                     "params": trial.user_attrs["params"],
                     "mean_objective": float(np.mean(scores)),
                     "std_objective": float(np.std(scores)),
+                    "validation_gate": validation_gate(seed_reports),
                 }
             )
         selected = min(shortlist, key=lambda s: (s["mean_objective"], s["trial"]))
@@ -707,7 +770,7 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
             budget,
             root / "final-fit",
         )
-        fitted["training_rows"] = len(dev)
+        fitted.setdefault("training_rows", len(dev))
         with (root / "retrospective-test.started.json").open("x") as stream:
             json.dump(
                 {
@@ -770,7 +833,14 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
         )
         budget.check()
         deployment = export_model(
-            root, fitted, cfg, manifest, selection, metrics[0], context
+            root,
+            fitted,
+            cfg,
+            manifest,
+            selection,
+            metrics[0],
+            context,
+            run_name=protocol,
         )
         write_json(
             root / "status.json",
@@ -780,6 +850,7 @@ def run(root, n_trials=24, max_epochs=12, seconds=7200, device="auto"):
                 "deployment": deployment,
                 "test_is_independent": False,
                 "promotion": "paper_only_no_real_money",
+                "validation_gate": selection.get("validation_gate"),
             },
         )
         return selection
@@ -801,8 +872,16 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=12)
     parser.add_argument("--seconds", type=int, default=7200)
     parser.add_argument("--device", default="auto")
+    parser.add_argument("--protocol", choices=["run006", "run007"], default="run006")
     args = parser.parse_args()
     if args.command == "prepare":
         prepare_dataset(args.root)
     else:
-        run(args.root, args.trials, args.epochs, args.seconds, args.device)
+        run(
+            args.root,
+            args.trials,
+            args.epochs,
+            args.seconds,
+            args.device,
+            args.protocol,
+        )

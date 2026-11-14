@@ -184,14 +184,30 @@ def training_figures(root):
         for file in history:
             frame = pd.read_csv(file)
             name = "/".join(file.relative_to(root / "trials").parts[:2])
-            axes[0].plot(frame.epoch, frame.train_huber_scaled, marker="o", label=name)
+            loss_column = (
+                "train_loss_scaled"
+                if "train_loss_scaled" in frame
+                else "train_huber_scaled"
+            )
+            loss_name = (
+                str(frame.loss_name.iloc[0]) if "loss_name" in frame else "huber"
+            )
+            axes[0].plot(
+                frame.epoch,
+                frame[loss_column],
+                marker="o",
+                label=name + " · " + loss_name,
+            )
             if "inner_validation_mse" in frame:
                 axes[1].plot(
                     frame.epoch, frame.inner_validation_mse, marker="o", label=name
                 )
         for ax, title in zip(
             axes,
-            ["Training Huber · target × 100", "Inner validation MSE · return units"],
+            [
+                "Training objective · target × 100 (see loss labels)",
+                "Inner validation MSE · return units",
+            ],
         ):
             ax.set(title=title, xlabel="Epoch", ylabel="Loss")
             ax.legend()
