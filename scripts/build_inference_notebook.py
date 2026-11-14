@@ -1,6 +1,7 @@
 """Build notebook 07 with one Run All path and no training/preflight mode switch."""
 import argparse
 from pathlib import Path
+from quantstream.notebook_style import write_notebook
 import re
 
 import nbformat as nbf
@@ -222,7 +223,7 @@ Một mode effect trong môi trường này chưa tái dựng được chính x�
     notebook.metadata.kernelspec = {"display_name": "Python 3", "language": "python", "name": "python3"}
     notebook.metadata.language_info = {"name": "python"}
     nbf.validate(notebook)
-    nbf.write(notebook, destination)
+    write_notebook(notebook, destination)
 
 
 if __name__ == "__main__":

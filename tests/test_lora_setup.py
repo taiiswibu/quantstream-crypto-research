@@ -25,7 +25,7 @@ def test_failed_fit_keeps_logs_without_overwriting_original_zip(tmp_path):
     notebook = nbformat.read(Path(__file__).resolve().parents[1] /
                              "notebooks/05_Kaggle_LoRA_Lab.ipynb", as_version=4)
     fit_cell = next(cell.source for cell in notebook.cells
-                    if cell.cell_type == "code" and cell.source.startswith("reports=[]"))
+                    if cell.cell_type == "code" and "reports=[]" in cell.source.splitlines())
     work = tmp_path / "working"
     output = work / "run-003-lora-lab-rerun"
     output.mkdir(parents=True)

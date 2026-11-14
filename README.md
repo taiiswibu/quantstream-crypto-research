@@ -1,5 +1,8 @@
 # QuantStream
 
+**Local Terminal:** giao diện Streamlit + Plotly, model CPU, dữ liệu Binance thật và paper trading. Xem [hướng dẫn mở app trên Windows](docs/LOCAL_TERMINAL_VI.md). Đọc kiểm định của lần fit local trước khi đánh giá model; app dùng cho paper trading.
+
+
 [![CI](https://github.com/taiiswibu/quantstream-crypto-research/actions/workflows/ci.yml/badge.svg)](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323)
 
 **Local-first crypto forecasting, reproducible ML research and paper trading.**
@@ -61,37 +64,26 @@ flowchart TD
 
 Optional WebSocket capture retains closed-candle audit events. The paper runtime uses REST as its canonical catch-up path. Kafka, Spark, a warehouse and broker order execution are outside this local MVP.
 
-## Run from a source checkout
+## Run the local app
 
-Use Python 3.11 or 3.12. Datasets, weights, local state and large exports are generated locally and ignored by Git; small reference evidence is versioned under `reports/reference`.
-
-Windows PowerShell:
+Python 3.12 64-bit and Internet are required for first setup. From Windows PowerShell:
 
 ```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e .
-.\.venv\Scripts\python.exe -m quantstream demo
-.\.venv\Scripts\python.exe -m streamlit run app.py
+git clone https://github.com/taiiswibu/quantstream-crypto-research.git
+cd quantstream-crypto-research
+.\INSTALL_WINDOWS.cmd
+.\START_WINDOWS.cmd
 ```
 
-Linux/macOS:
+Open `http://localhost:8501`. First setup downloads 90 days of real closed BTC/ETH candles and fits Ridge/XGBoost on CPU. It does not run Kaggle experiments, TCN or LoRA. No API key or CUDA is required. Existing `workspace` models and paper state are retained.
 
-```bash
-python3.12 -m venv .venv
-.venv/bin/python -m pip install -e .
-.venv/bin/python -m quantstream demo
-.venv/bin/python -m streamlit run app.py
-```
+For an existing checkout, stop the app/worker, run `git pull --ff-only`, then `INSTALL_WINDOWS.cmd` once after updating and `START_WINDOWS.cmd`. Git refuses conflicting local edits; retain them before updating.
 
-`demo` downloads real archives, prepares features, compares classical models and exports Kaggle input. It does not automatically open the final holdout. A fresh checkout creates a new baseline run; the reference TCN weights are outside Git. Existing MVP users can retain their ignored datasets/models when applying the source update.
+Linux: `bash START_LINUX.sh`. For subsequent Windows starts, only `START_WINDOWS.cmd` is needed. `WORKER_WINDOWS.cmd` keeps market sync and paper tracking active while its process stays open. The app and worker share a lock; run one worker.
 
-To train or serve TCN, install CPU PyTorch with your environment's Python:
+Source checkouts create their own models from live public data. The separate prebuilt ZIP contains the recorded local snapshot/models. Neither trained joblib files nor personal paper state are committed. See [the Vietnamese local terminal guide](docs/LOCAL_TERMINAL_VI.md).
 
-```bash
-python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-```
-
-Continuous simulated runtime: `python -m quantstream paper --watch --poll-seconds 60`. It stops when the process or machine stops. See [Vietnamese local guide](docs/LOCAL_GUIDE_VI.md).
+The original research pipeline remains available separately with `python -m quantstream demo`. It downloads the larger archive history and exports Kaggle input; it is not needed to open the terminal. To train TCN, install the optional PyTorch research dependencies. Historical reference weights and user-uploaded adapters are outside Git.
 
 ## Git-backed Kaggle training
 
@@ -108,9 +100,7 @@ To reproduce the recorded development labs, use an input ZIP with matching sourc
 
 [Run 004 results](docs/experiments/run-004-seed-stability.md), its [predeclared protocol](docs/experiments/run-004-seed-stability-protocol.md) and [reviewed Kaggle preflight](docs/experiments/run-004-preflight.md) are recorded. Execution source remains pinned to `bb47737b`; notebook 06 defaults to preflight for deliberate reproduction, not an instruction to keep adding trials. See the [Vietnamese handoff](docs/RESEARCH_LAB_VI.md#run-004--kiểm-tra-môi-trường-trước-ba-seed). No prospective evaluation has started.
 
-The next diagnostic is [Run 005: fixed-weight inference controls](docs/experiments/run-005-inference-protocol.md). Notebook 07 uses the already trained seed-42 adapter, loads it without merging and compares eval/dropout modes and inference RNG under a frozen model state. It has one Run All path and **zero optimizer steps**. The runner has local synthetic CPU checks; the full Kaggle diagnostic is not yet executed.
-
-The [uploaded runtime probe](reports/experiments/run-005-runtime-probe/verification.json) verified duplicate NumPy metadata. Updated Notebook 07 Retry001 preserves imported NumPy 2.1.3/Torch, repairs only missing Chronos and extra torchao, and adds loaded-module validation alongside the unchanged full legacy-inventory check. Return `QuantStream_Run005_Retry001_Output.zip`; full Kaggle inference is still pending. See the [incident notes](docs/experiments/run-005-runtime-incident.md).
+The [Run 005 inference protocol](docs/experiments/run-005-inference-protocol.md) provides a separate fixed-weight diagnostic runner. It needs the matching historical adapter and snapshot and is not part of terminal startup. The public runtime source includes the NumPy bootstrap repair; user-supplied adapter binaries, private diagnostic outputs and local portfolios are outside this source distribution.
 
 ## Checks and contribution history
 

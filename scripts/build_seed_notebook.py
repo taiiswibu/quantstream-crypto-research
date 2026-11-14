@@ -1,6 +1,7 @@
 """Build notebook 06 pinned to an existing clean source commit, without touching 04/05."""
 import argparse
 from pathlib import Path
+from quantstream.notebook_style import write_notebook
 import re
 
 import nbformat as nbf
@@ -132,7 +133,7 @@ Research hoàn tất khi đủ ba seed, mỗi seed `global_step=200`, cùng 512 
     notebook.metadata.kernelspec = {"display_name": "Python 3", "language": "python", "name": "python3"}
     notebook.metadata.language_info = {"name": "python"}
     nbf.validate(notebook)
-    nbf.write(notebook, destination)
+    write_notebook(notebook, destination)
 
 
 if __name__ == "__main__":

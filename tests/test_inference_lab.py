@@ -79,7 +79,7 @@ def test_notebook_has_one_path_and_setup_failure_keeps_zero_step_evidence(tmp_pa
         ast.parse(cell)
     assert not any("MODE=" in cell or "MODE =" in cell for cell in cells)
     assert any("report=run_inference_lab(" in cell for cell in cells)
-    setup = next(cell for cell in cells if cell.startswith("import os, shutil"))
+    setup = next(cell for cell in cells if "import os, shutil" in cell.splitlines())
     code = tmp_path / "source"
     lock = code / "reports/experiments/run-004-seed-stability/kaggle-preflight-lock-rerun-001.json"
     lock.parent.mkdir(parents=True)

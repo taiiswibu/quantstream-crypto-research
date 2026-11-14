@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quantstream-local"
-version = "0.1.0"
+version = "0.2.0"
 description = "Reproducible local crypto research, backtesting and paper trading"
 requires-python = ">=3.11,<3.14"
 dependencies = [
@@ -12,7 +12,7 @@ dependencies = [
   "duckdb>=1.1,<3", "scikit-learn>=1.5,<2", "joblib>=1.4,<2",
   "xgboost-cpu>=2.1,<4; platform_system == 'Linux'",
   "xgboost>=2.1,<4; platform_system != 'Linux'",
-  "streamlit>=1.50,<2", "plotly>=5.24,<8", "websockets>=14,<17"
+  "streamlit>=1.50,<2", "plotly>=5.24,<8", "websockets>=14,<17", "filelock>=3.16,<5"
 ]
 
 [project.optional-dependencies]

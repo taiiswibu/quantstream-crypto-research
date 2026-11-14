@@ -1,6 +1,7 @@
 """Build a standalone, read-only Kaggle probe for blocked Run 005 environments."""
 import hashlib
 from pathlib import Path
+from quantstream.notebook_style import write_notebook
 
 import nbformat as nbf
 
@@ -40,7 +41,7 @@ display(FileLink(str(archive)))"""),
             if before.cell_type == after.cell_type:
                 after.id = before.id
     nbf.validate(notebook)
-    nbf.write(notebook, destination)
+    write_notebook(notebook, destination)
 
 
 if __name__ == "__main__":
