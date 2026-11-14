@@ -333,7 +333,13 @@ def import_bundle(root, folder):
             "source_metadata_sha256": sha256(destination / "metadata.json"),
             "origin": {
                 "kind": "notebook_bundle",
-                "label": "Notebook 09 · " + family.upper(),
+                "label": (
+                    "Notebook 10"
+                    if original.get("research_run") == "run007"
+                    else "Notebook 09"
+                )
+                + " · "
+                + family.upper(),
                 "status": "hash_and_prediction_parity_verified",
             },
             "parity_max_abs_delta": parity_delta,

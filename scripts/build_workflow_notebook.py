@@ -8,7 +8,7 @@ import nbformat as nbf
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def build(source):
+def build(source, write=True):
     if not re.fullmatch(r"[0-9a-f]{40}", source):
         raise ValueError("Pin the actual published source commit")
     cells = [
@@ -196,8 +196,10 @@ print('Giữ Save Version của Kaggle cùng ZIP để có bằng chứng notebo
     nb.metadata.language_info = {"name": "python"}
     nbf.validate(nb)
     destination = ROOT / "notebooks/09_Kaggle_EndToEnd_Training.ipynb"
-    nbf.write(nb, destination)
-    print(destination)
+    if write:
+        nbf.write(nb, destination)
+        print(destination)
+    return nb
 
 
 if __name__ == "__main__":

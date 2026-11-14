@@ -124,8 +124,15 @@ def history(root, metadata, chart):
         if records:
             st.dataframe(pd.DataFrame(records), width="stretch", hide_index=True)
         st.caption(
-            "Test của Run 006 là kiểm tra hồi cứu. Chưa phải dữ liệu tương lai độc lập."
+            "Block lịch sử này là kiểm tra hồi cứu. Chưa phải dữ liệu tương lai độc lập."
         )
+        gate = original.get("validation_gate")
+        if gate is not None:
+            st.dataframe(pd.DataFrame([gate]), width="stretch", hide_index=True)
+            if not gate["beats_zero_on_mean_and_every_fold"]:
+                st.warning(
+                    "Model chưa vượt baseline return bằng 0 trên trung bình và từng fold validation."
+                )
         folder = Path(root) / metadata["source_metadata_path"]
         curves = []
         for path in folder.parent.glob("history_*.csv"):
@@ -136,7 +143,9 @@ def history(root, metadata, chart):
                 px.line(
                     data,
                     x="epoch",
-                    y="train_huber_scaled",
+                    y="train_loss_scaled"
+                    if "train_loss_scaled" in data
+                    else "train_huber_scaled",
                     color="stage",
                     markers=True,
                     render_mode="svg",
