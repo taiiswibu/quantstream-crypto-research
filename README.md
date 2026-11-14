@@ -1,5 +1,8 @@
 # QuantStream
 
+**Notebook đầu-cuối:** [09_Kaggle_EndToEnd_Training.ipynb](notebooks/09_Kaggle_EndToEnd_Training.ipynb) thu thập, tiền xử lý, chuẩn hóa, chia tập thời gian, tuning Ridge/XGBoost/TCN/GRU và xuất model về app. [Cách chạy và nạp model](docs/END_TO_END_TRAINING_VI.md). Lượt GPU đầy đủ cần được thực thi trên Kaggle; code/test CPU không thay thế kết quả train.
+
+
 **Local Terminal:** giao diện Streamlit + Plotly, model CPU, dữ liệu Binance thật và paper trading. Xem [hướng dẫn mở app trên Windows](docs/LOCAL_TERMINAL_VI.md). Đọc kiểm định của lần fit local trước khi đánh giá model; app dùng cho paper trading.
 
 

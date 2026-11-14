@@ -40,6 +40,9 @@ class SequenceRegressor(nn.Module):
                                          CausalBlock(width, width, 2),
                                          CausalBlock(width, width, 4),
                                          CausalBlock(width, width, 8))
+            activation = {"gelu": nn.GELU, "relu": nn.ReLU, "silu": nn.SiLU}[params.get("activation", "gelu")]
+            for block in self.encoder:
+                block.activation = activation()
         elif self.family == "gru":
             self.encoder = nn.GRU(len(FEATURES), width, batch_first=True)
         else:

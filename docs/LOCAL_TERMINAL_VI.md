@@ -41,7 +41,7 @@ Nếu cài đặt bị ngắt, chạy lại `INSTALL_WINDOWS.cmd`. Khi port 8501
 | Danh mục | Vốn giả lập 10.000 USDT, lệnh chờ, phí/slippage, equity và sổ lệnh CSV |
 | Dữ liệu | Nguồn, thời gian, thiếu nến, checksum, health log và fit lại từ nến đã lưu |
 
-Model trong app là baseline local mới, không phải adapter Chronos Run 004/005 hay champion TCN cũ. Không chọn model tốt nhất từ một lượt inference ngẫu nhiên. Kết quả Run 001–005 thuộc các thí nghiệm khác và không được gộp vào bảng kiểm định local.
+Model mặc định của app là baseline local. Bản mới hỗ trợ nạp checkpoint TCN cũ và model xuất từ Notebook 09; adapter Chronos chưa được nối vào terminal. Xem [quy trình notebook → model → app](END_TO_END_TRAINING_VI.md). Không chọn model tốt nhất từ một lượt inference ngẫu nhiên. Kết quả Run 001–005 thuộc các thí nghiệm khác và không được gộp vào bảng kiểm định local.
 
 Dự báo là return sau thời gian chờ 1 giờ, giữ 4 giờ. Giá hiện tại từ ticker; nến chỉ gồm nến đã đóng. Thời gian hiển thị UTC. Một forecast mỗi model/tài sản/nến; không tạo lại lịch sử dự báo bằng model fit sau đó.
 
