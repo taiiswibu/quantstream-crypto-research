@@ -129,6 +129,9 @@ def predict_champion(root, samples):
     if meta["type"] == "tcn":
         from .deep import predict_tcn_file
         return predict_tcn_file(path, samples)
+    if meta["type"] == "portable":
+        from .workflow_model import predict_file
+        return predict_file(path, samples, meta)
     raise ValueError("Unsupported serving model")
 
 

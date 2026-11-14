@@ -9,11 +9,13 @@ if not exist ".venv\Scripts\python.exe" (
 if errorlevel 1 goto fail
 .venv\Scripts\python.exe -m pip install --no-deps -e .
 if errorlevel 1 goto fail
+if /I "%~1"=="--inference-only" goto ready
 if not exist "workspace\artifacts\local_registry.json" (
     echo Downloading 90 days of public candles and fitting CPU baselines...
     .venv\Scripts\python.exe -m quantstream.terminal --root workspace setup --days 90
     if errorlevel 1 goto fail
 )
+:ready
 echo.
 echo Ready. Open START_WINDOWS.cmd
 exit /b 0

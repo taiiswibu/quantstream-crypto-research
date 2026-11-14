@@ -9,7 +9,7 @@ if not exist ".venv\Scripts\python.exe" (
 if errorlevel 1 goto fail
 .venv\Scripts\python.exe -m pip install -r requirements-local.txt
 if errorlevel 1 goto fail
-.venv\Scripts\python.exe -m pip install --no-deps wheels\quantstream_local-0.2.0-py3-none-any.whl
+.venv\Scripts\python.exe -m pip install --no-deps wheels\quantstream_local-0.3.0-py3-none-any.whl
 if errorlevel 1 goto fail
 echo.
 echo Installation complete. Open START_WINDOWS.cmd

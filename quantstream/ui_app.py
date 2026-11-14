@@ -13,6 +13,7 @@ from plotly.subplots import make_subplots
 import streamlit as st
 
 from . import terminal
+from . import model_ui
 from .common import write_json
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -79,15 +80,22 @@ def main():
         symbol = st.selectbox("Thị trường", cfg.symbols, format_func=lambda s: s.replace("USDT", " / USDT"))
         names = list(registry) or ["ridge"]
         selected = st.selectbox("Model", names, index=names.index(meta.get("model", names[0])),
-                                format_func=lambda n: {"ridge": "Ridge · CPU", "xgboost_d3": "XGBoost · CPU"}.get(n,n), disabled=not registry)
-        if registry and selected != meta.get("model") and st.button("Dùng model này", width="stretch"):
-            try:
-                with FileLock(str(ROOT / "terminal.lock"), timeout=2):
-                    terminal.activate(ROOT, selected)
-                terminal.local_step(ROOT, refresh=False)
-                st.rerun()
-            except Exception as error:
-                st.error(str(error))
+                                format_func=lambda n: model_ui.label(registry.get(n, {"model":n})), disabled=not registry)
+        if registry and selected != meta.get("model"):
+            state=terminal.read_json(ROOT/"paper/state.json",{})
+            different=bool(state and state.get("model_sha256")!=registry[selected]["sha256"])
+            open_positions=any(a.get("qty") for a in state.get("assets",{}).values())
+            if different and open_positions:
+                st.warning("Còn vị thế paper. Dừng lệnh mới ở trang Danh mục và chờ vị thế thoát trước khi đổi model.")
+            title="Lưu phiên và dùng model này" if different else "Dùng model này"
+            if st.button(title,width="stretch",disabled=different and open_positions):
+                try:
+                    with FileLock(str(ROOT/"terminal.lock"),timeout=2):
+                        terminal.activate(ROOT,selected,archive_empty=different)
+                    terminal.local_step(ROOT,refresh=not (ROOT/"data/processed/bars.parquet").exists())
+                    st.rerun()
+                except Exception as error:
+                    st.error(str(error))
         st.divider()
         auto = st.toggle("Tự đồng bộ mỗi phút", value=False, disabled=not registry)
         if st.button("Đồng bộ thị trường", width="stretch", disabled=not registry):
@@ -107,6 +115,11 @@ def main():
                 st.rerun()
             except Exception as error:
                 st.error(str(error))
+        model_ui.import_panel(ROOT,PROJECT)
+        return
+    if not meta:
+        st.info("Model đã nạp. Chọn model ở sidebar rồi bấm Dùng model này để bắt đầu dự báo.")
+        model_ui.import_panel(ROOT,PROJECT)
         return
     route = st.radio("Trang", ["Thị trường", "Dự báo", "Kiểm định", "Danh mục", "Dữ liệu"], horizontal=True, label_visibility="collapsed")
     st.session_state.setdefault("last_poll", time.monotonic())
@@ -140,7 +153,7 @@ def main():
 def market(bars, symbol, forecasts, meta):
     asset = bars[bars.symbol.eq(symbol)].sort_values("timestamp")
     last = asset.iloc[-1]
-    forecast = next((r for r in forecasts if r["symbol"] == symbol), {})
+    forecast = next((r for r in forecasts if r["symbol"] == symbol and r.get("model_sha256") == meta.get("sha256")), {})
     quote = terminal.read_json(ROOT / "quotes.json", {}).get("quotes", {}).get(symbol, {})
     if quote and pd.Timestamp.now(tz="UTC") - pd.Timestamp(quote["received_at"]) > pd.Timedelta(minutes=2):
         st.warning("Giá ticker đã quá 2 phút. Bấm Đồng bộ thị trường để cập nhật.")
@@ -151,7 +164,7 @@ def market(bars, symbol, forecasts, meta):
     change = quote.get("priceChangePercent", (last.close/asset.iloc[-25].close-1)*100)
     a.metric("Giá gần nhất · USDT" if quote else "Đóng nến · USDT", f"{quote.get('lastPrice',last.close):,.2f}", f"{change:+.2f}% / 24h")
     b.metric("Khối lượng 24h · USDT", f"{quote.get('quoteVolume',asset.tail(24).quote_volume.sum())/1e6:,.1f}M")
-    c.metric("Model đang dùng", "Ridge" if meta["model"]=="ridge" else "XGBoost")
+    c.metric("Model đang dùng", model_ui.label(meta))
     d.metric("Nến đóng gần nhất", (last.timestamp+pd.Timedelta(hours=1)).strftime("%H:%M UTC"))
     st.write("")
     left,right = st.columns([3,1.1], gap="large")
@@ -175,8 +188,12 @@ def market(bars, symbol, forecasts, meta):
         details="".join(f'<div class="detail"><span>{label}</span><b>{escape(date(forecast.get(key)))}</b></div>' for label,key in [("Nến tín hiệu","decision_time"),("Vào giả định","entry_time"),("Hết khung dự báo","horizon_end")])
         st.markdown(f'<div class="forecast"><div class="eyebrow">MODEL FORECAST · 4H</div><div class="number" style="color:{color}">{text}</div><p class="small">Lợi suất dự báo, không phải lệnh mua/bán.</p>{details}<p class="small" style="margin-top:16px">Khung dự báo 4 giờ, chờ vào 1 giờ theo cấu hình kiểm định.</p></div>',unsafe_allow_html=True)
         st.caption(f"Model fit: {date(meta['created_at'])}")
-        ratio=meta["validation"]["mse_ratio_to_zero"]
-        st.caption("Validation MSE / zero return: " + f"{ratio:.4f}" + (" · chưa vượt baseline" if ratio>=1 else " · thấp hơn baseline"))
+        validation=meta.get("validation") or {}
+        ratio=validation.get("mse_ratio_to_zero")
+        if ratio is not None:
+            st.caption("Validation MSE / zero return: " + f"{ratio:.4f}" + (" · chưa vượt baseline" if ratio>=1 else " · thấp hơn baseline"))
+        else:
+            st.caption("Checkpoint đã nhập. Xem nguồn và loss lịch sử ở trang Kiểm định.")
 
 
 def predictions(symbol,meta):
@@ -206,14 +223,24 @@ def predictions(symbol,meta):
         st.dataframe(hist[["symbol","decision_time","prediction","target_return","model","recorded_at"]],width="stretch",hide_index=True)
         st.download_button("Tải lịch sử dự báo CSV",hist.to_csv(index=False).encode(),"forecasts.csv","text/csv")
     st.divider()
+    if meta.get("type")=="tcn" or meta.get("hyperparameters",{}).get("family") in ("tcn","gru"):
+        try:
+            model_ui.neural_inputs(ROOT,meta,symbol,chart)
+        except Exception as error:
+            st.error(str(error))
+        return
     st.subheader("Feature và dự báo")
     values=terminal.feature_contributions(ROOT,symbol).head(10).sort_values("value")
     chart(go.Figure(go.Bar(x=values.value,y=values.feature,orientation="h",marker_color=[GREEN if x>=0 else GOLD for x in values.value])),340)
     st.caption("Ridge: hệ số × feature đã chuẩn hóa. XGBoost: độ quan trọng tổng quát; không phải giải thích nhân quả.")
-    st.caption(f"80% sai số OOF nằm trong ±{meta['residual_abs_q80']:.2%}; không bảo đảm coverage tương lai.")
+    if meta.get("residual_abs_q80") is not None:
+        st.caption(f"80% sai số OOF nằm trong ±{meta['residual_abs_q80']:.2%}; không bảo đảm coverage tương lai.")
 
 
 def research(meta):
+    if meta.get("type") in ("tcn","portable"):
+        model_ui.history(ROOT,meta,chart)
+        return
     run=ROOT/meta["run"]
     st.subheader("Kiểm định theo thời gian")
     st.caption("Ba fold mở rộng, purge nhãn chồng lấn. Validation đã dùng so model, chưa phải test đầu tư độc lập.")
@@ -306,7 +333,10 @@ def data_page(bars,meta):
     st.divider()
     st.subheader("Fit lại model local")
     st.caption("Dùng nến đã lưu và tham số cố định; cần lưu phiên paper cũ trước.")
-    if st.button("Fit lại Ridge và XGBoost"):
+    state=terminal.read_json(ROOT/"paper/state.json",{})
+    if state:
+        st.info("Đang có phiên paper. Lưu phiên ở trang Danh mục trước khi fit lại; nạp checkpoint không cần fit lại.")
+    if st.button("Fit lại Ridge và XGBoost",disabled=bool(state)):
         try:
             with FileLock(str(ROOT/"terminal.lock"),timeout=2),st.spinner("Đang fit trên CPU…"):
                 terminal.fit_local(ROOT)
@@ -314,3 +344,6 @@ def data_page(bars,meta):
             st.rerun()
         except Exception as error:
             st.error(str(error))
+
+    st.divider()
+    model_ui.import_panel(ROOT,PROJECT)
