@@ -10,7 +10,7 @@ from .features import build_features
 from .research import load_metadata, predict_champion
 
 
-def paper_step(root, cfg, now=None, refresh_data=True, price_provider=latest_price):
+def paper_step(root, cfg, now=None, refresh_data=True, price_provider=latest_price, allow_new_entries=True):
     root = Path(root)
     current = pd.Timestamp(now) if now is not None else pd.Timestamp.now(tz="UTC")
     meta, _ = load_metadata(root)
@@ -53,6 +53,10 @@ def paper_step(root, cfg, now=None, refresh_data=True, price_provider=latest_pri
             asset["halted"] = True
             asset["pending"] = None
         pending = asset["pending"]
+        if not allow_new_entries and pending is not None:
+            state["events"].append({"time": str(current), "symbol": symbol, "side": "CANCEL", "reason": "new_entries_paused"})
+            asset["pending"] = None
+            pending = None
         if pending is not None:
             due = pd.Timestamp(pending["due"])
             if current > due + pd.Timedelta(minutes=2):
@@ -81,7 +85,7 @@ def paper_step(root, cfg, now=None, refresh_data=True, price_provider=latest_pri
                 if fresh and np.isfinite(row.prediction):
                     state.setdefault("predictions", []).append({"symbol": symbol, "decision_time": decision,
                                                                 "prediction": float(row.prediction)})
-                if fresh and np.isfinite(row.prediction) and row.prediction > meta["threshold"] and not asset["qty"] and not asset["halted"]:
+                if allow_new_entries and fresh and np.isfinite(row.prediction) and row.prediction > meta["threshold"] and not asset["qty"] and not asset["halted"]:
                     asset["pending"] = {"due": (row.decision_time + pd.Timedelta(hours=cfg.execution_lag_bars)).isoformat(),
                                         "signal_time": decision, "prediction": float(row.prediction)}
         asset["last_price"] = price

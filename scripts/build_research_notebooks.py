@@ -1,5 +1,6 @@
 """Build separate research notebooks without replacing executed results or run 001."""
 from pathlib import Path
+from quantstream.notebook_style import write_notebook
 import nbformat as nbf
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,7 +59,7 @@ def save(name, cells):
     nb = nbf.v4.new_notebook(cells=cells)
     nb.metadata.kernelspec = {"display_name": "Python 3", "language": "python", "name": "python3"}
     nb.metadata.language_info = {"name": "python", "version": "3.12"}
-    nbf.write(nb, path)
+    write_notebook(nb, path)
 
 
 save("04_Kaggle_Model_Search.ipynb", [

@@ -1,0 +1,57 @@
+{
+  "actual_module_versions": {
+    "matplotlib": "3.10.0",
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "pyarrow": "23.0.1",
+    "scipy": "1.16.3",
+    "sklearn": "1.6.1",
+    "torch": "2.11.0+cu130"
+  },
+  "actual_numpy_kernel": {
+    "file": "/usr/local/lib/python3.13/dist-packages/numpy/__init__.py",
+    "version": "2.1.3"
+  },
+  "artifact_sha256": "547404c9cc40228e0578b54726a506f8a54e183cd476a0aa1f3cb21c5eb20347",
+  "cuda": "13.0",
+  "current_inventory_count": 937,
+  "gpu": "Tesla T4",
+  "legacy_inventory_diff": {
+    "chronos-forecasting": {
+      "actual": null,
+      "expected": "2.3.2"
+    },
+    "torchao": {
+      "actual": "0.10.0",
+      "expected": null
+    }
+  },
+  "limitations": [
+    "Probe is not a Run 005 inference result.",
+    "Run 004 did not record its imported NumPy version/path.",
+    "The matching legacy inventory is metadata identity, not proof of historical imported modules."
+  ],
+  "model_downloads": 0,
+  "numpy_bridge_sum": 2.0,
+  "numpy_metadata_candidates": [
+    {
+      "root": "/usr/local/lib/python3.13/dist-packages",
+      "version": "2.1.3"
+    },
+    {
+      "root": "/usr/lib/python3/dist-packages",
+      "version": "1.26.4"
+    }
+  ],
+  "numpy_metadata_first": "2.1.3",
+  "numpy_metadata_legacy_last": "1.26.4",
+  "old_inventory_count": 937,
+  "optimizer_steps": 0,
+  "package_mutations": 0,
+  "pip_check_output": "bigframes 2.51.0 requires google-cloud-bigquery-storage, which is not installed.\ngoogle-colab 1.0.0 has requirement jupyter-server==2.20.0, but you have jupyter-server 2.12.5.\ngoogle-colab 1.0.0 has requirement pandas==2.2.3, but you have pandas 2.3.3.\ngoogle-colab 1.0.0 has requirement requests==2.32.4, but you have requests 2.34.2.\ndopamine-rl 4.1.2 has requirement gym<=0.25.2, but you have gym 0.26.2.\nmoviepy 1.0.3 has requirement decorator<5.0,>=4.0.2, but you have decorator 5.3.1.\nydf 0.15.0 has requirement protobuf<7.0.0,>=5.29.1, but you have protobuf 7.36.2.\ngradio 6.30.0 has requirement pillow<13.0,>=8.0, but you have pillow 13.0.0.\n",
+  "pip_check_returncode": 1,
+  "probe_status": "probe_completed",
+  "protocol": "run-005-runtime-probe-v1",
+  "python": "3.13.16",
+  "status": "verified_probe_not_inference"
+}
