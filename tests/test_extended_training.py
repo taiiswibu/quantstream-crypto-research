@@ -51,6 +51,29 @@ def test_validation_gate_cannot_hide_a_losing_fold_behind_the_mean():
     assert not result["beats_zero_on_mean_and_every_fold"]
 
 
+def test_windows_snapshot_paths_are_portable_without_changing_parent_bytes(tmp_path):
+    from quantstream.common import write_json, sha256
+
+    parent = tmp_path / "windows-parent"
+    synthetic_dataset(parent)
+    path = parent / "dataset_manifest.json"
+    original = json.loads(path.read_text())
+    original["files"] = {
+        name.replace("/", "\\"): value for name, value in original["files"].items()
+    }
+    write_json(path, original)
+    expected = sha256(path)
+    root = tmp_path / "reused"
+    manifest = extended_training.prepare_dataset(root, parent)
+    assert set(manifest["files"]) == {
+        "data/processed/bars.parquet",
+        "data/processed/features.parquet",
+        "split.json",
+    }
+    assert sha256(path) == expected
+    assert sha256(root / "reference/base_dataset_manifest.json") == expected
+
+
 def test_attached_snapshot_zip_extracts_only_dataset_members(tmp_path):
     import zipfile
     from quantstream.common import write_json
@@ -65,8 +88,8 @@ def test_attached_snapshot_zip_extracts_only_dataset_members(tmp_path):
     inputs.mkdir()
     with zipfile.ZipFile(inputs / "QuantStream_Run006_Output.zip", "w") as zipped:
         for name in ["dataset_manifest.json", *manifest["files"]]:
-            zipped.write(parent / name, "nested/" + name)
-        zipped.writestr("nested/deployment/model.pt", "do not extract")
+            zipped.write(parent / name, "one/nested/" + name)
+        zipped.writestr("one/nested/deployment/model.pt", "do not extract")
         zipped.writestr("../../outside.txt", "do not extract")
     found = extended_training.find_parent_snapshot(inputs, tmp_path / "cache")
     assert found and (found / "data/processed/features.parquet").exists()

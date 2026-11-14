@@ -1,6 +1,6 @@
 """Run 007: controlled training-depth, loss and recency comparisons."""
 
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import json
 import shutil
 import zipfile
@@ -30,11 +30,11 @@ def find_parent_snapshot(input_root, cache):
                 names = [
                     name
                     for name in zipped.namelist()
-                    if Path(name).name == "dataset_manifest.json"
+                    if PurePosixPath(name).name == "dataset_manifest.json"
                 ]
                 if len(names) != 1:
                     raise ValueError("Ambiguous parent manifest in attached ZIP")
-                prefix = str(Path(names[0]).parent)
+                prefix = str(PurePosixPath(names[0]).parent)
                 prefix = "" if prefix == "." else prefix + "/"
                 allowed = [
                     "dataset_manifest.json",
@@ -89,18 +89,25 @@ def prepare_dataset(root, parent=None):
     if parent is None:
         base = collect(root)
         parent_sha = sha256(manifest_path)
+        source_manifest = manifest_path
     else:
         parent = Path(parent)
         base = json.loads((parent / "dataset_manifest.json").read_text())
         parent_sha = sha256(parent / "dataset_manifest.json")
+        source_manifest = parent / "dataset_manifest.json"
         allowed = {
             "data/processed/bars.parquet",
             "data/processed/features.parquet",
             "split.json",
         }
-        if set(base["files"]) != allowed:
+        normalized_files = {
+            name.replace("\\", "/"): digest for name, digest in base["files"].items()
+        }
+        if set(normalized_files) != allowed or len(normalized_files) != len(
+            base["files"]
+        ):
             raise ValueError("Unexpected paths in parent dataset manifest")
-        for name, expected in base["files"].items():
+        for name, expected in normalized_files.items():
             if sha256(parent / name) != expected:
                 raise ValueError("Parent dataset changed: " + name)
             destination = root / name
@@ -135,14 +142,19 @@ def prepare_dataset(root, parent=None):
         ],
     }
     write_json(root / "split.json", split)
+    normalized_files = {
+        name.replace("\\", "/"): digest for name, digest in base["files"].items()
+    }
     manifest = {
         **base,
         "research_protocol": "run007-depth-v1",
         "split": split,
         "parent_dataset_manifest_sha256": parent_sha,
-        "files": {**base["files"], "split.json": sha256(root / "split.json")},
+        "files": {**normalized_files, "split.json": sha256(root / "split.json")},
     }
-    write_json(root / "reference/base_dataset_manifest.json", base)
+    reference = root / "reference/base_dataset_manifest.json"
+    reference.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source_manifest, reference)
     write_json(manifest_path, manifest)
     return manifest
 
