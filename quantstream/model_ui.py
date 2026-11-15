@@ -23,7 +23,7 @@ def label(metadata):
 def import_panel(root, project):
     st.subheader("Nạp model đã train")
     st.caption(
-        "TCN: model.pt + tcn_metadata.json. Notebook 09: thư mục deployment đã giải nén. Chỉ nạp, không train lại."
+        "TCN: model.pt + tcn_metadata.json. Notebook 09/10/11: thư mục model bundle đã giải nén. Chỉ nạp, không train lại."
     )
     folder = st.text_input(
         "Thư mục checkpoint", value=str(Path(project) / "artifacts/tcn")

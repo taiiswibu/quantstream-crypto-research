@@ -266,7 +266,7 @@ def import_bundle(root, folder):
         manifest = terminal.read_json(folder / "bundle_manifest.json")
         if not manifest or manifest.get("format") != "quantstream-notebook-v1":
             raise ValueError(
-                "Chọn thư mục deployment có bundle_manifest.json của notebook 09"
+                "Chọn thư mục model đã giải nén có bundle_manifest.json"
             )
         for name, expected in manifest.get("files", {}).items():
             if (
