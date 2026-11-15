@@ -223,6 +223,9 @@ def predictions(symbol,meta):
         st.dataframe(hist[["symbol","decision_time","prediction","target_return","model","recorded_at"]],width="stretch",hide_index=True)
         st.download_button("Tải lịch sử dự báo CSV",hist.to_csv(index=False).encode(),"forecasts.csv","text/csv")
     st.divider()
+    if meta.get("hyperparameters",{}).get("family") == "zero_return":
+        st.info("Baseline return bằng 0 là mốc đối chiếu, không có feature importance hoặc tín hiệu đã học.")
+        return
     if meta.get("type")=="tcn" or meta.get("hyperparameters",{}).get("family") in ("tcn","gru"):
         try:
             model_ui.neural_inputs(ROOT,meta,symbol,chart)
@@ -280,11 +283,15 @@ def research(meta):
 
 
 def portfolio(cfg,meta):
+    from .forecast_contract import allows_paper_entries
+    accepted = allows_paper_entries(meta)
     st.subheader("Danh mục mô phỏng")
+    if not accepted:
+        st.info("Chưa có model đạt điều kiện validation. Tiếp tục theo dõi dự báo; tạm dừng nhận lệnh mới.")
     st.caption("10.000 USDT mô phỏng. App/worker dừng thì mô phỏng không tiếp tục chạy.")
     controls=terminal.read_json(ROOT/"controls.json",{"paper_enabled":False})
     a,b=st.columns([1,3])
-    if a.button("Bắt đầu mô phỏng",disabled=controls["paper_enabled"],type="primary"):
+    if a.button("Bắt đầu mô phỏng",disabled=controls["paper_enabled"] or not accepted,type="primary"):
         write_json(ROOT/"controls.json",{"paper_enabled":True})
         refresh()
         st.rerun()

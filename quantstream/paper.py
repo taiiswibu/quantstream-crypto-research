@@ -14,6 +14,8 @@ def paper_step(root, cfg, now=None, refresh_data=True, price_provider=latest_pri
     root = Path(root)
     current = pd.Timestamp(now) if now is not None else pd.Timestamp.now(tz="UTC")
     meta, _ = load_metadata(root)
+    from .forecast_contract import allows_paper_entries
+    allow_new_entries = allow_new_entries and allows_paper_entries(meta)
     if json.dumps(meta["config"], sort_keys=True) != json.dumps(cfg.to_dict(), sort_keys=True):
         raise ValueError("Paper config must match the selected model's frozen configuration.")
     path = root / "paper/state.json"

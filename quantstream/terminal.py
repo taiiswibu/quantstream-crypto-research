@@ -404,6 +404,12 @@ def predict_latest(root):
     root = Path(root)
     cfg = config(root)
     meta, _ = load_metadata(root)
+    if meta.get("forecast_contract_sha256") and meta[
+        "forecast_contract_sha256"
+    ] != sha256(Path(__file__).with_name("forecast_contract.py")):
+        raise ValueError(
+            "Forecast-unit contract changed; inspect the model before inference"
+        )
     if meta.get("type", "sklearn") == "sklearn":
         import sklearn
 
@@ -576,6 +582,8 @@ def feature_contributions(root, symbol):
     meta, path = load_metadata(root)
     if meta.get("type") == "portable":
         family = meta["hyperparameters"]["family"]
+        if family == "zero_return":
+            return pd.DataFrame(columns=["feature", "value"])
         if family == "xgboost":
             import xgboost as xgb
 
@@ -586,6 +594,8 @@ def feature_contributions(root, symbol):
                 {"feature": FEATURES, "value": [score.get(f, 0) for f in FEATURES]}
             ).sort_values("value", ascending=False)
         if family == "ridge":
+            from .forecast_contract import target_scale
+
             data = read_json(path)
             samples = build_features(
                 pd.read_parquet(root / "data/processed/bars.parquet"), config(root)
@@ -596,7 +606,12 @@ def feature_contributions(root, symbol):
             )
             return (
                 pd.DataFrame(
-                    {"feature": FEATURES, "value": x * np.asarray(data["coef"])}
+                    {
+                        "feature": FEATURES,
+                        "value": x
+                        * np.asarray(data["coef"])
+                        * target_scale(row, meta["hyperparameters"])[0],
+                    }
                 )
                 .assign(magnitude=lambda f: f.value.abs())
                 .sort_values("magnitude", ascending=False)
