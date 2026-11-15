@@ -266,7 +266,7 @@ def import_bundle(root, folder):
         manifest = terminal.read_json(folder / "bundle_manifest.json")
         if not manifest or manifest.get("format") != "quantstream-notebook-v1":
             raise ValueError(
-                "Chọn thư mục deployment có bundle_manifest.json của notebook 09"
+                "Chọn thư mục model đã giải nén có bundle_manifest.json"
             )
         for name, expected in manifest.get("files", {}).items():
             if (
@@ -285,7 +285,11 @@ def import_bundle(root, folder):
         ):
             raise ValueError("Source feature khác notebook đã train")
         family = original["hyperparameters"]["family"]
-        if family not in ("ridge", "xgboost", "tcn", "gru"):
+        if original.get("forecast_contract_sha256") and original[
+            "forecast_contract_sha256"
+        ] != sha256(Path(__file__).with_name("forecast_contract.py")):
+            raise ValueError("Forecast-unit contract differs from the exported model")
+        if family not in ("ridge", "xgboost", "tcn", "gru", "zero_return"):
             raise ValueError("Chưa hỗ trợ họ model này")
         if family in ("tcn", "gru") and original.get("sequence_code_sha256") != sha256(
             Path(__file__).with_name("search.py")
@@ -334,9 +338,13 @@ def import_bundle(root, folder):
             "origin": {
                 "kind": "notebook_bundle",
                 "label": (
-                    "Notebook 10"
-                    if original.get("research_run") == "run007"
-                    else "Notebook 09"
+                    "Notebook 11"
+                    if original.get("research_run") == "run008"
+                    else (
+                        "Notebook 10"
+                        if original.get("research_run") == "run007"
+                        else "Notebook 09"
+                    )
                 )
                 + " · "
                 + family.upper(),

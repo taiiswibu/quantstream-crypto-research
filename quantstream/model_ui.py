@@ -23,7 +23,7 @@ def label(metadata):
 def import_panel(root, project):
     st.subheader("Nạp model đã train")
     st.caption(
-        "TCN: model.pt + tcn_metadata.json. Notebook 09: thư mục deployment đã giải nén. Chỉ nạp, không train lại."
+        "TCN: model.pt + tcn_metadata.json. Notebook 09/10/11: thư mục model bundle đã giải nén. Chỉ nạp, không train lại."
     )
     folder = st.text_input(
         "Thư mục checkpoint", value=str(Path(project) / "artifacts/tcn")
@@ -60,6 +60,10 @@ def history(root, metadata, chart):
     st.caption(
         "Báo cáo lịch sử đi kèm checkpoint. Không dùng checkpoint đã refit toàn development để dựng lại OOF trên các fold cũ."
     )
+    if metadata.get("training_last_label"):
+        st.caption("Nhãn train cuối (UTC): " + str(metadata["training_last_label"]))
+    if metadata.get("artifact_role") == "all_observed_research_refit_no_independent_test":
+        st.caption("Checkpoint này đã refit toàn bộ nhãn quan sát. Chưa có test độc lập cho chính các weights này.")
     if metadata["type"] == "tcn":
         loss = []
         for fold in original.get("history", []):

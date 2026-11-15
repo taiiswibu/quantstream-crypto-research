@@ -255,11 +255,13 @@ def neural_train(
             mask = (validation.is_validation & validation.eligible_window).to_numpy()
             if not mask.any() or not np.isfinite(prediction[mask]).all():
                 raise ValueError("No validation windows")
-            mse = float(
-                np.mean(
-                    (prediction[mask] - validation.target_return.to_numpy()[mask]) ** 2
-                )
-            )
+            from .forecast_contract import restore_return
+
+            actual = validation.get(
+                "_raw_target_return", validation.target_return
+            ).to_numpy()
+            raw_prediction = restore_return(prediction, validation, params)
+            mse = float(np.mean((raw_prediction[mask] - actual[mask]) ** 2))
             row["inner_validation_mse"] = mse
             if mse < best_mse:
                 best_mse, best_epoch, stale = mse, epoch, 0
@@ -273,7 +275,11 @@ def neural_train(
         print(Path(folder).name, row, flush=True)
         if scheduler is not None:
             scheduler.step()
-        if validation is not None and stale >= params.get("patience", 3):
+        if (
+            validation is not None
+            and epoch >= params.get("min_epochs", 1)
+            and stale >= params.get("patience", 3)
+        ):
             break
     if best is not None:
         model.load_state_dict(best)
@@ -303,6 +309,12 @@ def fit_model(train, params, seed, epochs, cfg, device, budget, folder):
             "first_decision": str(train.decision_time.min()),
         },
     )
+    if params.get("target_transform", "none") != "none":
+        from .forecast_contract import target_scale
+
+        train = train.copy()
+        train["_raw_target_return"] = train.target_return
+        train["target_return"] = train.target_return / target_scale(train, params)
     if params["family"] in ("tcn", "gru"):
         from .search import inner_split, with_context
 
@@ -334,7 +346,12 @@ def fit_model(train, params, seed, epochs, cfg, device, budget, folder):
         from sklearn.preprocessing import StandardScaler
         from sklearn.linear_model import Ridge
 
-        model = make_pipeline(StandardScaler(), Ridge(alpha=params["alpha"]))
+        model = make_pipeline(
+            StandardScaler(),
+            Ridge(
+                alpha=params["alpha"], fit_intercept=params.get("fit_intercept", True)
+            ),
+        )
     else:
         from xgboost import XGBRegressor
 
@@ -342,7 +359,7 @@ def fit_model(train, params, seed, epochs, cfg, device, budget, folder):
             n_estimators=params["n_estimators"],
             max_depth=params["max_depth"],
             learning_rate=params["learning_rate"],
-            min_child_weight=30,
+            min_child_weight=params.get("min_child_weight", 30),
             reg_lambda=params.get("reg_lambda", 10),
             subsample=0.85,
             colsample_bytree=0.85,
@@ -374,13 +391,19 @@ def fit_model(train, params, seed, epochs, cfg, device, budget, folder):
 
 
 def predict(fitted, frame):
+    from .forecast_contract import restore_return
+
+    if fitted["params"]["family"] == "zero_return":
+        return np.zeros(len(frame))
     if fitted["params"]["family"] in ("tcn", "gru"):
         from .deep import predict_tcn
 
-        return predict_tcn(
+        values = predict_tcn(
             fitted["model"], frame, fitted["mean"], fitted["std"], 48, fitted["device"]
         )
-    return fitted["model"].predict(frame[FEATURES])
+    else:
+        values = fitted["model"].predict(frame[FEATURES])
+    return restore_return(values, frame, fitted["params"])
 
 
 def forecast_metrics(rows):
@@ -469,7 +492,10 @@ def export_model(
     params = fitted["params"]
     family = params["family"]
     model = fitted["model"]
-    if family == "ridge":
+    if family == "zero_return":
+        path = output / "model.json"
+        write_json(path, {"constant": 0.0})
+    elif family == "ridge":
         path = output / "model.json"
         scaler = model.named_steps["standardscaler"]
         ridge = model.named_steps["ridge"]
@@ -524,6 +550,12 @@ def export_model(
         "test": test_report,
         "test_is_independent": False,
         "deployment_status": "research_only_paper",
+        "signal_approved": selection.get(
+            "signal_approved",
+            (selection.get("validation_gate") or {}).get(
+                "beats_zero_on_mean_and_every_fold", run_name != "run008"
+            ),
+        ),
         "model_file": path.name,
         "sha256": sha256(path),
     }

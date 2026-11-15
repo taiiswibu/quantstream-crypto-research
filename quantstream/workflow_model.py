@@ -8,20 +8,34 @@ from .features import FEATURES
 
 
 def predict_file(path, frame, metadata):
+    from .forecast_contract import restore_return
+
     path = Path(path)
     family = metadata["hyperparameters"]["family"]
+    if family == "zero_return":
+        if json.loads(path.read_text()).get("constant") != 0:
+            raise ValueError("Invalid zero-return baseline")
+        return np.zeros(len(frame))
     if family == "ridge":
         data = json.loads(path.read_text())
         x = (frame[FEATURES].to_numpy() - np.asarray(data["mean"])) / np.asarray(
             data["scale"]
         )
-        return x @ np.asarray(data["coef"]) + data["intercept"]
+        return restore_return(
+            x @ np.asarray(data["coef"]) + data["intercept"],
+            frame,
+            metadata["hyperparameters"],
+        )
     if family == "xgboost":
         import xgboost as xgb
 
         model = xgb.Booster()
         model.load_model(path)
-        return model.predict(xgb.DMatrix(frame[FEATURES]))
+        return restore_return(
+            model.predict(xgb.DMatrix(frame[FEATURES])),
+            frame,
+            metadata["hyperparameters"],
+        )
     import torch
     from .search import SequenceRegressor
     from .deep import predict_tcn
@@ -29,9 +43,10 @@ def predict_file(path, frame, metadata):
     payload = torch.load(path, map_location="cpu", weights_only=True)
     model = SequenceRegressor(metadata["hyperparameters"])
     model.load_state_dict(payload["state_dict"], strict=True)
-    return predict_tcn(
+    values = predict_tcn(
         model, frame, payload["mean"], payload["std"], payload["lookback"]
     )
+    return restore_return(values, frame, metadata["hyperparameters"])
 
 
 def check_parity(path, metadata, parity):
