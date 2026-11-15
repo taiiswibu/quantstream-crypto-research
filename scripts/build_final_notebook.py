@@ -47,6 +47,29 @@ def final_notebook(source):
         "parent = Path(os.environ['QUANTSTREAM_PARENT_SNAPSHOT']) if os.environ.get('QUANTSTREAM_PARENT_SNAPSHOT') else find_parent_snapshot(Path('/kaggle/input'),BASE/'snapshot-cache')\n"
         "print('Snapshot:',str(parent) if parent else 'Collect the same frozen period')\nmanifest = prepare_dataset(WORK,parent)",
     )
+    n.cells[6].source = """# Kiến trúc thật của hai họ neural trong giao thức cố định.
+from quantstream.final_research import conditions
+from quantstream.search import SequenceRegressor
+neural=[p for p in conditions(MAX_EPOCHS,MIN_EPOCHS) if p['family'] in ['tcn','gru'] and p['target_transform']=='none']
+architecture=[]
+fig,axes=plt.subplots(1,2,figsize=(12,6))
+for ax,params in zip(axes,neural):
+    model=SequenceRegressor(params)
+    architecture.append({'family':params['family'],'parameters':sum(p.numel() for p in model.parameters()),
+        'activation':'SiLU' if params['family']=='tcn' else 'sigmoid/tanh gates','context':48,'features':18,'width':32})
+    encoder='4 causal residual blocks; SiLU; dilations 1, 2, 4, 8' if params['family']=='tcn' else 'GRU; sigmoid gates and tanh state'
+    labels=['48 hourly steps × 18 features',encoder,'Last hidden state: 32','Dropout 0.15 → Linear(32, 1)']
+    for i,label in enumerate(labels):
+        y=.85-i*.21
+        ax.text(.5,y,label,ha='center',va='center',wrap=True,fontsize=9,
+            bbox={'boxstyle':'round,pad=1','facecolor':'#ecfdf5','edgecolor':'#0f766e'})
+        if i<3: ax.annotate('',xy=(.5,y-.15),xytext=(.5,y-.06),arrowprops={'arrowstyle':'->','color':'#64748b'})
+    ax.set(xlim=(0,1),ylim=(0,1),title=params['family'].upper());ax.axis('off')
+fig.suptitle('Fixed neural architectures · output units restored before evaluation')
+plt.tight_layout();fig.savefig(WORK/'figures/06-architecture.png',dpi=150,bbox_inches='tight');plt.show()
+display(pd.DataFrame(architecture))
+print(SequenceRegressor(neural[0]))
+del model"""
     n.cells[
         7
     ].source = """# Tám điều kiện cân bằng; sau đó kiểm tra một finalist mỗi họ trên ba seed.
@@ -96,6 +119,17 @@ display(pd.DataFrame([status]))"""
 display(pd.read_csv(WORK/'trials.csv'))
 from quantstream.final_plots import figures
 figures(WORK)"""
+    n.cells[8].source += """
+# Learning rate ghi trong lịch sử, không phải đường minh họa.
+fig,ax=plt.subplots(figsize=(11,4))
+for trial in pd.read_csv(WORK/'trials.csv').itertuples():
+    path=WORK/'trials'/f'{trial.number:03}'/'fold-0/early-stop/history.csv'
+    if path.exists():
+        h=pd.read_csv(path)
+        ax.plot(h.epoch,h.learning_rate,marker='.',label=f'{trial.params_family}/{trial.params_target_transform}')
+ax.set(title='Recorded learning rate · first fold',xlabel='Epoch',ylabel='Learning rate');ax.legend();ax.grid(alpha=.2)
+plt.tight_layout();fig.savefig(WORK/'figures/19-learning-rates.png',dpi=150,bbox_inches='tight');plt.show()
+"""
     n.cells[
         9
     ].source = """# Quyết định chỉ dùng development; khoảng tuần là chẩn đoán xấp xỉ.

@@ -188,6 +188,9 @@ def market(bars, symbol, forecasts, meta):
         details="".join(f'<div class="detail"><span>{label}</span><b>{escape(date(forecast.get(key)))}</b></div>' for label,key in [("Nến tín hiệu","decision_time"),("Vào giả định","entry_time"),("Hết khung dự báo","horizon_end")])
         st.markdown(f'<div class="forecast"><div class="eyebrow">MODEL FORECAST · 4H</div><div class="number" style="color:{color}">{text}</div><p class="small">Lợi suất dự báo, không phải lệnh mua/bán.</p>{details}<p class="small" style="margin-top:16px">Khung dự báo 4 giờ, chờ vào 1 giờ theo cấu hình kiểm định.</p></div>',unsafe_allow_html=True)
         st.caption(f"Model fit: {date(meta['created_at'])}")
+        from .forecast_contract import allows_paper_entries
+        if not allows_paper_entries(meta):
+            st.caption("Chưa đạt điều kiện chấp nhận · dự báo để theo dõi nghiên cứu.")
         validation=meta.get("validation") or {}
         ratio=validation.get("mse_ratio_to_zero")
         if ratio is not None:
