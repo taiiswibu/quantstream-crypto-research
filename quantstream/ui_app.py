@@ -226,6 +226,9 @@ def predictions(symbol,meta):
         st.dataframe(hist[["symbol","decision_time","prediction","target_return","model","recorded_at"]],width="stretch",hide_index=True)
         st.download_button("Tải lịch sử dự báo CSV",hist.to_csv(index=False).encode(),"forecasts.csv","text/csv")
     st.divider()
+    from .risk_ui import panel as interval_panel
+    interval_panel(ROOT, PROJECT, symbol, chart)
+    st.divider()
     if meta.get("hyperparameters",{}).get("family") == "zero_return":
         st.info("Baseline return bằng 0 là mốc đối chiếu, không có feature importance hoặc tín hiệu đã học.")
         return
