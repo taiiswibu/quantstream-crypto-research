@@ -30,11 +30,12 @@ from .common import (
     write_json,
     write_parquet,
 )
-from .data import REST, normalise, validate_bars
+from .data import normalise, validate_bars
 from .features import FEATURES, build_features
 from .research import load_metadata, predict_champion
 
 PROJECT = Path(__file__).resolve().parents[1]
+REST = "https://data-api.binance.vision/api/v3"
 
 
 def config(root):

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quantstream-local"
-version = "0.3.0"
+version = "0.4.0"
 description = "Reproducible local crypto research, backtesting and paper trading"
 requires-python = ">=3.11,<3.14"
 dependencies = [
@@ -20,6 +20,7 @@ dl = ["torch>=2.6,<3"]
 research = ["torch>=2.6,<3", "optuna>=4.5,<6"]
 finetune = ["torch>=2.6,<3", "chronos-forecasting>=2.3,<3", "peft>=0.18,<1", "accelerate>=1,<2", "datasets>=3,<5"]
 notebook = ["matplotlib>=3.9,<4", "nbclient>=0.10,<1", "nbconvert>=7,<8", "ipykernel>=6,<8"]
+forecast = ["torch>=2.8,<3", "tirex-2==0.5.0", "timestral @ git+https://github.com/mistralai/timestral.git@a534bdbd244d64f3d9d743f46c7bf6fc330ed4ff"]
 dev = ["pytest>=8,<10", "nbformat>=5,<6", "ruff>=0.12,<1"]
 
 [project.scripts]

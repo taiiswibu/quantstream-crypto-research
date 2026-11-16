@@ -1,6 +1,8 @@
 # QuantStream
 
-**Bản cuối:** [Notebook 11](notebooks/11_Final_Research_and_Deployment.ipynb) · [Cách nạp model và đọc kết quả](docs/FINAL_RELEASE_VI.md). So sánh cân bằng, kiểm tra đúng đơn vị return và tách checkpoint audit khỏi weights refit mới. Model chưa đạt điều kiện validation chỉ dùng theo dõi dự báo, không nhận lệnh paper mới.
+**v0.4 local:** [Notebook 12](notebooks/12_Recent_Methods_and_Risk.ipynb) kiểm tra các phương pháp mới, dữ liệu funding/premium và cập nhật trễ. App thêm khoảng tham chiếu return 4 giờ và Timestral/TiRex-2 chạy CPU để thử nghiệm; không tự thay model paper. [Phương pháp, cách chuẩn bị model và license](docs/METHODS_2026_VI.md).
+
+**Huấn luyện và xuất model:** [Notebook 11](notebooks/11_Final_Research_and_Deployment.ipynb) · [Cách nạp model và đọc kết quả](docs/FINAL_RELEASE_VI.md). So sánh cân bằng, kiểm tra đúng đơn vị return và tách checkpoint audit khỏi weights refit mới. Model chưa đạt điều kiện validation chỉ dùng theo dõi dự báo, không nhận lệnh paper mới.
 
 **Notebook đầu-cuối:** [09_Kaggle_EndToEnd_Training.ipynb](notebooks/09_Kaggle_EndToEnd_Training.ipynb) thu thập, tiền xử lý, chuẩn hóa, chia tập thời gian, tuning Ridge/XGBoost/TCN/GRU và xuất model về app. [Cách chạy và nạp model](docs/END_TO_END_TRAINING_VI.md). Lượt GPU đầy đủ cần được thực thi trên Kaggle; code/test CPU không thay thế kết quả train.
 
@@ -8,7 +10,7 @@
 **Local Terminal:** giao diện Streamlit + Plotly, model CPU, dữ liệu Binance thật và paper trading. Xem [hướng dẫn mở app trên Windows](docs/LOCAL_TERMINAL_VI.md). Đọc kiểm định của lần fit local trước khi đánh giá model; app dùng cho paper trading.
 
 
-[![CI](https://github.com/taiiswibu/quantstream-crypto-research/actions/workflows/ci.yml/badge.svg)](https://github.com/taiiswibu/quantstream-crypto-research/actions/runs/42843857323)
+[![CI](https://github.com/taiiswibu/quantstream-crypto-research/actions/workflows/ci.yml/badge.svg)](https://github.com/taiiswibu/quantstream-crypto-research/actions/workflows/ci.yml)
 
 **Local-first crypto forecasting, reproducible ML research and paper trading.**
 
