@@ -1,5 +1,7 @@
 # QuantStream
 
+**v0.4.1 local:** [Nạp lịch sử train](docs/LOCAL_HISTORY_VI.md). Fit dùng toàn bộ dữ liệu quá khứ đã lưu, còn ba fold so sánh nằm trong 90 ngày gần nhất. Registry và giao diện ghi rõ số dòng, kỳ đánh giá và MSE ratio từng fold; checkpoint đã nhập được giữ lại.
+
 **v0.4 local:** [Notebook 12](notebooks/12_Recent_Methods_and_Risk.ipynb) kiểm tra các phương pháp mới, dữ liệu funding/premium và cập nhật trễ. App thêm khoảng tham chiếu return 4 giờ và Timestral/TiRex-2 chạy CPU để thử nghiệm; không tự thay model paper. [Phương pháp, cách chuẩn bị model và license](docs/METHODS_2026_VI.md).
 
 **Huấn luyện và xuất model:** [Notebook 11](notebooks/11_Final_Research_and_Deployment.ipynb) · [Cách nạp model và đọc kết quả](docs/FINAL_RELEASE_VI.md). So sánh cân bằng, kiểm tra đúng đơn vị return và tách checkpoint audit khỏi weights refit mới. Model chưa đạt điều kiện validation chỉ dùng theo dõi dự báo, không nhận lệnh paper mới.

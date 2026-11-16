@@ -266,6 +266,11 @@ def research(meta):
         fig.update_yaxes(tickformat=".2%",title="MAE · thấp hơn tốt hơn")
         chart(fig,290)
     b.dataframe(table,width="stretch",hide_index=True)
+    if meta.get("validation_fold_mse_ratios"):
+        st.dataframe(pd.DataFrame({"Fold":range(1,len(meta["validation_fold_mse_ratios"])+1),"MSE / zero return":meta["validation_fold_mse_ratios"]}),hide_index=True,width="stretch")
+    if meta.get("validation_start") and meta.get("validation_end"):
+        symbols = "/".join(meta.get("config",{}).get("symbols",[]))
+        st.caption(f"Train: {meta['training_rows']:,} dòng. Validation: {meta['validation']['rows']:,} dòng gộp {symbols}, {date(meta['validation_start'])} → {date(meta['validation_end'])}.")
     oof=frame(run/"validation_predictions.parquet")
     values=oof[oof.model.eq(meta["model"])]
     a,b=st.columns(2)
@@ -336,7 +341,8 @@ def data_page(bars,meta):
     st.dataframe(bars.groupby("symbol").agg(candles=("timestamp","size"),first=("timestamp","min"),last=("timestamp","max")),width="stretch")
     quality=terminal.read_json(ROOT/"data/processed/live_quality.json",{})
     a,b,c=st.columns(3)
-    a.metric("Thiếu nến",str(sum(r["missing_bars"] for r in quality.get("gaps",[]))))
+    missing = (bars.sort_values(["symbol","timestamp"]).groupby("symbol").timestamp.diff().dt.total_seconds()/3600-1).clip(lower=0).sum()
+    a.metric("Thiếu nến",str(int(missing)))
     b.metric("Nến loại bỏ",str(quality.get("quarantine_rows",0)))
     c.metric("Model trên đĩa",f"{meta['artifact_bytes']/1024:.1f} KB")
     with st.expander("Nguồn và health log"):
@@ -345,7 +351,22 @@ def data_page(bars,meta):
     st.download_button("Tải nến CSV",bars.to_csv(index=False).encode(),"candles.csv","text/csv")
     st.divider()
     st.subheader("Fit lại model local")
-    st.caption("Dùng nến đã lưu và tham số cố định; cần lưu phiên paper cũ trước.")
+    st.caption("Train bằng toàn bộ lịch sử đã lưu; so sánh trên cửa sổ 90 ngày gần nhất. Cần lưu phiên paper cũ trước khi fit.")
+    if "history_imported" in st.session_state:
+        st.success(st.session_state.pop("history_imported"))
+    with st.expander("Nạp lịch sử huấn luyện"):
+        st.caption("Gói lịch sử có manifest và SHA. Nến cũ được ghép với nến hiện có; dữ liệu mâu thuẫn sẽ bị từ chối.")
+        history_file = st.file_uploader("Gói lịch sử (.zip)",type=["zip"],key="history_upload")
+        if st.button("Kiểm tra và nạp lịch sử",disabled=history_file is None):
+            try:
+                from .history_import import import_history
+                with st.spinner("Đang đối chiếu và ghép nến…"):
+                    result = import_history(ROOT,history_file)
+                st.session_state["history_imported"] = f"Đã thêm {result['added_rows']:,} nến; tổng {result['rows']:,} nến. Model hiện tại không đổi."
+                st.cache_data.clear()
+                st.rerun()
+            except Exception as error:
+                st.error(str(error))
     state=terminal.read_json(ROOT/"paper/state.json",{})
     if state:
         st.info("Đang có phiên paper. Lưu phiên ở trang Danh mục trước khi fit lại; nạp checkpoint không cần fit lại.")
