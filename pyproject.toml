@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quantstream-local"
-version = "0.4.0"
+version = "0.4.1"
 description = "Reproducible local crypto research, backtesting and paper trading"
 requires-python = ">=3.11,<3.14"
 dependencies = [

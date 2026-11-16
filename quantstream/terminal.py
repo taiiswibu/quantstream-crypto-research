@@ -219,7 +219,17 @@ def fit_local(root):
         raise ValueError("Archive the paper session before refitting models")
     samples = build_features(bars, cfg)
     labelled = samples.dropna(subset=["target_return", "label_end_time"])
-    times = np.sort(labelled.decision_time.unique())
+    # Compare the same recent window when earlier training history is added.
+    recent_start = bars.timestamp.max() + pd.Timedelta(hours=1) - pd.Timedelta(days=90)
+    recent_bars = bars[bars.timestamp.ge(recent_start)]
+    evaluation = (
+        labelled
+        if len(recent_bars) == len(bars)
+        else build_features(recent_bars, cfg).dropna(
+            subset=["target_return", "label_end_time"]
+        )
+    )
+    times = np.sort(evaluation.decision_time.unique())
     if len(times) < 1200:
         raise ValueError(
             "Need at least 1,200 hourly observations; load 90 days of history"
@@ -228,7 +238,7 @@ def fit_local(root):
         pd.Timestamp(times[int(len(times) * fraction)])
         for fraction in (0.55, 0.70, 0.85)
     ]
-    edges.append(pd.Timestamp(labelled.label_end_time.max()) + pd.Timedelta(hours=1))
+    edges.append(pd.Timestamp(evaluation.label_end_time.max()) + pd.Timedelta(hours=1))
     run = root / "runs" / ("local-" + stamp())
     run.mkdir(parents=True, exist_ok=False)
     registry, metric_rows, predictions = {}, [], []
@@ -236,8 +246,8 @@ def fit_local(root):
         started, folds = time.monotonic(), []
         for fold, (start, end) in enumerate(zip(edges[:-1], edges[1:])):
             train = labelled[labelled.label_end_time < start]
-            validation = labelled[
-                (labelled.decision_time >= start) & (labelled.label_end_time < end)
+            validation = evaluation[
+                (evaluation.decision_time >= start) & (evaluation.label_end_time < end)
             ].copy()
             assert not train.empty and not validation.empty
             assert train.label_end_time.max() < validation.decision_time.min()
@@ -270,6 +280,10 @@ def fit_local(root):
             path,
         )
         metrics = forecast_metrics(oof.target_return, oof.prediction)
+        fold_ratios = [
+            forecast_metrics(g.target_return, g.prediction)["mse_ratio_to_zero"]
+            for _, g in oof.groupby("fold")
+        ]
         import sklearn
 
         meta = {
@@ -282,6 +296,9 @@ def fit_local(root):
             "features": FEATURES,
             "config": cfg.to_dict(),
             "training_rows": len(labelled),
+            "training_first_decision": str(labelled.decision_time.min()),
+            "training_last_label": str(labelled.label_end_time.max()),
+            "validation_window_days": 90,
             "feature_code_sha256": sha256(Path(__file__).parent / "features.py"),
             "bars_sha256": sha256(root / "data/processed/bars.parquet"),
             "source_control": git_provenance(PROJECT),
@@ -289,6 +306,7 @@ def fit_local(root):
             "deployment_status": "paper_only_baseline",
             "validation_is_independent_final_test": False,
             "validation": metrics,
+            "validation_fold_mse_ratios": fold_ratios,
             "residual_abs_q80": float(
                 np.quantile(abs(oof.prediction - oof.target_return), 0.8)
             ),
