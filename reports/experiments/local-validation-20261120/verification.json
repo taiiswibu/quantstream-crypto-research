@@ -1,0 +1,24 @@
+{
+  "input_sha256": {
+    "ridge_backtest.json": "2c731886542d9c270625e30a1f1619a47f18302cb5fba0733186f048383e15ac",
+    "validation_predictions.parquet": "c5091510435681efcf294bcadde2d8ec646f25ca03ab8c6bfa05e04284430eab",
+    "local_registry.json": "e77623f679ffdb094de4063d3ce791ee9cd590a302eaf762ae6cc4bf058c514c"
+  },
+  "total_rows": 3756,
+  "rows_per_model": 1878,
+  "unique_decision_times": 939,
+  "decision_start_utc": "2026-10-07 23:00:00+00:00",
+  "last_decision_utc": "2026-11-16 11:00:00+00:00",
+  "last_label_end_utc": "2026-11-16 16:00:00+00:00",
+  "same_cohort_and_targets": true,
+  "missing_values": 0,
+  "duplicate_keys": 0,
+  "metadata_metrics_reproduced": true,
+  "zero_target_rows_per_model": 1,
+  "source_commit": "8e4130f4b9fba578a4bc9f0abf28633f3ffdc254",
+  "source_worktree_dirty": true,
+  "artifact_bytes_not_provided": true,
+  "raw_candles_and_feature_columns_not_provided": true,
+  "independent_final_test": false,
+  "bootstrap_note": "Circular blocks within each fold; paired assets; reused validation, diagnostic only. 168h blocks within ~13d folds provide few independent blocks."
+}
