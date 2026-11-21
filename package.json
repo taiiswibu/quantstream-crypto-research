@@ -1,1 +1,0 @@
-{"name": "quantstream-terminal-preview", "private": true, "scripts": {"dev": "${QUANTSTREAM_PYTHON:-python} scripts/preview.py"}}

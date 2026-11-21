@@ -1,0 +1,21 @@
+{
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT"
+  ],
+  "interval": "1h",
+  "start_month": "2023-01",
+  "end_month": "2026-11",
+  "horizon": 4,
+  "execution_lag_bars": 1,
+  "fee_bps": 10.0,
+  "slippage_bps": 5.0,
+  "position_fraction": 0.1,
+  "drawdown_halt": 0.1,
+  "test_fraction": 0.2,
+  "walk_forward_folds": 3,
+  "minimum_trades": 20,
+  "seed": 42,
+  "threads": 4,
+  "lookback": 48
+}

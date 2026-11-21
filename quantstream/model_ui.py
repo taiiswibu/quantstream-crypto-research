@@ -45,7 +45,7 @@ def import_panel(root, project):
         except Exception as error:
             st.error(str(error))
     st.caption(
-        "TCN cần PyTorch CPU. Có thể chạy IMPORT_TCN_WINDOWS.cmd tại thư mục dự án để cài và nạp bản artifacts/tcn."
+        "TCN cần PyTorch CPU. Xem docs/VAN_HANH_VI.md và nạp checkpoint ở trang Dữ liệu."
     )
 
 

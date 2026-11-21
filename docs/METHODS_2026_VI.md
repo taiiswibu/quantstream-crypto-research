@@ -30,7 +30,7 @@ Thử nghiệm foundation là screening theo ngày tại 00:00 UTC. Không so tr
 
 ## Chuẩn bị model local
 
-Chạy `INSTALL_FORECAST_WINDOWS.cmd` sau khi cập nhật code. Script chuẩn bị Timestral-5M khoảng 21 MB, chạy CPU. Model chỉ tải một lần, pin revision và kiểm tra cả config lẫn weights. Bản core vẫn chạy khi chưa cài extension.
+Cài phần phụ thuộc forecast và chuẩn bị weights bằng các lệnh Python trong [hướng dẫn vận hành](VAN_HANH_VI.md#notebook-kaggle-và-môi-trường-tùy-chọn). Model chạy CPU, pin revision và kiểm tra config/weights. App core chạy độc lập với extension.
 
 Trong app: Dự báo → Mô hình dự báo mới → Tính dự báo thử nghiệm. Các model này được ghi rõ là thử nghiệm; không có tự chuyển model paper.
 

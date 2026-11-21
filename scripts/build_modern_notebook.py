@@ -127,7 +127,7 @@ with ZipFile(diagnostics,'w',ZIP_DEFLATED) as z:
     for name in ['plan.json','downloads.json']:
         z.write(STUDY/'external'/name,'external/'+name)
 display(FileLink(str(diagnostics)))
-print('App core dùng model đã nhập. INSTALL_FORECAST_WINDOWS.cmd chỉ thêm model thử nghiệm, không thay paper champion.')""")
+print('App core dùng model đã nhập. Xem docs/VAN_HANH_VI.md để chuẩn bị model thử nghiệm riêng.')""")
     notebook = nbf.v4.new_notebook(cells=[nbf.v4.new_code_cell(c) for c in cells])
     notebook.metadata["kernelspec"] = {
         "display_name": "Python 3",

@@ -2,138 +2,168 @@
 
 [![CI](https://github.com/taiiswibu/quantstream-crypto-research/actions/workflows/ci.yml/badge.svg)](https://github.com/taiiswibu/quantstream-crypto-research/actions/workflows/ci.yml)
 
-Pipeline dữ liệu và machine learning cho BTC/USDT, ETH/USDT: thu thập nến Binance, tạo đặc trưng, huấn luyện, kiểm định theo thời gian và đưa model lên web app local.
+**Pipeline dữ liệu thị trường, nghiên cứu dự báo và ứng dụng theo dõi local cho BTC/USDT và ETH/USDT.**
 
-**Bản hiện tại: v0.4.1 · Streamlit + Plotly · inference CPU · paper trading.** Phạm vi MVP nghiên cứu đã có luồng chạy local. Kết quả model còn yếu; chưa có bằng chứng đủ để dùng vốn thật. Dự án ghi lại cả những thí nghiệm không vượt baseline.
+QuantStream thu thập nến Binance, kiểm tra chất lượng dữ liệu, tạo features nhân quả, huấn luyện model và đưa dự báo lên web app. Kết quả được đối chiếu với baseline và mô phỏng sau phí. Dự án giữ checkpoint, metadata, notebook đã chạy và ảnh minh chứng để có thể kiểm tra lại từng phần.
 
-## Kết quả kiểm tra gần nhất
+[Báo cáo dự án chi tiết](docs/BAO_CAO_DU_AN_VI.md) · [Notebook minh chứng đã chạy](notebooks/13_Project_Evidence_VI.ipynb) · [Cài đặt và vận hành](docs/VAN_HANH_VI.md)
 
-Lần fit local **20/11/2026**, dùng 67.736 mẫu có nhãn từ lịch sử đã lưu. Các chỉ số dưới đây được tính lại từ dự báo out-of-fold (OOF), gồm **1.878 mẫu: 939 BTC và 939 ETH**, trên cùng cohort cho hai model. Nến tín hiệu từ **07/10/2026 23:00 đến 16/11/2026 11:00 UTC**; nhãn cuối kết thúc **16/11/2026 16:00 UTC**.
+## Dự án đã làm được gì
 
-| Chỉ số | Ridge | XGBoost |
-|---|---:|---:|
-| MSE / zero-return, thấp hơn 1 tốt hơn | **0,9961** | 0,9991 |
-| MAE | 0,6658% | **0,6625%** |
-| Đúng hướng | 46,59% | 52,29% |
-| Số fold có MSE thấp hơn zero-return | 2/3 | 1/3 |
-| Số dự báo mua vượt ngưỡng 0,60% | 0 | 0 |
-
-Ridge giảm MSE khoảng 0,39% so với dự báo return bằng 0, nhưng MAE của cả hai model vẫn cao hơn baseline này. Baseline hướng cố định “không tăng” đạt 53,09% trên cùng nhãn; đây chỉ là đối chiếu phân loại hướng, không phải chiến lược giao dịch.
-
-Backtest Ridge ở ngưỡng hiện tại có **0 lệnh**, nên return và drawdown bằng 0 không chứng minh hiệu quả đầu tư. Khoảng ước lượng lợi thế MSE theo khối thời gian vẫn chứa mức 0 ở cả hai model. Validation đã được xem để so model; **chưa phải final test độc lập**.
-
-![Kiểm tra validation theo fold, tài sản và độ nhạy khi tăng biên độ dự báo](reports/experiments/local-validation-20261120/validation-audit.png)
-
-[Báo cáo chi tiết và giới hạn kiểm tra](docs/experiments/local-validation-20261120.md) · [Chỉ số tính lại](reports/experiments/local-validation-20261120/summary.csv) · [Kết quả từng fold/tài sản](reports/experiments/local-validation-20261120/slices.csv)
-
-Các kết quả TCN, Chronos LoRA và model từ notebook thuộc những cohort khác. Không dùng bảng trên để xếp hạng chúng.
-
-## Những phần đã triển khai
-
-| Thành phần | Nội dung |
+| Hạng mục | Kết quả triển khai |
 |---|---|
-| Thu thập dữ liệu | Kho nến Binance theo tháng và public REST để cập nhật nến đóng BTC/ETH |
-| Kiểm tra dữ liệu | SHA-256, UTC, OHLCV, nến trùng/xung đột, quarantine và khoảng trống thời gian |
-| Tiền xử lý | 18 đặc trưng nhân quả; khởi động lại chỉ báo khi chuỗi nến bị ngắt; scaler fit trong train của từng fold |
-| Model | Ridge, Logistic Regression, XGBoost, TCN; thí nghiệm GRU và Chronos-2 LoRA riêng |
-| Kiểm định | Split theo thời gian dùng chung ranh giới cho các tài sản, purge nhãn chồng lấn, walk-forward và baseline |
-| Backtest | Long/cash, vào lệnh trễ, giữ vị thế theo horizon, phí/slippage, tránh vị thế chồng lấn trên cùng tài sản |
-| Ứng dụng | Nến và volume, dự báo, sai số, đóng góp feature, quản lý checkpoint và danh mục paper |
-| Theo dõi | Ghi forecast theo thời điểm phát hành, chấm sau khi nhãn đủ thời gian, kiểm tra độ mới và feature drift |
-| Tái lập | Manifest dữ liệu, hash model, config, source commit, trạng thái code local và CI Linux/Windows |
+| Dữ liệu | Snapshot 67.820 nến 1H của BTC/ETH, nguồn Binance archive và REST |
+| Chất lượng | Kiểm tra SHA, UTC, OHLCV, nến đóng, khóa trùng/xung đột, quarantine và gap |
+| Features | 18 biến từ return, biến động, xu hướng, volume, hình dạng nến và chu kỳ thời gian |
+| Machine learning | Ridge, XGBoost và các thí nghiệm TCN/GRU/Chronos-2 LoRA có hồ sơ riêng |
+| Kiểm định | Ba fold thời gian có purge; baseline zero-return và naive; báo cáo OOF |
+| Backtest | Long/cash, vào trễ, phí/slippage, horizon, exposure và drawdown |
+| Triển khai local | Streamlit + Plotly, inference CPU, registry/checkpoint, lịch sử forecast và paper |
+| Tái lập | Input/model/code hash, config, notebook output, manifest ảnh và CI Linux/Windows |
 
-Stack chính: **Python, pandas, NumPy, PyArrow/Parquet, DuckDB, scikit-learn, XGBoost, PyTorch, Optuna, Streamlit, Plotly, SQLite và GitHub Actions**. Torch và các thư viện nghiên cứu được cài theo nhu cầu; app core dùng model CPU.
+Stack: **Python · pandas · NumPy · Parquet/PyArrow · DuckDB · scikit-learn · XGBoost · PyTorch · Optuna · Streamlit · Plotly · SQLite · GitHub Actions**.
 
-## Luồng xử lý
+Phạm vi hiện tại là ứng dụng nghiên cứu chạy local. Model còn yếu về dự báo; kết quả chưa đủ để dùng vốn thật.
 
-```mermaid
-flowchart TD
-    A["Binance archives / REST"] --> B["Kiểm tra nến · Parquet"]
-    B --> C["Features và nhãn theo thời gian"]
-    C --> D["Train · walk-forward"]
-    D --> E["Checkpoint và báo cáo"]
-    C --> F["Streamlit · forecast · paper"]
-    E --> F
-```
+## Từ dữ liệu thị trường đến dự báo
 
-Dữ liệu đầu vào là nến **1 giờ**. Model dự báo return của một vị thế giả định **giữ 4 giờ, sau 1 giờ chờ thực thi**. Ví dụ: quyết định lúc 16:00 UTC, vào giả định lúc 17:00, hết horizon lúc 21:00. Thời gian hiển thị trong app là UTC; timestamp nến mở và thời điểm nến trở nên quan sát được có ý nghĩa khác nhau.
+![Kiến trúc và luồng dữ liệu QuantStream](reports/portfolio_cpu/architecture.svg)
 
-REST là nguồn cập nhật chính của runtime. WebSocket capture là phần tùy chọn để lưu sự kiện nến đóng. Dự án chưa có broker đặt lệnh thật, hệ thống phân tán hoặc dịch vụ nhiều người dùng.
+[Sơ đồ PNG từ output notebook](reports/portfolio_cpu/figures/13_Project_Evidence_VI-01-system-1.png) · [Mã sơ đồ](docs/architecture.dot)
 
-## Chạy web app local
+Dữ liệu đi từ archive/REST qua kiểm tra chất lượng đến Parquet. `features.py` dùng chung cách tính cho nghiên cứu và inference. Nhánh nghiên cứu tạo model/báo cáo; nhánh runtime nạp model đã chọn, ghi forecast và theo dõi danh mục paper. Không có kết nối đặt lệnh tiền thật.
 
-Cần **Python 3.12 64-bit**, Git nếu cập nhật từ repo, và Internet để cài thư viện/nạp dữ liệu. Không cần API key Binance hoặc GPU cho app core.
+Model dự báo **return 4 giờ sau 1 giờ chờ thực thi**. Quyết định lúc 16:00 UTC tương ứng vào giả định 17:00 và hết horizon 21:00. Nến mở 15:00 chỉ trở nên quan sát được khi đóng lúc 16:00. Các ranh giới train/validation dùng thời điểm nhãn đầy đủ để tránh look-ahead.
 
-**Đã có code:** mở PowerShell tại thư mục dự án rồi chạy:
+## 1. Thu thập dữ liệu và kiểm tra chất lượng
+
+[Notebook 13](notebooks/13_Project_Evidence_VI.ipynb) đã chạy kiểm tra snapshot, tiền xử lý, train CPU, baseline, đường học và backtest. [Notebook 08](notebooks/08_Local_Model_Review.ipynb) đọc lại các artifacts vừa tạo để review.
+
+Snapshot có 33.910 nến mỗi tài sản, từ 01/01/2023 đến 13/11/2026 UTC. Bốn nến thiếu được ghi nhận; chỉ báo được reset tại gap. Lượt minh chứng dùng dữ liệu đã lưu và đối chiếu SHA, không tải lại toàn bộ nguồn trong lần chạy này.
+
+![Dữ liệu đã kiểm tra trong notebook](reports/portfolio_cpu/figures/13_Project_Evidence_VI-02-data-quality-0.png)
+
+### 2. Tạo nhãn và chia tập theo thời gian
+
+Model cần phân biệt lúc nến đóng với lúc nhãn tương lai đã đầy đủ. Mỗi fold dùng cùng ranh giới UTC cho BTC/ETH và purge những nhãn chồng qua ranh giới.
+
+![Phân phối target và walk-forward](reports/portfolio_cpu/figures/13_Project_Evidence_VI-03-target-splits-0.png)
+
+Các ảnh được trích nguyên byte từ output notebook. [Manifest ảnh Notebook 13](reports/portfolio_cpu/figures/13_Project_Evidence_VI-images.json) và [Notebook 08](reports/portfolio_cpu/figures/08_Local_Model_Review-images.json) ghi notebook hash, cell, execution count và image hash. Đây là ảnh kết quả tính toán, không phải ảnh chụp app Windows hoặc một lượt Kaggle mới.
+
+## 3. Huấn luyện model và so sánh baseline
+
+Lượt notebook ngày 21/11/2026 theo giờ Việt Nam fit model cuối trên **67.608 mẫu có nhãn**. Ba fold tạo **1.878 mẫu OOF/model**, gồm 939 BTC và 939 ETH. Kỳ validation bắt đầu **05/10/2026 07:00 UTC**, nhãn cuối kết thúc **14/11/2026 00:00 UTC**.
+
+| Model | MAE return | MSE / zero-return | Đúng hướng |
+|---|---:|---:|---:|
+| Ridge | 0,6204% | **0,994550** | 46,70% |
+| XGBoost | 0,6181% | **0,998255** | 51,28% |
+| Zero-return | **0,6170%** | 1,000000 | 53,25% |
+| Naive return 4H trước đó | 0,9430% | 2,071623 | 49,52% |
+
+![So sánh model với baseline trên cùng cohort](reports/portfolio_cpu/figures/13_Project_Evidence_VI-04-baselines-2.png)
+
+Ridge giảm MSE khoảng 0,545% so với zero-return, nhưng MAE của cả Ridge/XGBoost vẫn kém baseline này. Ridge thua MSE ở một fold; XGBoost thua ở hai fold. Validation đã dùng để quan sát/so model, chưa phải một final test độc lập mới. DA dùng quy ước `return > 0`; dự báo 0 thuộc nhóm không tăng.
+
+[Metrics CSV](reports/portfolio_cpu/validation_metrics.csv) · [Từng fold](reports/portfolio_cpu/fold_metrics.csv) · [Execution record và hashes](reports/portfolio_cpu/execution.json)
+
+![Đường học XGBoost thực sự đã chạy](reports/portfolio_cpu/figures/13_Project_Evidence_VI-05-learning-curve-0.png)
+
+Đường học là một lượt fit chẩn đoán fold 1 với 120 boosting rounds cố định. Log TCN và 12 trial tuning lịch sử được trình bày riêng trong báo cáo; không được gọi là lượt train GPU mới của bộ hồ sơ này.
+
+### 4. Dự báo thực tế và phân phối sai số
+
+![Đối chiếu prediction OOF với nhãn và phân phối residual](reports/portfolio_cpu/figures/13_Project_Evidence_VI-06-forecast-errors-0.png)
+
+Các điểm được tạo bằng model của từng fold, trước bước refit cuối. Dự báo tập trung gần 0 trong khi return thực tế có đuôi lớn hơn. Đây là giới hạn thấy được trên dữ liệu, không phải bằng chứng chỉ cần tăng biên độ forecast để sửa model.
+
+### 5. Đọc model qua features
+
+![Hệ số Ridge trên 18 features đã chuẩn hóa](reports/portfolio_cpu/figures/13_Project_Evidence_VI-08-ridge-features-1.png)
+
+Ridge cho phép xem hệ số theo một đơn vị z-score của feature. Biểu đồ giúp kiểm tra dấu và độ lớn hệ số; quan hệ này không phải giải thích nhân quả cho giá thị trường. XGBoost là mô hình cây và không có hàm kích hoạt neural.
+
+### 6. Mô phỏng sau chi phí giao dịch
+
+![Equity và drawdown validation sau phí](reports/portfolio_cpu/figures/13_Project_Evidence_VI-07-backtest-0.png)
+
+Cấu hình local dùng phí 10 bps + slippage 5 bps mỗi chiều, ngưỡng long 0,60% và position fraction 10%. Ridge có 0 lệnh ở kỳ này. Vì vậy đường equity phẳng không chứng minh model sinh lời hoặc quản lý rủi ro tốt hơn một chiến lược đã có exposure.
+
+### 7. TCN và lịch sử điều chỉnh siêu tham số
+
+![Log train và validation TCN đã lưu từ reference run](reports/portfolio_cpu/figures/13_Project_Evidence_VI-09-historical-tcn-1.png)
+
+TCN tham chiếu dùng causal convolutions với dilation 1/2/4/8, GELU và residual connections. Log bên trên thuộc artifact lịch sử; train loss giảm không đi kèm cải thiện validation đều qua các epoch. Bộ hồ sơ này vẽ lại log, không tuyên bố có lượt train TCN/GPU mới.
+
+![Toàn bộ 12 trial của model search Run 002](reports/portfolio_cpu/figures/13_Project_Evidence_VI-10-historical-tuning-0.png)
+
+Giữ toàn bộ trial để nhìn thấy cả cấu hình không vượt zero-return. Kỳ dữ liệu và ngân sách của Run 002 khác lượt CPU hiện tại, nên không trộn các objective vào bảng so sánh cùng cohort ở trên.
+
+Audit local ngày 20/11 dùng cohort khác dù cũng có 1.878 mẫu/model. Kết quả Ridge 0,9961 và XGBoost 0,9991 của audit được giữ trong [báo cáo riêng](docs/experiments/local-validation-20261120.md), không lấy chênh lệch hai kỳ làm mức cải thiện.
+
+## 8. Ứng dụng local và ảnh giao diện
+
+| Trang | Chức năng |
+|---|---|
+| Thị trường | Giá/ticker, nến, volume và thời điểm dự báo |
+| Dự báo | Forecast đã ghi, feature và khoảng tham chiếu |
+| Kiểm định | Baseline, lỗi dự báo, từng fold, mô phỏng và checkpoint |
+| Danh mục | Vốn giả lập, lệnh, equity và quản lý phiên paper |
+| Dữ liệu | Nguồn, health, hash, nạp lịch sử, fit và import model |
+
+Giá hiện tại, validation và forecast sau triển khai có vai trò khác nhau. Hệ thống lưu thời điểm phát hành forecast rồi chấm khi nhãn đã đầy đủ; không tạo lịch sử dự báo quá khứ bằng weights fit sau đó. Phiên paper phải được lưu đúng luồng trước khi đổi model/refit.
+
+### Cách chụp ảnh app để bổ sung vào hồ sơ
+
+Chụp riêng năm trang **Thị trường, Dự báo, Kiểm định, Danh mục, Dữ liệu**. Giữ tên model, tài sản, thời gian nến và đơn vị biểu đồ trong khung; ở trang Kiểm định chụp cả baseline và từng fold. Lưu PNG vào `reports/app/` theo [checklist chụp ảnh](docs/VAN_HANH_VI.md#chụp-ảnh-giao-diện-làm-minh-chứng). Chỉ đưa ảnh app thật vào phần này sau khi đã chụp; 15 ảnh notebook được lưu riêng với manifest nguồn.
+
+### Chạy trên Windows khi đã có code
+
+Cần Python 3.12 64-bit. Nếu chưa có môi trường ảo, tạo bằng `py -3.12 -m venv .venv`. Sau đó chạy tại thư mục dự án:
 
 ```powershell
-.\INSTALL_WINDOWS.cmd
-.\START_WINDOWS.cmd
+.\.venv\Scripts\python.exe -m pip install -e . -c requirements-tested-core.txt
+.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1 --server.port 8501
 ```
 
-Mở [http://127.0.0.1:8501/](http://127.0.0.1:8501/). Những lần sau chỉ cần `START_WINDOWS.cmd`.
+Mở [http://127.0.0.1:8501/](http://127.0.0.1:8501/). Không cần clone lại nếu đã có code.
 
-**Cài mới từ GitHub:**
+Nếu workspace hoàn toàn mới, khởi tạo 90 ngày dữ liệu và model CPU trước khi mở app:
 
 ```powershell
-git clone https://github.com/taiiswibu/quantstream-crypto-research.git
-cd quantstream-crypto-research
-.\INSTALL_WINDOWS.cmd
-.\START_WINDOWS.cmd
+.\.venv\Scripts\python.exe -m quantstream.terminal --root workspace setup --days 90
 ```
 
-Lần cài đầu chưa có registry sẽ nạp 90 ngày nến thật và fit Ridge/XGBoost. Đây là dữ liệu khởi động; kết quả có thể khác bảng audit bên trên. Khi đã có registry trong `workspace`, installer giữ model và phiên paper hiện có. [Nạp thêm lịch sử train](docs/LOCAL_HISTORY_VI.md) để dùng dữ liệu quá khứ đã lưu; nạp dữ liệu không tự cập nhật weights.
+Lệnh setup từ chối khi model đã tồn tại. Dữ liệu 90 ngày khởi tạo không phải snapshot đầy đủ dùng trong bảng minh chứng. [Hướng dẫn Linux, worker, import model, notebook và sao lưu](docs/VAN_HANH_VI.md).
 
-Linux: `bash START_LINUX.sh`. Worker riêng trên Windows: `WORKER_WINDOWS.cmd`. Dùng một worker; chương trình phải còn chạy và máy phải thức để tiếp tục đồng bộ.
+## Cấu trúc repo
 
-| Trang | Nội dung chính |
+| Thư mục | Nội dung |
 |---|---|
-| Thị trường | Giá, nến, khối lượng và dự báo return 4 giờ |
-| Dự báo | Forecast đã ghi, thời điểm phát hành, sai số và feature |
-| Kiểm định | Metrics, baseline, từng fold và mô phỏng validation |
-| Danh mục | Vốn giả lập, lệnh, chi phí và equity paper |
-| Dữ liệu | Nguồn, health log, lịch sử, fit và nạp model |
+| `quantstream/` | Ingestion, features, model, backtest, runtime và UI |
+| `notebooks/` | Notebook nghiên cứu và notebook đã chạy phục vụ hồ sơ |
+| `reports/portfolio_cpu/` | Metrics, log, hashes và ảnh của lượt CPU minh chứng |
+| `reports/reference/`, `reports/experiments/` | Bằng chứng của các thí nghiệm lịch sử |
+| `docs/` | Báo cáo dự án, vận hành, nguồn và hồ sơ thí nghiệm |
+| `scripts/` | Công cụ nghiên cứu, dựng notebook, xuất ảnh và kiểm tra |
+| `tests/` | Kiểm tra nhân quả, chi phí, artifact, snapshot và runtime |
 
-Trước khi fit lại hoặc đổi model có phiên paper, dùng luồng **dừng nhận lệnh → chờ thoát vị thế → lưu phiên**. Toàn bộ dữ liệu/model/forecast/paper nằm trong `workspace`; tắt app và worker trước khi sao lưu thư mục này.
+Nến gốc, weights, SQLite, optimizer state và phiên paper giữ ngoài Git. `workspace/` là dữ liệu app; `notebook_work/` là vùng nghiên cứu riêng.
 
-Để cập nhật một checkout đã cấu hình remote: giữ các sửa đổi local, dừng app/worker, chạy `git pull --ff-only`, rồi chạy lại installer nếu dependency thay đổi. [Hướng dẫn Windows, vận hành và xử lý lỗi](docs/LOCAL_TERMINAL_VI.md).
-
-## Notebook và thí nghiệm
-
-| Nội dung | Tài liệu |
-|---|---|
-| Pipeline đầu-cuối: lấy dữ liệu, xử lý, tuning, biểu đồ và xuất model | [Notebook 09](notebooks/09_Kaggle_EndToEnd_Training.ipynb) · [Cách chạy](docs/END_TO_END_TRAINING_VI.md) |
-| So sánh model, đánh giá và gói model phục vụ | [Notebook 11](notebooks/11_Final_Research_and_Deployment.ipynb) · [Cách nạp và đọc kết quả](docs/FINAL_RELEASE_VI.md) |
-| Phương pháp bổ sung, dữ liệu ngoài và khoảng tham chiếu | [Notebook 12](notebooks/12_Recent_Methods_and_Risk.ipynb) · [Phạm vi và điều kiện sử dụng](docs/METHODS_2026_VI.md) |
-| TCN Kaggle và model search | [Run 001](docs/experiments/run-001-kaggle-tcn.md) · [Run 002](docs/experiments/run-002-model-search.md) |
-| Chronos-2 LoRA và kiểm tra nhiều seed | [Run 003](docs/experiments/run-003-lora-lab.md) · [Run 004](docs/experiments/run-004-seed-stability.md) |
-| Kiểm tra inference với weights cố định | [Protocol Run 005](docs/experiments/run-005-inference-protocol.md) |
-
-Notebook train cần đúng dataset/source snapshot của từng run. Bản Git chứa mã nghiên cứu; kết quả thực thi phải đối chiếu báo cáo và artifact tương ứng. Test CPU, kiểm tra cú pháp notebook hoặc một bước optimizer không thay thế lượt huấn luyện Kaggle đầy đủ.
-
-Các thí nghiệm cũ được giữ làm lịch sử. TCN tham chiếu từng có return sau phí **-14,46%** trên kỳ holdout đã được xem; đọc [báo cáo gốc](reports/reference/final_report.json) và [ghi chép thí nghiệm](docs/EXPERIMENTS.md). Kỳ đó không còn là test chưa quan sát cho một giả thuyết mới.
-
-App core hoạt động độc lập với các extension model thử nghiệm. Adapter Chronos không được tự nối vào paper runtime; model không đạt gate chấp nhận giữ trạng thái nghiên cứu theo metadata. [Quy trình Git và xuất snapshot Kaggle](docs/RESEARCH_LAB_VI.md).
-
-## Kiểm thử và tái lập
+## Kiểm thử
 
 ```bash
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev]" -c requirements-tested-core.txt
 python -m pytest -q
 python -m ruff check quantstream app.py tests scripts
 python scripts/check_notebooks.py
 ```
 
-CI chạy trên Linux và Windows, kiểm tra logic nhân quả, purge nhãn, chi phí, snapshot, paper, provenance và cấu trúc notebook. Phần deep learning phụ thuộc thư viện tùy chọn; kiểm thử tự động không xác nhận lợi nhuận đầu tư hoặc giao diện hoạt động trên mọi máy.
+CI chạy Linux/Windows. Notebook Kaggle có quy trình và snapshot riêng; không đánh dấu đã chạy lại tất cả chỉ vì test CPU hoặc kiểm tra notebook thành công. [Hồ sơ thí nghiệm](docs/EXPERIMENTS.md) giữ cả các kết quả không vượt baseline.
 
-Giữ raw data, credentials, weights, optimizer state và phiên paper ngoài Git. Khi ghi một thí nghiệm mới, lưu snapshot hash, source commit, config, seed, kỳ đánh giá và chi phí. Xem [CONTRIBUTING](CONTRIBUTING.md), [Git workflow](docs/GIT_WORKFLOW_VI.md) và [CHANGELOG](CHANGELOG.md).
+## Giới hạn và nguồn
 
-## Phạm vi và giới hạn
+Dữ liệu hai tài sản chưa đại diện toàn thị trường. Backtest có giả định khớp lệnh, chưa mô hình hóa đầy đủ thanh khoản/capacity. Một đường vốn phẳng với 0 lệnh không chứng minh model sinh lời. Dự án chưa có xác thực nhiều người, máy chủ vận hành 24/7 hoặc broker tiền thật.
 
-- Đã có app local và pipeline nghiên cứu để trình bày portfolio. Chưa có bằng chứng về chiến lược sinh lời ổn định.
-- Hai tài sản và dữ liệu OHLCV giới hạn khả năng khái quát; backtest chưa mô hình hóa đầy đủ thanh khoản, độ sâu sổ lệnh và capacity.
-- CV dùng để so model và checkpoint refit cuối có vai trò khác nhau. Không đánh giá lại quá khứ bằng weights fit sau đó rồi gọi là dự báo ngoài mẫu.
-- Việc train lâu hơn, thêm model lớn hoặc tăng biên độ dự báo không tự bảo đảm cải thiện. Giả thuyết tiếp theo cần kỳ đánh giá mới, giữ riêng khỏi tuning.
-- App chưa có xác thực nhiều người, vận hành máy chủ 24/7, SLA, kiểm toán bảo mật hoặc kết nối đặt lệnh sàn.
-
-Mã ứng dụng gốc dùng [MIT](LICENSE). Dữ liệu và pretrained weights giữ điều kiện sử dụng của nguồn; license mã nguồn không cấp lại quyền với chúng. [Third-party notices](THIRD_PARTY_NOTICES.md). Kiến trúc có tham khảo FraudGuard, không chép implementation từ repo đó.
+Mã ứng dụng gốc theo [MIT](LICENSE). Dữ liệu, pretrained weights và phụ thuộc giữ điều kiện sử dụng riêng. [Third-party notices](THIRD_PARTY_NOTICES.md) · [Phương pháp mở rộng](docs/METHODS_2026_VI.md).

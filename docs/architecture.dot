@@ -1,0 +1,30 @@
+digraph QuantStream {
+  graph [rankdir=TB, bgcolor="white", pad="0.3", nodesep="0.35", ranksep="0.55", fontname="DejaVu Sans", label="QUANTSTREAM   Luồng dữ liệu và mô hình", labelloc=t, fontsize=22];
+  node [shape=box, style="rounded,filled", fillcolor="#eef5f7", color="#95aaba", fontname="DejaVu Sans", fontsize=12, margin="0.18,0.12"];
+  edge [color="#5d7387", fontname="DejaVu Sans", fontsize=10, arrowsize=0.75];
+  source [label="NGUỒN DỮ LIỆU\nBinance monthly ZIP + checksum\nPublic REST cho nến đóng 1H", fillcolor="#e0f1ec"];
+  ingest [label="THU THẬP VÀ CHUẨN HÓA\ndata.py / terminal.py\nUTC · schema OHLCV · timestamp ms/µs"];
+  quality [label="KIỂM TRA DỮ LIỆU\nnến đóng · OHLCV · xung đột khóa\nquarantine · gap log · SHA256"];
+  bars [shape=cylinder, label="LƯU NẾN\nParquet + manifest + health log", fillcolor="#fff5de"];
+  features [label="FEATURES VÀ NHÃN\n18 biến nhân quả · reset tại gap\nquyết định t → vào t+1 → hết t+5"];
+  train [label="NGHIÊN CỨU\nsplit thời gian chung BTC/ETH\npurge nhãn · scaler chỉ fit train\nRidge / XGBoost / TCN / thí nghiệm LoRA", fillcolor="#e9edf9"];
+  evaluation [label="ĐÁNH GIÁ\nzero-return / naive baseline\nMSE · MAE · từng fold · sau phí\nCV được ghi rõ khác test độc lập", fillcolor="#e9edf9"];
+  registry [shape=cylinder, label="ARTIFACTS\nweights · metadata · hash\nregistry · báo cáo từng run", fillcolor="#fff5de"];
+  inference [label="INFERENCE LOCAL\nload checkpoint đã chọn\nkiểm tra độ mới · feature contract\nkhông tự train trong mỗi dự báo", fillcolor="#e0f1ec"];
+  forecast [shape=cylinder, label="LỊCH SỬ FORECAST\nSQLite · thời điểm phát hành\nchấm khi nhãn đủ thời gian", fillcolor="#fff5de"];
+  paper [label="PAPER WORKER\ngate model + ngưỡng tín hiệu\nentry delay · phí/slippage · risk halt\nlệnh giả lập và equity", fillcolor="#fceee9"];
+  ui [label="WEB APP STREAMLIT + PLOTLY\nThị trường · Dự báo · Kiểm định\nDanh mục · Dữ liệu", fillcolor="#d9efe9", penwidth=2];
+  source -> ingest -> quality -> bars -> features;
+  features -> train -> evaluation -> registry;
+  features -> inference;
+  registry -> inference [label="model được chọn"];
+  inference -> forecast -> paper;
+  bars -> ui [style=dashed, label="nến và health", constraint=false];
+  registry -> ui [style=dashed, label="metrics", constraint=false];
+  forecast -> ui;
+  paper -> ui;
+  forecast -> evaluation [style=dashed, constraint=false];
+  {rank=same; train; inference;}
+  {rank=same; evaluation; forecast;}
+  {rank=same; registry; paper;}
+}

@@ -38,7 +38,7 @@ For a next *distinct* hypothesis, record a protocol and environment lock before 
 
 Notebook 05 and its generator now remove optional torchao before importing PEFT, pin Chronos 2.3.2 / PEFT 0.21.2, reject stale imported modules and run a small CPU LoRA injection/backward preflight. A rerun writes a separate output folder/ZIP, captures package versions and preserves lightweight trainer logs if produced. Historical Run 003 files and metrics are unchanged.
 
-Local validation reproduced the exact ImportError with torchao 0.10.0 and PEFT 0.21.2; the revised setup cell then uninstalled torchao and passed injection/backward with PyTorch 2.15.0+cpu / Python 3.12.14. All 28 tests, lint, notebook schema/syntax checks and compilation passed. This checks the reported failure path, **not** the full Kaggle GPU training run or an exact reconstruction of its historical environment. See [runtime instructions](../RESEARCH_LAB_VI.md#môi-trường-kaggle-và-lỗi-torchao).
+Local validation reproduced the exact ImportError with torchao 0.10.0 and PEFT 0.21.2; the revised setup cell then uninstalled torchao and passed injection/backward with PyTorch 2.15.0+cpu / Python 3.12.14. All 28 tests, lint, notebook schema/syntax checks and compilation passed. This checks the reported failure path, **not** the full Kaggle GPU training run or an exact reconstruction of its historical environment. See [runtime instructions](../VAN_HANH_VI.md#notebook-kaggle-và-môi-trường-tùy-chọn).
 
 ## Run 004 comparison follow-up — 2026-11-12
 
