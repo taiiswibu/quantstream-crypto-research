@@ -1,0 +1,33 @@
+{
+  "environment": "Linux Python 3.12 CPU",
+  "pytest": {
+    "passed": 110,
+    "failed": 0,
+    "warnings": 1,
+    "seconds": 37.23
+  },
+  "ruff": "passed",
+  "notebook_schema_and_python_syntax": "14 notebooks passed",
+  "compileall": "passed",
+  "terminal_help": "passed",
+  "app_test_routes": [
+    "Thị trường",
+    "Dự báo",
+    "Kiểm định",
+    "Danh mục",
+    "Dữ liệu"
+  ],
+  "executed_notebooks": {
+    "13_Project_Evidence_VI.ipynb": {
+      "code_cells": 15,
+      "images": 11
+    },
+    "08_Local_Model_Review.ipynb": {
+      "code_cells": 6,
+      "images": 4
+    }
+  },
+  "image_hashes_verified": 15,
+  "new_gpu_training": false,
+  "windows_desktop_ui_inspection": false
+}
