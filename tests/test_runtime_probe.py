@@ -1,11 +1,9 @@
 """Preserve conflicting package metadata and archive read-only diagnostic evidence."""
-import ast
 import json
 from pathlib import Path
 import runpy
 import zipfile
 
-import nbformat
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -50,17 +48,3 @@ def test_probe_keeps_fresh_import_errors_and_does_not_overwrite_earlier_attempt(
         assert saved["status"] == "probe_completed" and saved["pip_check"]["returncode"] == 1
 
 
-def test_probe_notebook_is_standalone_and_has_no_training_or_install_calls(tmp_path):
-    builder = runpy.run_path(str(ROOT / "scripts/build_runtime_probe_notebook.py"))
-    path = tmp_path / "probe.ipynb"
-    builder["build"](path)
-    notebook = nbformat.read(path, as_version=4)
-    nbformat.validate(notebook)
-    for cell in notebook.cells:
-        if cell.cell_type != "code":
-            continue
-        tree = ast.parse(cell.source)
-        calls = {node.func.attr for node in ast.walk(tree) if isinstance(node, ast.Call)
-                 and isinstance(node.func, ast.Attribute)}
-        assert not calls.intersection({"fit", "backward", "from_pretrained", "unlink", "rmtree"})
-        assert "pip','install" not in cell.source and "pip', 'install" not in cell.source

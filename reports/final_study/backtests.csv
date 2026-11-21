@@ -1,0 +1,10 @@
+model,threshold,total_return,sharpe_hourly_estimate,max_drawdown,trades,win_rate,turnover,note
+ridge,0.003,0.0,0.0,0.0,0,0.0,0.0,Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted.
+ridge,0.006,0.0,0.0,0.0,0,0.0,0.0,Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted.
+ridge,0.009,0.0,0.0,0.0,0,0.0,0.0,Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted.
+xgboost_d3,0.003,-0.0004365931877123863,-2.6601332176870387,-0.0006598664925046016,1,0.0,0.1991261395643394,Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted.
+xgboost_d3,0.006,0.0,0.0,0.0,0,0.0,0.0,Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted.
+xgboost_d3,0.009,0.0,0.0,0.0,0,0.0,0.0,Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted.
+tcn_fixed6,0.003,-0.004774804713173375,-5.169318606095387,-0.0050456518929695715,17,0.35294117647058826,3.38324407277357,Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted.
+tcn_fixed6,0.006,-0.0005055414418678739,-2.4632882601574444,-0.000828008956838433,3,0.0,0.5988083206589724,Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted.
+tcn_fixed6,0.009,0.0,0.0,0.0,0,0.0,0.0,Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted.

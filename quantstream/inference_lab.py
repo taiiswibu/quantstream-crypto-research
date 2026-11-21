@@ -291,7 +291,7 @@ def run_inference_lab(snapshot, artifact, output, device="cuda"):
         if source["status"] != "available" or source["dirty"] is not False:
             raise ValueError("Use the clean pinned Run 005 source checkout")
         source["files"] = {str(p.relative_to(ROOT)): sha256(p) for p in sorted((ROOT / "quantstream").glob("*.py"))}
-        source["protocol_sha256"] = sha256(ROOT / "docs/experiments/run-005-inference-protocol.md")
+        source["protocol_sha256"] = sha256(ROOT / "reports/reference/protocols/run-005-inference-protocol.txt")
         source["runtime_probe_verification_sha256"] = sha256(AUDIT)
         plan = {"protocol": PROTOCOL, "created_at": utcnow(), "source": source, "environment": environment,
             "inputs": identity, "run004_artifact_sha256": RUN004_SHA, "adapter_sha256": ADAPTER_SHA,

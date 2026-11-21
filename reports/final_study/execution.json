@@ -1,0 +1,31 @@
+{
+  "executed_at": "2026-11-21T07:21:04.308034+00:00",
+  "runtime_packages": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.8.0",
+    "torch": "2.15.0+cpu",
+    "streamlit": "1.67.0",
+    "xgboost": "3.4.1"
+  },
+  "snapshot_sha256": "1bc980d79b7a5a9c689883aa8d065e67284d7850d605c353dc2ab040ffb1b653",
+  "tcn_fixed_epochs": 6,
+  "all_remaining_notebooks": [
+    "01_Data",
+    "02_Training",
+    "03_Evaluation",
+    "04_Inference"
+  ],
+  "source_files_sha256": {
+    "scripts/final_study.py": "903da70ab4f7037e04077aaa40667792337fbd619d51f9b22b0d58623bda71dc",
+    "quantstream/features.py": "2944b185c86dc2f53f24a0dabc858b9d6b80e1550d38d662464ec33e1377a388",
+    "quantstream/deep.py": "d4aafa90fe1ed97d3d59fc5535c9917fc3d3bf219ce990c52522e49676649ddc",
+    "quantstream/terminal.py": "ae89862228eebacd70ebada14d271792cc74b863af676d71f4c7ab7e3a6ecbb7"
+  },
+  "source_control": {
+    "status": "verified_source_copy_with_local_changes",
+    "base_commit": "317895640d259da580eeeafb4ce6dd273246741a"
+  },
+  "independent_final_test": false,
+  "real_orders": false
+}

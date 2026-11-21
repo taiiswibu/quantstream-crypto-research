@@ -45,7 +45,7 @@ def import_panel(root, project):
         except Exception as error:
             st.error(str(error))
     st.caption(
-        "TCN cần PyTorch CPU. Xem docs/VAN_HANH_VI.md và nạp checkpoint ở trang Dữ liệu."
+        "TCN cần PyTorch CPU. Xem README.md và nạp checkpoint ở trang Dữ liệu."
     )
 
 

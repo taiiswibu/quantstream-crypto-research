@@ -1,0 +1,11 @@
+digraph target {
+ graph [rankdir=TB,bgcolor=white,fontname="DejaVu Sans",label="Thời gian của một nhãn · timestamp nến nguồn = T",labelloc=t,fontsize=19];
+ node [shape=box,style="rounded,filled",fillcolor="#edf5f3",fontname="DejaVu Sans",margin=".25,.16"];
+ edge [color="#687c90"];
+ a [label="Nến nguồn mở T, đóng T+1h\nFeatures chỉ dùng thông tin đã biết đến lúc đóng"];
+ b [label="Quyết định D = T+1h\nKhông dùng giá tương lai trong features"];
+ c [label="Vào lệnh tại open T+2h = D+1h\nexecution_lag_bars = 1"];
+ d [label="Thoát tại close nến mở T+5h\nNhãn hoàn tất T+6h = D+5h"];
+ e [label="Target = giá thoát / giá vào − 1\nGiữ vị thế 4h; chưa trừ chi phí"];
+ a -> b -> c -> d -> e;
+}

@@ -1,0 +1,20 @@
+{
+  "buy_hold": {
+    "total_return": -0.025227978915915328,
+    "sharpe_hourly_estimate": -6.326566112771112,
+    "max_drawdown": -0.025542999358786234,
+    "trades": 2,
+    "win_rate": 0.0,
+    "turnover": 0.34949393570427323,
+    "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+  },
+  "ema": {
+    "total_return": -0.039140704854209285,
+    "sharpe_hourly_estimate": -15.93697602652573,
+    "max_drawdown": -0.039140704854209285,
+    "trades": 154,
+    "win_rate": 0.2532467532467532,
+    "turnover": 30.143940890787565,
+    "note": "Hourly Sharpe assumes sqrt(8760) scaling; serial correlation is not adjusted."
+  }
+}

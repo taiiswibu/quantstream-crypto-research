@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-11-21T07:28:30.828884+00:00",
+  "local_os": "Linux",
+  "pytest": {
+    "passed": 105,
+    "failed": 0
+  },
+  "ruff": "passed",
+  "notebook_schema_and_python_cells": {
+    "passed": 4
+  },
+  "compileall": "passed",
+  "streamlit_apptest": {
+    "pages": 5,
+    "runtime_exceptions": 0,
+    "visual_browser_review": false
+  },
+  "notebook_execution": {
+    "completed": 4,
+    "output_images": 17
+  },
+  "ci_note": "GitHub Actions validates the published commit separately on Linux and Windows."
+}

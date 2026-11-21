@@ -27,6 +27,7 @@ dist/
 *.safetensors
 BAO_CAO_KET_QUA.html
 notebook_work/
+research_input/
 private_uploads/
 VERIFICATION.json
 

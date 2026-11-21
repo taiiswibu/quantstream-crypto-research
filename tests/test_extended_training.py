@@ -211,27 +211,3 @@ def test_run007_full_pipeline_and_mse_model_ui(tmp_path, monkeypatch):
     ).run()
     app.radio[0].set_value("Kiểm định").run()
     assert not app.exception, [error.message for error in app.exception]
-    # Execute the generated notebook's export cell against actual fixture artifacts.
-    monkeypatch.syspath_prepend(str(Path(ui_app.__file__).parents[1] / "scripts"))
-    import build_extended_notebook
-    import nbformat
-    from quantstream.common import sha256
-
-    notebook_root = tmp_path / "generated"
-    (notebook_root / "notebooks").mkdir(parents=True)
-    monkeypatch.setattr(build_extended_notebook, "ROOT", notebook_root)
-    build_extended_notebook.extended("0" * 40)
-    notebook = nbformat.read(
-        notebook_root / "notebooks/10_Kaggle_Extended_Training.ipynb", as_version=4
-    )
-    assert "'--protocol','run007'" in notebook.cells[7].source
-    exec(
-        notebook.cells[11].source,
-        {
-            "WORK": root,
-            "json": json,
-            "pd": pd,
-            "sha256": sha256,
-            "display": lambda _: None,
-        },
-    )

@@ -1,0 +1,51 @@
+{
+  "notebook": "02_Training.ipynb",
+  "notebook_sha256": "a02fa5deb732a2cbd41109e47d270d6e0e06053a5e079eb4981ec4855f91aa6c",
+  "images": [
+    {
+      "file": "02_Training-tuning-2.png",
+      "cell_index_zero_based": 3,
+      "output_index": 2,
+      "execution_count": 3,
+      "mime": "image/png",
+      "bytes": 46840,
+      "sha256": "71e6c209189990c6024f33faa142852c2b4d6870640ed74e2cabe95802d52d6d"
+    },
+    {
+      "file": "02_Training-xgb-loss-0.png",
+      "cell_index_zero_based": 5,
+      "output_index": 0,
+      "execution_count": 5,
+      "mime": "image/png",
+      "bytes": 36883,
+      "sha256": "4870405be7c40190655959d0d5c7987381e9a00e937c7a87a0c5473fb9311353"
+    },
+    {
+      "file": "02_Training-tcn-architecture-0.png",
+      "cell_index_zero_based": 6,
+      "output_index": 0,
+      "execution_count": 6,
+      "mime": "image/png",
+      "bytes": 108742,
+      "sha256": "6944b7e43440210dab1f8222b4b0679b12d9476f59c7d46abd2bbdc77915237c"
+    },
+    {
+      "file": "02_Training-tcn-loss-0.png",
+      "cell_index_zero_based": 8,
+      "output_index": 0,
+      "execution_count": 8,
+      "mime": "image/png",
+      "bytes": 96514,
+      "sha256": "08b8d1e741d6a403869d5bbab96bebaad2e537ff54bac42cef782ebe758f54bc"
+    },
+    {
+      "file": "02_Training-importance-1.png",
+      "cell_index_zero_based": 9,
+      "output_index": 1,
+      "execution_count": 9,
+      "mime": "image/png",
+      "bytes": 51014,
+      "sha256": "82a66df8138888de0d62615a5f04baf7d9ef050068bc2b1e0d442202ec0960a4"
+    }
+  ]
+}
