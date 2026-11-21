@@ -59,7 +59,7 @@ Phạm vi hiện tại là một ứng dụng local cho nghiên cứu và paper 
 | Inference | Dự đoán CPU, kiểm tra độ mới dữ liệu và lưu forecast để chấm khi có nhãn |
 | Web app | Năm trang Streamlit; biểu đồ Plotly tương tác và bảng model/data health |
 | Kiểm thử | Pytest, Ruff, notebook schema, compile và GitHub Actions trên Linux/Windows |
-| Minh chứng | 4 notebook có output đã chạy; ảnh được xuất nguyên byte từ output, có manifest nguồn |
+| Minh chứng | 4 notebook có output đã chạy, 17 biểu đồ/sơ đồ và 6 screenshot app bao quát 5 trang |
 
 Các mô-đun nghiên cứu mở rộng và báo cáo các vòng cũ vẫn được giữ để đối chiếu. Bộ notebook đang sử dụng được rút về bốn bước ở [mục 14](#14-chạy-lại-toàn-bộ-notebook), tránh phải đi qua nhiều notebook phát sinh trong quá trình thử nghiệm.
 
@@ -278,31 +278,55 @@ Notebook 04 còn tạo `QuantStream_Research_Workspace.zip` trong thư mục là
 
 ## 11. Giao diện và ảnh app
 
-Web app dùng nền tối, biểu đồ Plotly tương tác, bộ chọn tài sản/model và năm trang:
+Ứng dụng Streamlit chạy tại `127.0.0.1:8501`, sử dụng biểu đồ Plotly và bộ chọn tài sản/model ở sidebar. Sáu ảnh dưới đây do người dùng chụp trên máy local, được cung cấp ngày **21/11/2026**, bao quát cả năm trang chính. Các ảnh dùng **BTC/USDT · Ridge CPU** và được giữ nguyên nội dung.
 
-| Trang | Nội dung |
+| Trang | Nội dung thể hiện trong ảnh |
 |---|---|
-| Thị trường | Giá, volume, nến, dự báo và thời điểm dữ liệu |
-| Dự báo | Lịch sử forecast, nhãn khi đã hoàn tất horizon và feature contribution |
-| Kiểm định | Metrics, baseline, kết quả từng fold, logs và mô phỏng validation |
-| Danh mục | Vốn giả lập, equity, vị thế, lệnh và điều kiện dừng |
-| Dữ liệu | Nguồn, health, phạm vi nến, import và thao tác model |
+| Thị trường | Giá, volume, nến 1H, return dự báo và thời điểm tín hiệu |
+| Dự báo | Forecast đã ghi, nhãn chưa hoàn tất và đóng góp feature |
+| Kiểm định | Metrics, baseline, biểu đồ sai số và backtest validation |
+| Danh mục | Vốn paper, vị thế, số lệnh và tham số chi phí |
+| Dữ liệu | Số nến, phạm vi dữ liệu, nến thiếu và trạng thái fit model |
 
-Notebook 04 đã dùng Streamlit AppTest kiểm tra cả năm trang không phát sinh runtime exception. Đây là kiểm tra chạy ứng dụng; chưa thay cho kiểm tra bố cục trong trình duyệt thực tế trên Windows.
+### Thị trường và dự báo
 
-![Ô chờ ảnh app thực tế do người dùng chụp](reports/app/app.png)
+![Giao diện Thị trường với nến BTC/USDT, volume và dự báo Ridge](reports/app/01_thi_truong.png)
 
-*Hình 18 — Ô chờ ảnh, chưa phải screenshot của ứng dụng. Chỉ cần thay một file `reports/app/app.png`; liên kết trong README sẽ cập nhật theo.*
+*Hình 18 — Trang Thị trường: giá hiển thị 60.344,03 USDT, khối lượng 24 giờ 3.888,9 triệu USDT và dự báo return +0,25%. Tín hiệu mang mốc 21/11/2026 14:00 UTC, thời điểm vào giả định 15:00 và hết horizon 19:00 UTC. Đây là trạng thái hiển thị tại lúc chụp, không phải kết quả dự báo đã được xác nhận.*
 
-**Cách chụp một ảnh app đưa vào README:**
+### Lịch sử forecast và đóng góp feature
 
-1. Mở app tại `http://127.0.0.1:8501/`, chọn BTC/USDT và model muốn giới thiệu. Giữ cửa sổ rộng khoảng 1.400–1.600 px, zoom 100% hoặc 90% để đọc rõ chữ.
-2. Nếu dùng dữ liệu live, bấm **Đồng bộ thị trường** và chờ render. Nếu đang demo snapshot offline, giữ nguyên trạng thái dữ liệu cũ và mô tả đúng điều đó.
-3. Chọn trang **Kiểm định** để ảnh có cả model, baseline và biểu đồ. Giữ sidebar, tên model, mốc dữ liệu và đơn vị trục trong vùng chụp. Có thể dùng trang **Thị trường** nếu muốn ưu tiên giao diện nến.
-4. Nhấn **Win + Shift + S**, chụp vùng app và lưu PNG đè vào `reports/app/app.png`. Có thể ghép thêm khung Thị trường bên cạnh khung Kiểm định trong cùng một PNG, kèm nhãn trang; không sửa số liệu hoặc bỏ cảnh báo làm thay đổi ý nghĩa.
-5. Thay chú thích Hình 18 bằng tài sản, model, thời điểm chụp có múi giờ và trạng thái đồng bộ. Commit đúng ảnh đã chụp.
+![Lịch sử forecast đã lưu và biểu đồ đóng góp các đặc trưng](reports/app/02_du_bao_va_features.png)
 
-Không cần tạo lệnh giả hoặc mở paper mới chỉ để ảnh có nhiều giao dịch. Nếu hệ thống ghi 0 lệnh thì giữ đúng 0 lệnh. Ảnh notebook phía trên đã có dữ liệu nguồn; ảnh app bổ sung bằng chứng giao diện sử dụng thực tế tại lúc chụp.
+*Hình 19 — Trang Dự báo có một forecast BTCUSDT lúc 14:00 UTC, giá trị 0,0025 tương ứng +0,25%. `target_return` đang là `None`, nên chưa thể chấm sai số cho dự báo này. Phần dưới hiển thị hệ số Ridge nhân với feature đã chuẩn hóa; biểu đồ không diễn giải quan hệ nhân quả.*
+
+### Kiểm định và baseline
+
+![Trang Kiểm định với MAE, MSE ratio, directional accuracy và baseline](reports/app/03_kiem_dinh_baseline.png)
+
+*Hình 20 — App hiển thị MAE validation 0,620%, MSE/zero-return 0,9946 và directional accuracy 46,7% của Ridge. Bảng so sánh gồm Ridge, XGBoost, zero-return và naive return trên 1.878 mẫu; phía dưới là dự báo so với nhãn và phân phối sai số. Các metric này là validation lịch sử, không phải kết quả của forecast mới ở Hình 19.*
+
+### Mô phỏng trên validation
+
+![Bảng backtest validation và vùng biểu đồ đang được zoom](reports/app/04_backtest_validation.png)
+
+*Hình 21 — Bảng backtest ghi Ridge có 0 lệnh và return bằng 0; buy-and-hold khoảng −2,52%, EMA khoảng −3,91% sau các giả định chi phí. Ảnh đang giữ trạng thái zoom của Plotly, nên vùng hiển thị không chứa đầy đủ đường equity. Biểu đồ toàn kỳ được trình bày tại Hình 16; không dùng vùng trống trong ảnh này để đánh giá lợi nhuận.*
+
+### Danh mục paper
+
+![Danh mục mô phỏng với vốn 10.000 USDT, chưa có lệnh khớp](reports/app/05_danh_muc_paper.png)
+
+*Hình 22 — Trang Danh mục hiển thị vốn giả lập 10.000 USDT, thay đổi +0,00% và 0 lệnh đã khớp. Mỗi tài sản đang có 5.000 USDT tiền mặt, số lượng nắm giữ bằng 0. Cấu hình trên ảnh là 10% vốn mỗi tài sản, phí/slippage 15 bps mỗi chiều và ngưỡng 0,60%. Đây là trạng thái phiên paper tại lúc chụp, chưa chứng minh hiệu quả giao dịch.*
+
+### Dữ liệu và vận hành
+
+![Nguồn dữ liệu, phạm vi nến và cơ chế chặn refit khi có phiên paper](reports/app/06_du_lieu_va_van_hanh.png)
+
+*Hình 23 — Trang Dữ liệu ghi 34.092 nến cho mỗi tài sản, từ 01/01/2023 đến nến mở 21/11/2026 13:00 UTC, tổng cộng 68.184 nến. App ghi 4 nến thiếu, 0 nến bị loại và file Ridge khoảng 2,5 KB. Thao tác fit lại đang bị khóa vì có phiên paper; cần lưu phiên trước khi đổi model.*
+
+Dữ liệu vận hành trong bộ ảnh đã có phạm vi dài hơn snapshot **67.820 nến** dùng để chạy notebook ở mục 4. Vì vậy số nến trên app và số nến trong báo cáo nghiên cứu khác nhau. Đồng bộ nến không tự huấn luyện lại model và không biến validation lịch sử thành một test độc lập mới.
+
+Notebook 04 đã dùng Streamlit AppTest kiểm tra runtime của năm trang. Bộ screenshot bổ sung bằng chứng giao diện trên trình duyệt Windows; không thay cho metric, logs hoặc kiểm thử. Tên file, kích thước và SHA256 của sáu ảnh được ghi trong [screenshots.json](reports/app/screenshots.json). Khi chụp bổ sung, giữ nguyên tên model, thời điểm dữ liệu, đơn vị và các trạng thái như chưa đủ nhãn hoặc 0 lệnh.
 
 ## 12. Công nghệ sử dụng
 
@@ -454,7 +478,7 @@ Bảng/ảnh trong `reports/final_study` và output notebook sẽ được cập
 
 ### Nguồn của ảnh minh chứng
 
-Có **17 ảnh từ output notebook** trong [reports/final_study/figures](reports/final_study/figures), tương ứng Hình 1–17; ảnh app ở Hình 18 là ô chờ riêng. Runner xuất nguyên byte PNG từ notebook và tạo bốn manifest ảnh, ghi notebook SHA256, cell index, execution count và image SHA256.
+Có **17 ảnh từ output notebook** trong [reports/final_study/figures](reports/final_study/figures), tương ứng Hình 1–17. Sáu screenshot app tại Hình 18–23 được lưu riêng trong [reports/app](reports/app), có manifest nguồn và SHA256. Runner xuất nguyên byte PNG từ notebook và tạo bốn manifest ảnh, ghi notebook SHA256, cell index, execution count và image SHA256.
 
 Có thể xuất lại ảnh một notebook:
 
@@ -479,8 +503,8 @@ README này là tài liệu giới thiệu, báo cáo kết quả và hướng d
 | `tests/`, `.github/workflows/` | Kiểm thử dữ liệu, mô hình, accounting, import, UI và CI |
 | `reports/final_study/` | Bảng số liệu, logs, provenance và ảnh của lượt hiện tại |
 | `reports/experiments/`, `reports/reference/` | Bằng chứng các vòng nghiên cứu cũ và protocols tham chiếu |
-| `reports/diagrams/` | Mã nguồn sơ đồ và ô chờ ảnh |
-| `reports/app/app.png` | Một file để bổ sung ảnh app thực tế |
+| `reports/diagrams/` | Mã nguồn sơ đồ hệ thống, target và TCN |
+| `reports/app/` | Sáu ảnh chụp app thực tế và manifest nguồn ảnh |
 | `research_input/` | Snapshot đầu vào ở máy người chạy; không commit |
 | `notebook_work/`, `workspace/` | Dữ liệu và artifact phát sinh; không commit |
 
@@ -536,4 +560,4 @@ Mã ứng dụng QuantStream theo [MIT License](LICENSE). Quyền sử dụng d�
 - **Chronos-2 của Amazon:** model/library theo Apache-2.0; [source](https://github.com/amazon-science/chronos-forecasting), [model](https://huggingface.co/amazon/chronos-2). Các vòng fine-tuning lịch sử dùng adapter với base model riêng; revision/provenance nằm trong report của từng vòng. Bốn notebook hiện tại không tải weights hay chạy lại fine-tuning Chronos.
 - **Thư viện:** PyTorch, scikit-learn, XGBoost, pandas, NumPy, PyArrow, DuckDB, Streamlit, Plotly, Transformers, PEFT và các dependencies giữ license của từng bên. Chúng được cài qua package manager, không đóng gói bản phân phối thư viện trong repository.
 
-Các thí nghiệm và protocol cũ có thể đối chiếu trong [bản tài liệu lịch sử](https://github.com/taiiswibu/quantstream-crypto-research/tree/317895640d259da580eeeafb4ce6dd273246741a/docs/experiments) và các báo cáo máy đọc được còn trong `reports/`. Các hình trong README là biểu đồ/diagram từ notebook đã chạy, trừ ô chờ screenshot app được ghi rõ tại Hình 18.
+Các thí nghiệm và protocol cũ có thể đối chiếu trong [bản tài liệu lịch sử](https://github.com/taiiswibu/quantstream-crypto-research/tree/317895640d259da580eeeafb4ce6dd273246741a/docs/experiments) và các báo cáo máy đọc được còn trong `reports/`. Hình 1–17 là biểu đồ/diagram từ notebook đã chạy; Hình 18–23 là ảnh chụp app local do người dùng cung cấp, giữ nguyên số liệu và trạng thái hiển thị.

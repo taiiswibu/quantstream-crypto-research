@@ -41,7 +41,16 @@ def test_readme_images_and_local_links_exist_and_attribution_is_preserved():
         if target.startswith(('http:', 'https:', '#')):
             continue
         assert (ROOT / target.split('#')[0]).exists(), target
-    assert len(re.findall(r'!\[.*?\]\(', readme)) == 18
+    images = re.findall(r'!\[.*?\]\(([^)]+)\)', readme)
+    manifest = json.loads((ROOT / 'reports/app/screenshots.json').read_text(encoding='utf-8'))
+    expected_app = {'reports/app/' + entry['file'] for entry in manifest['images']}
+    assert {path for path in images if path.startswith('reports/app/')} == expected_app
+    assert len(images) == 17 + len(expected_app)
+    for entry in manifest['images']:
+        payload = (ROOT / 'reports/app' / entry['file']).read_bytes()
+        assert payload.startswith(b'\x89PNG\r\n\x1a\n')
+        assert len(payload) == entry['bytes']
+        assert hashlib.sha256(payload).hexdigest() == entry['sha256']
     assert 'Apache-2.0' in readme and 'Binance public data terms' in readme
     assert (ROOT / 'LICENSE').is_file()
 

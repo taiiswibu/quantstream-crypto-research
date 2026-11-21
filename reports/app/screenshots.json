@@ -1,0 +1,64 @@
+{
+  "source": "User-provided screenshots of the local Streamlit application",
+  "provided_date": "2026-11-21",
+  "local_code_commit_at_capture": null,
+  "image_processing": "None; renamed copies preserve the original bytes.",
+  "market_decision_time_visible_utc": "2026-11-21T14:00:00+00:00",
+  "model_label_visible": "Ridge · CPU",
+  "images": [
+    {
+      "file": "01_thi_truong.png",
+      "original_filename": "01_thi_truong.png",
+      "description": "Thị trường và dự báo BTC/USDT",
+      "sha256": "f07728bf0ca894d43f93a5c53da87215cc597efec8f1d976563768c6ffa9e938",
+      "bytes": 285571,
+      "width": 1912,
+      "height": 965
+    },
+    {
+      "file": "02_du_bao_va_features.png",
+      "original_filename": "02_lich_su_du_bao.png",
+      "description": "Lịch sử forecast và đóng góp feature",
+      "sha256": "e18956fda7b7c6da98b5e05726bf479b31e7718dfc7cfc305619b3a02c61244f",
+      "bytes": 124260,
+      "width": 1907,
+      "height": 967
+    },
+    {
+      "file": "03_kiem_dinh_baseline.png",
+      "original_filename": "Screenshot 2026-11-21 213305.png",
+      "description": "Metrics, baseline và phân phối sai số",
+      "sha256": "a9ca41df171a775e3228e742d201f3157f99dc4dad8fc7260160d49a07cd9f40",
+      "bytes": 248902,
+      "width": 1916,
+      "height": 960
+    },
+    {
+      "file": "04_backtest_validation.png",
+      "original_filename": "Screenshot 2026-11-21 213355.png",
+      "description": "Backtest validation ở trạng thái zoom và bảng chiến lược",
+      "sha256": "1434db50669993ce93ebbdf3025a44d072a8cd239935bc4ab7b4b001587cf0e5",
+      "bytes": 183154,
+      "width": 1915,
+      "height": 962
+    },
+    {
+      "file": "05_danh_muc_paper.png",
+      "original_filename": "Screenshot 2026-11-21 213419.png",
+      "description": "Danh mục paper: vốn 10.000 USDT và 0 lệnh",
+      "sha256": "b7ef96608f488cb0999bc7dd91f9995a8a989008296f5cd38f4131ab440c9feb",
+      "bytes": 208663,
+      "width": 1917,
+      "height": 971
+    },
+    {
+      "file": "06_du_lieu_va_van_hanh.png",
+      "original_filename": "Screenshot 2026-11-21 213500.png",
+      "description": "Nguồn dữ liệu, số nến và trạng thái fit model",
+      "sha256": "0f8fd37ace569c941b05ede32b2e4946226ac2a34c841c93db0d46cdbb4b488e",
+      "bytes": 195628,
+      "width": 1916,
+      "height": 972
+    }
+  ]
+}
