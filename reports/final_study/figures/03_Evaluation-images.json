@@ -1,0 +1,51 @@
+{
+  "notebook": "03_Evaluation.ipynb",
+  "notebook_sha256": "15fc3bed361e9ce4afded6cd90e6c7387d8beb79cdfd7b6708955afc67450cc9",
+  "images": [
+    {
+      "file": "03_Evaluation-baseline-0.png",
+      "cell_index_zero_based": 3,
+      "output_index": 0,
+      "execution_count": 3,
+      "mime": "image/png",
+      "bytes": 47627,
+      "sha256": "1862ee4de502eddb9247cd20083601cfb3e81a820a260fd469b59a28f72399e0"
+    },
+    {
+      "file": "03_Evaluation-folds-1.png",
+      "cell_index_zero_based": 4,
+      "output_index": 1,
+      "execution_count": 4,
+      "mime": "image/png",
+      "bytes": 28179,
+      "sha256": "457bdc3aa9a01fe3f5f7af6ba082e0a02be38ffd404839e99445c6cfbe520524"
+    },
+    {
+      "file": "03_Evaluation-predictions-0.png",
+      "cell_index_zero_based": 5,
+      "output_index": 0,
+      "execution_count": 5,
+      "mime": "image/png",
+      "bytes": 110098,
+      "sha256": "696aa9714774f94b09837550bb43e8148069dcc24951bc9504dcde4fea54defd"
+    },
+    {
+      "file": "03_Evaluation-predictions-1.png",
+      "cell_index_zero_based": 5,
+      "output_index": 1,
+      "execution_count": 5,
+      "mime": "image/png",
+      "bytes": 89363,
+      "sha256": "e3506dde391ac655a116cc64d120b1011e32f7aae3465376cc346bebb241921a"
+    },
+    {
+      "file": "03_Evaluation-strategy-2.png",
+      "cell_index_zero_based": 6,
+      "output_index": 2,
+      "execution_count": 6,
+      "mime": "image/png",
+      "bytes": 98137,
+      "sha256": "ea642b201f23b03bf2e574119f631f2c02502f7322e78c905605f4a64b551214"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "notebook": "04_Inference.ipynb",
+  "notebook_sha256": "655dbea7c11c50cf8516018365833afa14f80ddc9cd1486dcbeafd495a7dd02c",
+  "images": [
+    {
+      "file": "04_Inference-inference-0.png",
+      "cell_index_zero_based": 3,
+      "output_index": 0,
+      "execution_count": 3,
+      "mime": "image/png",
+      "bytes": 72840,
+      "sha256": "117d6711c6b9be89e2cff4ef034aaba0b8bf9a3d4d39fe8b02d875aecfa3c721"
+    }
+  ]
+}

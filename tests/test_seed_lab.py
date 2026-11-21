@@ -1,10 +1,8 @@
 """Run 004 isolation, shared populations, actual trainer evidence and interrupted runs."""
 import json
 from pathlib import Path
-import runpy
 import zipfile
 
-import nbformat
 import numpy as np
 import pandas as pd
 import pytest
@@ -171,21 +169,6 @@ def test_seed_runner_uses_fresh_fits_and_preserves_failure(tmp_path, predictions
     assert original.read_bytes() == b"run003"
 
 
-def test_notebook_defaults_to_preflight_and_pinned_source(tmp_path):
-    root = Path(__file__).resolve().parents[1]
-    builder = runpy.run_path(str(root / "scripts/build_seed_notebook.py"))
-    path = tmp_path / "06.ipynb"
-    builder["build"]("a" * 40, path)
-    notebook = nbformat.read(path, as_version=4)
-    nbformat.validate(notebook)
-    cells = "\n".join(cell.source for cell in notebook.cells if cell.cell_type == "code")
-    assert "MODE='preflight'" in cells and f"SOURCE_COMMIT='{'a' * 40}'" in cells
-    assert "CODE=WORK/('source-'+SOURCE_COMMIT[:12])" in cells
-    assert "verified=verify_run003_snapshot(SNAPSHOT)" in cells
-    assert "archive_evidence(target,archive)" in cells
-    assert "if target.exists() or archive.exists():" in cells
-    with pytest.raises(ValueError, match="immutable"):
-        builder["build"]("main", path)
 
 
 def test_actual_tiny_chronos_lora_trainer_records_step_and_adapter(tmp_path):

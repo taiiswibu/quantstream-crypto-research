@@ -1,0 +1,13 @@
+digraph tcn {
+ graph [rankdir=TB,bgcolor=white,fontname="DejaVu Sans",label="TCN nhỏ · PyTorch CPU · fixed 6 epochs mỗi fit",labelloc=t,fontsize=20];
+ node [shape=box,style="rounded,filled",fillcolor="#eaf0fa",fontname="DejaVu Sans",margin=".25,.14"];
+ edge [color="#687c90"];
+ x [label="Input: batch × 48 giờ × 18 features\nMean/std chỉ từ train của từng fold"];
+ c [label="4 causal Conv1D residual blocks\nwidth 24 · kernel 3 · dilation 1 / 2 / 4 / 8\nLeft padding · GELU + skip connection"];
+ h [label="Lấy thời điểm cuối → Linear 24 → 1\nĐầu ra không activation; target train × 100"];
+ loss [label="Huber delta 1 · AdamW lr 5e-4\nweight_decay 1e-3 · clip grad 1 · batch 256"];
+ out [label="Inference chia 100 để về return gốc\nGiữ epoch cuối, không chọn bằng outer validation"];
+ x -> c -> h -> out;
+ h -> loss [label="train",style=dashed];
+ loss -> c [label="gradient",style=dashed];
+}

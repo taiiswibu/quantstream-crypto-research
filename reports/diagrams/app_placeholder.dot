@@ -1,0 +1,5 @@
+digraph app {
+ graph [bgcolor="#0b121d",pad="0.7",fontname="DejaVu Sans"];
+ node [shape=box,style="rounded,filled",fillcolor="#132132",color="#344e68",fontcolor="#dbe5ef",fontname="DejaVu Sans",fontsize=19,margin="0.5,0.4"];
+ a [label="QUANTSTREAM · ẢNH APP THỰC TẾ CHƯA BỔ SUNG\n\nThay file reports/app/app.png bằng ảnh bạn chụp.\nGiữ sidebar, model, tài sản, thời gian và biểu đồ trong khung.\n\nĐây là ô chờ ảnh, không phải ảnh minh chứng giao diện."];
+}

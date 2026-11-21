@@ -79,7 +79,7 @@ def panel(root, project, symbol, chart):
         folder = Path(project) / "artifacts/forecast" / name
         if not (folder / "model.safetensors").exists():
             st.info(
-                "Chưa có weights local. Xem mục model tùy chọn trong docs/VAN_HANH_VI.md để chuẩn bị Timestral-5M."
+                "Chưa có weights local. Xem mục model tùy chọn trong README.md để chuẩn bị Timestral-5M."
             )
         elif st.button("Tính dự báo thử nghiệm"):
             try:

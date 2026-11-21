@@ -1,0 +1,37 @@
+{
+  "bars_sha256": "1bc980d79b7a5a9c689883aa8d065e67284d7850d605c353dc2ab040ffb1b653",
+  "rows": 67820,
+  "by_symbol": {
+    "BTCUSDT": 33910,
+    "ETHUSDT": 33910
+  },
+  "first_open": "2023-01-01 00:00:00+00:00",
+  "last_open": "2026-11-13 23:00:00+00:00",
+  "feature_rows": 67628,
+  "labelled_rows": 67608,
+  "feature_code_sha256": "2944b185c86dc2f53f24a0dabc858b9d6b80e1550d38d662464ec33e1377a388",
+  "feature_count": 18,
+  "config": {
+    "symbols": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "interval": "1h",
+    "start_month": "2023-01",
+    "end_month": "2026-11",
+    "horizon": 4,
+    "execution_lag_bars": 1,
+    "fee_bps": 10.0,
+    "slippage_bps": 5.0,
+    "position_fraction": 0.1,
+    "drawdown_halt": 0.1,
+    "test_fraction": 0.2,
+    "walk_forward_folds": 3,
+    "minimum_trades": 20,
+    "seed": 42,
+    "threads": 4,
+    "lookback": 48
+  },
+  "source_note": "Verified saved snapshot; no new network collection in this execution.",
+  "terms_url": "https://github.com/binance/binance-public-data/blob/master/TERMS_AND_CONDITIONS.md"
+}

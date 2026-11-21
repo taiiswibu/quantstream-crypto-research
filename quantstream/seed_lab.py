@@ -69,7 +69,7 @@ def source_identity():
     if source["status"] != "available" or source["dirty"] is not False:
         raise ValueError("Run 004 requires a clean Git checkout at the pinned source SHA")
     source["files"] = {str(p.relative_to(root)): sha256(p) for p in sorted((root / "quantstream").glob("*.py"))}
-    source["protocol_sha256"] = sha256(root / "docs/experiments/run-004-seed-stability-protocol.md")
+    source["protocol_sha256"] = sha256(root / "reports/reference/protocols/run-004-seed-stability-protocol.txt")
     # A detached checkout is expected on Kaggle; branch names are not runtime identity.
     source.pop("branch")
     return source

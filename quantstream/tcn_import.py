@@ -123,7 +123,7 @@ def load_checked_payload(path, metadata):
         import torch
     except ImportError as error:
         raise ValueError(
-            "Cần PyTorch CPU. Xem hướng dẫn cài phần dl trong docs/VAN_HANH_VI.md"
+            "Cần PyTorch CPU. Xem hướng dẫn cài phần dl trong README.md"
         ) from error
     major, minor = (int(v) for v in torch.__version__.split(".")[:2])
     if (major, minor) < (2, 6):

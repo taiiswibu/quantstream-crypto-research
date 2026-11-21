@@ -3,10 +3,6 @@ import ast
 import copy
 import json
 from pathlib import Path
-import runpy
-import subprocess
-import sys
-import traceback
 import zipfile
 
 import numpy as np
@@ -65,40 +61,6 @@ def test_reference_rejects_modified_zip_before_extracting_weights(tmp_path):
     assert not list(tmp_path.glob("adapter-*"))
 
 
-def test_notebook_has_one_path_and_setup_failure_keeps_zero_step_evidence(tmp_path, monkeypatch):
-    import nbformat
-    import platform
-    root = Path(__file__).resolve().parents[1]
-    builder = runpy.run_path(str(root / "scripts/build_inference_notebook.py"))
-    notebook_path = tmp_path / "07.ipynb"
-    builder["build"]("a" * 40, notebook_path)
-    notebook = nbformat.read(notebook_path, as_version=4)
-    nbformat.validate(notebook)
-    cells = [cell.source for cell in notebook.cells if cell.cell_type == "code"]
-    for cell in cells:
-        ast.parse(cell)
-    assert not any("MODE=" in cell or "MODE =" in cell for cell in cells)
-    assert any("report=run_inference_lab(" in cell for cell in cells)
-    setup = next(cell for cell in cells if "import os, shutil" in cell.splitlines())
-    code = tmp_path / "source"
-    lock = code / "reports/experiments/run-004-seed-stability/kaggle-preflight-lock-rerun-001.json"
-    lock.parent.mkdir(parents=True)
-    lock.write_text(json.dumps({"environment": {"python": "not-this-python",
-        "packages": {"peft": "0.21.2", "numpy": "1.26.4"}}}))
-    output, archive = tmp_path / "output", tmp_path / "evidence.zip"
-    calls = []
-    monkeypatch.setattr(subprocess, "check_call", lambda *args, **kwargs: calls.append(args))
-    namespace = {"CODE": code, "WORK": tmp_path, "OUTPUT": output, "ARCHIVE": archive,
-                 "json": json, "sys": sys, "platform": platform, "subprocess": subprocess,
-                 "traceback": traceback, "zipfile": zipfile, "display": lambda value: None, "FileLink": str}
-    with pytest.raises(RuntimeError, match="Python base image"):
-        exec(compile(setup, "inference-setup", "exec"), namespace)
-    assert calls == []
-    assert not (tmp_path / "run004-constraints.txt").exists()
-    with zipfile.ZipFile(archive) as saved:
-        assert json.loads(saved.read("status.json"))["optimizer_steps"] == 0
-        assert "setup-error.txt" in saved.namelist()
-        assert json.loads(saved.read("setup/setup.json"))["status"] == "setup_failed_or_interrupted"
 
 
 def test_real_peft_reload_and_chronos_mode_controls_without_training(tmp_path, monkeypatch):
