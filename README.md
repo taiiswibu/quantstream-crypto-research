@@ -6,8 +6,6 @@ QuantStream là dự án nghiên cứu dự báo lợi suất BTC/USDT và ETH/U
 
 Bộ notebook hiện tại đã được chạy lại trên snapshot **67.820 nến**, gồm **Ridge, XGBoost và TCN**. Kết quả cho thấy Ridge/XGBoost chỉ nhỉnh hơn zero-return một lượng nhỏ về MSE trung bình; chưa ổn định qua từng fold. TCN của lượt này chưa vượt baseline. Ứng dụng đã có luồng inference và mô phỏng, nhưng kết quả nghiên cứu hiện tại **chưa đủ để dùng làm chiến lược đầu tư tiền thật**.
 
-Tác giả: **Võ Văn Tài** · Lĩnh vực: Data Engineering, Time Series Machine Learning, Applied ML.
-
 ## Mục lục
 
 1. [Bài toán và giá trị của dự án](#1-bài-toán-và-giá-trị-của-dự-án)
@@ -430,67 +428,7 @@ Không xóa state để bỏ guard. Với bundle portable từ các vòng nghiê
 
 Dừng app/worker rồi sao lưu toàn bộ workspace để giữ nến, models, registry, SQLite forecast và phiên paper. Các file vận hành và weights không được đưa vào Git.
 
-## 14. Chạy lại toàn bộ notebook
-
-Repository chỉ giữ **4 notebook đang sử dụng**, đọc theo thứ tự:
-
-| Notebook | Nội dung và đầu ra |
-|---|---|
-| [01_Data](notebooks/01_Data.ipynb) | Kiểm tra snapshot, chất lượng, features, nhãn, chuẩn hóa, split và sơ đồ |
-| [02_Training](notebooks/02_Training.ipynb) | Inner parameter study, fit Ridge/XGBoost/TCN, loss logs, weights và importance |
-| [03_Evaluation](notebooks/03_Evaluation.ipynb) | Chung cohort, baseline, từng fold, sai số, chuỗi forecast và backtest sau phí |
-| [04_Inference](notebooks/04_Inference.ipynb) | Reload/hash/parity, dự đoán từ artifact, AppTest 5 trang và gói workspace |
-
-Bản trong Git đã có output của một lượt chạy hoàn chỉnh. Các notebook Kaggle/LoRA cũ đã được bỏ khỏi cây hiện tại; vẫn có thể đọc [bản lịch sử tại commit 3178956](https://github.com/taiiswibu/quantstream-crypto-research/tree/317895640d259da580eeeafb4ce6dd273246741a/notebooks). Chúng không được tính là đã chạy lại trong lượt CPU này.
-
-### Chuẩn bị dữ liệu
-
-Đặt hai file `bars.parquet` và `history_manifest.json` vào `research_input/`, hoặc trỏ tới thư mục snapshot đã giải nén:
-
-```powershell
-$env:QUANTSTREAM_HISTORY_DIR = "D:\du-lieu\quantstream-history"
-```
-
-Không phải file `source_manifest.json` cũ nào cũng thay thế được `history_manifest.json`: SHA256 phải khớp đúng `bars.parquet` và metadata số dòng phải đúng. Raw snapshot không được commit vào repo. Gói workspace ở mục 10 chứa sẵn cặp file này trong `data/processed/`; có thể trỏ biến môi trường vào thư mục đó để chạy lại. Với dữ liệu khác, cần chuẩn bị manifest tương ứng và ghi kết quả thành một lượt riêng.
-
-Pipeline archive của CLI sử dụng `config.json` và có thể chạy bằng `python -m quantstream download` tại root dự án. Lệnh đó có truy cập mạng và tải lịch sử theo cấu hình; bộ bốn notebook không tự tải lại toàn bộ dữ liệu mỗi lần rerun.
-
-### Cài phần nghiên cứu và thực thi
-
-```powershell
-.\.venv\Scripts\python.exe -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-.\.venv\Scripts\python.exe -m pip install -e ".[dev,notebook,dl]" -c requirements-tested-core.txt
-.\.venv\Scripts\python.exe scripts/run_notebooks.py
-```
-
-Cần cài **Graphviz** và kiểm tra `dot -V` chạy được trong terminal. Có thể mở từng notebook bằng kernel `.venv` trong VSCode/Jupyter rồi Run All theo thứ tự 01 → 04.
-
-Runner tự chạy mỗi notebook trong một tiến trình IPython mới, theo thứ tự cell, ghi stdout/stderr và rich output. Không bỏ qua cell train hoặc thay bằng ảnh có sẵn. Có lỗi thì dừng; metadata chỉ ghi `completed=true` sau khi toàn bộ cell thành công. Lượt này dùng engine IPython in-process, không phải remote Kaggle kernel.
-
-Mặc định model được lưu ở `notebook_work/final_study`. Chạy lại từ đầu trên cùng thư mục đã có registry sẽ bị chặn để tránh ghi đè. Chọn một thư mục mới trước khi chạy:
-
-```powershell
-$env:QUANTSTREAM_STUDY_ROOT = "$PWD\notebook_work\study_02"
-.\.venv\Scripts\python.exe scripts/run_notebooks.py
-```
-
-Bảng/ảnh trong `reports/final_study` và output notebook sẽ được cập nhật theo lượt mới. Muốn giữ nguyên bản công bố thì chạy trên branch/thư mục riêng. Thời gian chạy phụ thuộc CPU, thư viện và dữ liệu; sáu epoch TCN là ngân sách cố định, không có cam kết rằng phải train lâu mới đạt chất lượng.
-
-### Nguồn của ảnh minh chứng
-
-Có **17 ảnh từ output notebook** trong [reports/final_study/figures](reports/final_study/figures), tương ứng Hình 1–17. Sáu screenshot app tại Hình 18–23 được lưu riêng trong [reports/app](reports/app), có manifest nguồn và SHA256. Runner xuất nguyên byte PNG từ notebook và tạo bốn manifest ảnh, ghi notebook SHA256, cell index, execution count và image SHA256.
-
-Có thể xuất lại ảnh một notebook:
-
-```powershell
-.\.venv\Scripts\python.exe scripts/export_notebook_images.py notebooks/03_Evaluation.ipynb --output reports/final_study/figures
-```
-
-Không dùng ảnh tạo sinh để thay biểu đồ, không dựng loss giả cho Ridge và không gọi output notebook là screenshot ứng dụng live.
-
-## 15. Cấu trúc repository và kiểm thử
-
-README này là tài liệu giới thiệu, báo cáo kết quả và hướng dẫn vận hành duy nhất ở phiên bản hiện tại. License được giữ riêng; attribution của nguồn ngoài được gộp ở mục 17. Các tài liệu lặp, launcher `.cmd/.bat/.sh`, generator notebook cũ và notebook trùng đã được dọn khỏi cây đang dùng.
+## 14. Cấu trúc repository và kiểm thử
 
 | Đường dẫn | Nội dung |
 |---|---|
@@ -508,56 +446,8 @@ README này là tài liệu giới thiệu, báo cáo kết quả và hướng d
 | `research_input/` | Snapshot đầu vào ở máy người chạy; không commit |
 | `notebook_work/`, `workspace/` | Dữ liệu và artifact phát sinh; không commit |
 
-Git history và số liệu thí nghiệm được giữ nguyên để có thể truy nguyên. Dọn tài liệu không làm các lần thử không đạt biến mất khỏi kết quả nghiên cứu.
 
-Chạy kiểm tra:
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
-.\.venv\Scripts\python.exe -m ruff check quantstream app.py tests scripts
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe scripts/check_notebooks.py
-.\.venv\Scripts\python.exe -m compileall -q quantstream app.py scripts
-```
 
-CI chạy trên Linux/Windows. Test tập trung vào tính nhân quả của features, purge nhãn, nến/gap, accounting và chi phí, model/hash/config contract, import và paper state. Kết quả kiểm tra local: **105 tests đạt**, Ruff, compile và schema của cả bốn notebook đều đạt; xem [software_checks.json](reports/final_study/software_checks.json). Kiểm tra schema notebook chỉ xác minh cấu trúc/cú pháp; output có execution metadata và manifest ảnh mới là bản ghi của lượt thực thi.
 
-## 16. Kinh nghiệm và hướng phát triển
 
-### Những kỹ năng thực hành từ dự án
-
-| Mảng | Nội dung đã thực hành |
-|---|---|
-| Data Engineering | Tích hợp archive/API/stream; chuẩn hóa schema và UTC; Parquet; kiểm tra chất lượng và nguồn dữ liệu |
-| Machine Learning | Feature engineering chuỗi thời gian, scaler fit train, baseline, regularization, boosted trees, TCN và logs optimizer |
-| Nghiên cứu thực nghiệm | Tách train/validation theo thời gian, purge nhãn, so cùng cohort, đọc kết quả thất bại và giới hạn thống kê |
-| Triển khai ML | Lưu/nạp artifact, hash/config contract, inference CPU, registry và kiểm tra parity |
-| Ứng dụng dữ liệu | Streamlit/Plotly, hiển thị độ mới dữ liệu, forecast history và mô phỏng danh mục |
-| Kỹ thuật phần mềm | Module hóa, file locking, kiểm thử, CI đa nền tảng và báo cáo có minh chứng |
-
-Bài học chính là một pipeline chạy được và một model tạo ra lợi thế dự báo là hai mức hoàn thành khác nhau. Dự án đã triển khai được luồng kỹ thuật; phần chất lượng tín hiệu vẫn cần nghiên cứu tiếp dựa trên bằng chứng.
-
-### Điều gì cần cải thiện?
-
-Hiện chưa đủ bằng chứng để kết luận riêng dữ liệu lỗi, thuật toán yếu hay train quá ít là nguyên nhân duy nhất. Snapshot đã qua kiểm tra kỹ thuật nhưng OHLCV 1H có thể vẫn thiếu tín hiệu cho nhãn đang chọn. Dự báo gần 0 cũng có thể là hệ quả của regularization và mục tiêu MSE trong thị trường nhiều nhiễu. Đây là giả thuyết cần kiểm chứng, không phải kết luận từ một hình.
-
-Hướng tiếp theo theo thứ tự ưu tiên:
-
-1. **Đóng băng protocol và chờ dữ liệu tương lai mới.** Xác định trước metric, thời gian và tiêu chí chấp nhận. Không tiếp tục điều chỉnh trên cùng một kỳ rồi gọi kỳ đó là test độc lập.
-2. **Kiểm tra sự khác biệt theo giai đoạn và tài sản.** Báo cáo từng fold, thị trường tăng/giảm và volatility regime; dùng phương pháp có xét phụ thuộc thời gian khi so sai số.
-3. **Ablation dữ liệu và target.** So nhóm OHLCV với dữ liệu bổ sung như funding/basis nếu thu thập được đúng lịch công bố; kiểm tra horizon và đơn vị nhãn. Dữ liệu bổ sung phải có timestamp khả dụng, không chỉ timestamp sự kiện.
-4. **Tuning có ngân sách và nhiều seed.** Dùng inner temporal validation trước outer evaluation; kiểm tra độ ổn định thay vì chọn duy nhất seed tốt nhất. Với TCN cần xem cả receptive field, learning rate, loss và mức regularization.
-5. **Theo dõi vận hành.** Forecast thật có thời điểm phát hành, chấm khi nhãn hoàn tất, theo dõi độ mới dữ liệu và drift. Chỉ bàn nâng cấp triển khai sau khi có bằng chứng ngoài mẫu và sau phí.
-
-Không có cam kết rằng thay model lớn hơn, thêm dữ liệu bất kỳ hay tăng epoch sẽ tự tạo ra lợi nhuận. Điều kiện để đi tiếp là một cải thiện đo được, ổn định và kiểm tra lại được.
-
-## 17. Nguồn dữ liệu và bản quyền
-
-Mã ứng dụng QuantStream theo [MIT License](LICENSE). Quyền sử dụng dữ liệu, pretrained weights và dependencies không được thay thế bởi license của mã ứng dụng.
-
-- **Binance Spot market data:** lấy từ public archives/API. Các URL archive và checksum lịch sử được ghi trong [source_manifest.json](reports/reference/source_manifest.json); snapshot đang dùng có hash riêng ở mục 4. Điều khoản: [Binance public data terms](https://github.com/binance/binance-public-data/blob/master/TERMS_AND_CONDITIONS.md).
-- **FraudGuard của ItsLewis-DE:** tham khảo ý tưởng kiến trúc tại commit `5144d6d63dc38b4af0e0a68fd8638f369d35a7a4`; không đóng gói source code của repository đó.
-- **Chronos-2 của Amazon:** model/library theo Apache-2.0; [source](https://github.com/amazon-science/chronos-forecasting), [model](https://huggingface.co/amazon/chronos-2). Các vòng fine-tuning lịch sử dùng adapter với base model riêng; revision/provenance nằm trong report của từng vòng. Bốn notebook hiện tại không tải weights hay chạy lại fine-tuning Chronos.
-- **Thư viện:** PyTorch, scikit-learn, XGBoost, pandas, NumPy, PyArrow, DuckDB, Streamlit, Plotly, Transformers, PEFT và các dependencies giữ license của từng bên. Chúng được cài qua package manager, không đóng gói bản phân phối thư viện trong repository.
-
-Các thí nghiệm và protocol cũ có thể đối chiếu trong [bản tài liệu lịch sử](https://github.com/taiiswibu/quantstream-crypto-research/tree/317895640d259da580eeeafb4ce6dd273246741a/docs/experiments) và các báo cáo máy đọc được còn trong `reports/`. Hình 1–17 là biểu đồ/diagram từ notebook đã chạy; Hình 18–23 là ảnh chụp app local do người dùng cung cấp, giữ nguyên số liệu và trạng thái hiển thị.
